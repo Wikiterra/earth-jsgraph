@@ -1,0 +1,801 @@
+/* =============================================================
+   Custom properties
+   ============================================================= */
+:root {
+  --top-bar-h:    52px;
+  --bottom-bar-h: 72px;
+
+  --color-accent:   #ff8033;
+  --color-primary:  #2d3436;
+  --color-surface:  #fff;
+  --color-bg:       #1a1a24;
+  --color-border:   #e0e0e0;
+  --color-text:     #222;
+  --color-muted:    #666;
+
+  --bar-bg:   rgba(16, 16, 24, 0.96);
+  --bar-text: rgba(255, 255, 255, 0.9);
+
+  --radius-sm: 5px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --shadow-sm: 0 2px 6px rgba(0,0,0,0.12);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.18);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.28);
+}
+
+/* =============================================================
+   Base reset
+   ============================================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;          /* no page scroll — canvas IS the page */
+  background: var(--color-bg);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-text);
+}
+
+#app {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* =============================================================
+   Top bar
+   ============================================================= */
+#top-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--top-bar-h);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  background: var(--bar-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+
+/* TabSelectors class required by Tabs.js — positioned inside #top-bar now */
+.TabSelectors {
+  display: flex;
+  gap: 4px;
+  list-style: none;
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 4px 0;
+}
+
+.TabSelectors::-webkit-scrollbar { display: none; }
+
+.TabSelectors li {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.65);
+  background: transparent;
+  border: 1px solid transparent;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.TabSelectors li.TabEnabled:hover {
+  color: var(--bar-text);
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.15);
+}
+
+.TabSelectors li.TabSelected {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-accent);
+}
+
+.TabSelectors li.TabPrimary {
+  color: #fff;
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.18);
+}
+
+.TabSelectors li.TabPrimary:hover {
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.3);
+}
+
+/* Hidden buttons kept in DOM for Tabs.js — not shown to user */
+.tab-hidden { display: none !important; }
+
+/* Top-right control cluster: playback + time + day + calendar */
+#top-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.top-playback {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* Time / Day compact sliders */
+.tc-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.tc-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.6);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.tc-range {
+  width: 68px;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+  height: 14px;
+}
+
+/* Calendar display */
+#calendar-widget {
+  position: relative;
+  flex-shrink: 0;
+}
+
+#calendar-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.75);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+#calendar-toggle:hover { background: rgba(255,255,255,0.13); }
+#calendar-toggle[aria-expanded="true"] { background: rgba(255,255,255,0.15); color: #fff; }
+
+#calendar-display { font-size: 12px; }
+
+/* Calendar dropdown */
+#calendar-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 200;
+  min-width: 230px;
+  background: var(--bar-bg);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#calendar-dropdown[hidden] { display: none; }
+
+.cal-date-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cal-date-input {
+  flex: 1;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: var(--radius-sm);
+  color: #fff;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  padding: 5px 8px;
+  text-align: center;
+}
+
+.cal-date-input:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+  background: rgba(255,255,255,0.12);
+}
+
+.cal-step-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 4px;
+}
+
+.cal-btn {
+  padding: 5px 4px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.8);
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.cal-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+/* =============================================================
+   Canvas — fills viewport between the two bars
+   ============================================================= */
+/* jsg creates #FeGraph via document.writeln(). Do NOT pre-define this element in HTML.
+   jsg sets inline height = 56% of width; our CSS positions it below the top bar. */
+#FeGraph {
+  position: fixed !important;
+  top: var(--top-bar-h) !important;
+  left: 0 !important;
+  right: 0 !important;
+  border: none;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  background: #000;
+  z-index: 1;
+}
+
+.JsGraph-ClippingBox {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  font-size: 0;
+  line-height: 0;
+}
+
+/* jsg sets position, top, left, width, height on the canvas via inline styles. */
+.JsGraph-Canvas { display: block; }
+
+/* =============================================================
+   Bottom bar
+   ============================================================= */
+#bottom-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--bottom-bar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 10px;
+  background: var(--bar-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.4);
+}
+
+/* Playback controls */
+.playback-section {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.pb-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.07);
+  color: var(--bar-text);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.pb-btn:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.3);
+}
+
+.pb-btn.pb-primary {
+  width: 40px;
+  height: 40px;
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  border-radius: var(--radius-md);
+}
+
+.pb-btn.pb-primary:hover {
+  background: #ff9a55;
+  border-color: #ff9a55;
+}
+
+.pb-btn[aria-pressed="true"].pb-primary {
+  background: #e06020;
+  border-color: #e06020;
+}
+
+.pb-select {
+  height: 34px;
+  padding: 0 6px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-sm);
+  color: var(--bar-text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pb-select:hover {
+  background: rgba(255,255,255,0.12);
+}
+
+/* Cycle mode + multiplier toggle groups */
+.pb-cycles,
+.pb-mults {
+  display: flex;
+  gap: 2px;
+}
+
+.pb-cycle,
+.pb-mult {
+  padding: 4px 7px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.65);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.pb-cycle:hover,
+.pb-mult:hover {
+  background: rgba(255,255,255,0.14);
+  color: rgba(255,255,255,0.9);
+}
+
+.pb-cycle[aria-pressed="true"],
+.pb-mult[aria-pressed="true"] {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
+/* Layer toggles */
+.layer-section {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.layer-section::-webkit-scrollbar { display: none; }
+
+.layer-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 7px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: rgba(255,255,255,0.35);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  min-width: 44px;
+}
+
+.layer-toggle:hover {
+  color: rgba(255,255,255,0.75);
+  background: rgba(255,255,255,0.08);
+}
+
+.layer-toggle[aria-pressed="true"] {
+  color: #fff;
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.toggle-label {
+  font-size: 10px;
+  line-height: 1;
+}
+
+/* =============================================================
+   Floating parameters panel
+   ============================================================= */
+#slider-panel {
+  position: fixed;
+  bottom: calc(var(--bottom-bar-h) + 60px);
+  right: 12px;
+  width: 380px;
+  max-height: calc(100dvh - var(--top-bar-h) - var(--bottom-bar-h) - 80px);
+  overflow-y: auto;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 999;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+#slider-panel[hidden] { display: none; }
+
+.slider-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  background: var(--color-surface);
+  z-index: 1;
+}
+
+.slider-panel-title {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-primary);
+}
+
+.slider-panel-close {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--color-muted);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.slider-panel-close:hover {
+  color: var(--color-text);
+  background: rgba(0,0,0,0.06);
+}
+
+.slider-panel-body {
+  padding: 0 4px;
+}
+
+/* Slider toggle button (floating, above bottom bar) */
+#slider-toggle {
+  position: fixed;
+  bottom: calc(var(--bottom-bar-h) + 10px);
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: rgba(16,16,24,0.92);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: var(--radius-md);
+  color: rgba(255,255,255,0.85);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  z-index: 1001;
+  backdrop-filter: blur(8px);
+  transition: background 0.15s, border-color 0.15s;
+  box-shadow: var(--shadow-md);
+}
+
+#slider-toggle:hover {
+  background: rgba(40,40,56,0.96);
+  border-color: rgba(255,255,255,0.35);
+}
+
+#slider-toggle[aria-expanded="true"] {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
+/* =============================================================
+   Control panels (generated by ControlPanel.js document.writeln)
+   ============================================================= */
+.ControlPanel {
+  margin: 8px 0;
+  background: transparent;
+  border-radius: 0;
+  padding: 8px 12px;
+  box-shadow: none;
+  border: none;
+  width: 100%;
+}
+
+.ControlPanel td.Label {
+  padding: 8px 10px 8px 0;
+  font-weight: 600;
+  color: #444;
+  width: 120px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.ControlPanel tr:hover {
+  background: rgba(0,0,0,0.02);
+}
+
+.ControlPanel input[type="text"] {
+  width: 80px;
+  padding: 4px 8px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-family: 'SF Mono', Consolas, monospace;
+  text-align: right;
+  background: #f8f9fa;
+  color: var(--color-text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.ControlPanel input[type="text"]:focus {
+  border-color: var(--color-accent);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255,128,51,0.12);
+  background: #fff;
+}
+
+.ControlPanel .FieldText {
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+/* Hide camera and zoom sliders — these are now controlled by mouse/gesture */
+#SliderPanel .Row9,
+#SliderPanel .Row10,
+#SliderPanel .Row11 { display: none; }
+
+/* OptionPanel is replaced by the bottom bar layer toggles */
+#OptionPanel { display: none; }
+/* SliderPanel is replaced by native param sliders in the bottom bar */
+#SliderPanel { display: none !important; }
+
+/* Slider widget (ControlPanel custom sliders) */
+div.Slider {
+  position: relative;
+  height: 3px;
+  background: var(--color-border);
+  border-radius: 2px;
+  margin: 18px 10px;
+  cursor: pointer;
+  min-width: 160px;
+}
+
+div.Slider .Handle {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  cursor: grab;
+  box-shadow: var(--shadow-sm);
+  border: 2px solid #fff;
+  font-size: 0;
+  transition: transform 0.1s;
+}
+
+div.Slider .Handle:hover  { transform: translate(-50%, -50%) scale(1.25); }
+div.Slider .Handle:active { cursor: grabbing; transform: translate(-50%, -50%) scale(0.9); }
+
+div.Slider .Handle[style*="background-color: black"]   { background-color: #2d3436 !important; }
+div.Slider .Handle[style*="background-color: orange"]  { background-color: #e17055 !important; }
+div.Slider .Handle[style*="background-color: blue"]    { background-color: #0984e3 !important; }
+div.Slider .Handle[style*="background-color: red"]     { background-color: #d63031 !important; }
+div.Slider .Handle[style*="background-color: green"]   { background-color: #00b894 !important; }
+div.Slider .Handle[style*="background-color: magenta"] { background-color: #6c5ce7 !important; }
+
+div.Slider.disabled,
+div.Slider.ReadOnly { opacity: 0.45; pointer-events: none; }
+
+.FieldGrid { width: 100%; border-collapse: collapse; }
+.FieldCell  { padding: 4px 8px; }
+.FieldCell:hover { background: #f8f8f8; }
+.FieldCaption { font-size: 13px; color: #444; cursor: pointer; }
+.Disabled .FieldCaption, .Disabled input { opacity: 0.5; cursor: not-allowed; }
+
+/* =============================================================
+   Ray controls + param sliders (bottom bar)
+   ============================================================= */
+.ray-section {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.ray-group-compact {
+  display: flex;
+  gap: 2px;
+}
+
+.ray-opt {
+  padding: 3px 8px;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.06);
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.ray-opt:hover {
+  background: rgba(255,255,255,0.14);
+  color: rgba(255,255,255,0.9);
+}
+
+.ray-opt[aria-checked="true"] {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
+/* Parameter sliders in bottom bar */
+.param-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.param-slider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.param-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.55);
+  white-space: nowrap;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+
+.param-val {
+  color: rgba(255,255,255,0.85);
+  font-weight: 500;
+}
+
+.param-range {
+  width: 72px;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+  height: 14px;
+}
+
+/* =============================================================
+   Save / Restore panel
+   ============================================================= */
+.save-restore {
+  position: fixed;
+  bottom: calc(var(--bottom-bar-h) + 56px);
+  left: 12px;
+  width: 340px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  z-index: 900;
+}
+
+.save-restore summary {
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--color-primary);
+  list-style: none;
+  user-select: none;
+}
+
+.save-restore summary::-webkit-details-marker { display: none; }
+.save-restore summary::before { content: '+ '; color: var(--color-muted); font-weight: 400; }
+.save-restore[open] summary::before { content: '− '; }
+
+.save-restore-body { padding: 10px 14px 14px; border-top: 1px solid var(--color-border); }
+
+.save-restore-body textarea {
+  width: 100%;
+  font-family: 'SF Mono', Consolas, monospace;
+  font-size: 11px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  resize: vertical;
+}
+
+.save-restore-body p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.save-restore-body button {
+  padding: 4px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.save-restore-body button:hover { background: #f0f0f0; }
+
+/* =============================================================
+   Focus — never suppress globally
+   ============================================================= */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* =============================================================
+   Mobile (≤ 600px): icon-only layer toggles, smaller controls
+   ============================================================= */
+@media (max-width: 600px) {
+  :root {
+    --top-bar-h:    48px;
+    --bottom-bar-h: 60px;
+  }
+
+  .toggle-label { display: none; }
+
+  .layer-toggle { min-width: 34px; padding: 6px 5px; }
+
+  .TabSelectors li { padding: 5px 10px; font-size: 12px; }
+
+  #slider-panel { width: calc(100vw - 24px); right: 12px; }
+
+  .pb-btn { width: 30px; height: 30px; }
+  .pb-btn.pb-primary { width: 36px; height: 36px; }
+  .pb-select { font-size: 11px; }
+}
