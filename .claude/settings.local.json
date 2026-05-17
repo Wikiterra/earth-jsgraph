@@ -10,7 +10,9 @@
       "PowerShell(Copy-Item \"d:\\\\Workspaces\\\\Curiosity432-user\\\\wikiterra-apps\\\\Flat-Earth-Dome\\\\fed-wabis-v2\\\\roadmap\\\\DONE.md\" \"d:\\\\Workspaces\\\\Curiosity432-user\\\\wikiterra-apps\\\\Flat-Earth-Dome\\\\fed-wabis-v3\\\\roadmap\\\\DONE.md\" -Force)",
       "Bash(node --check assets/app.js)",
       "Bash(node --check js/main-v2.js)",
-      "Bash(node --check assets/wiki.js)"
+      "Bash(node --check assets/wiki.js)",
+      "Bash(grep -nE \"^\\\\};?\\\\s*$\" \"d:/Workspaces/Curiosity432-user/wikiterra-apps/Flat-Earth-Dome/fed-wabis-v2/assets/app.js\")",
+      "Bash(node --check assets/app-draw.js)"
     ],
     "additionalDirectories": [
       "d:\\Workspaces\\Curiosity432-user\\wikiterra-apps\\Flat-Earth-Dome\\fed-wabis-v3\\src"

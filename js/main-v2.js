@@ -12,4 +12,6 @@ import '../assets/Tabs.js';
 import '../assets/DataX.js';
 import '../assets/ModelAnimation.js';
 import '../assets/app.js';
+import '../assets/app-draw.js';
+import '../assets/demos-data.js';
 import './ui.js';
