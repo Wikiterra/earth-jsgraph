@@ -1,5 +1,5 @@
-var ThisPageUrl = 'http://walter.bislins.ch/bloge/index.asp?page=Flat+Earth+Dome+Model+only+works+Based+on+the+Heliocentric+Model';
-var ThisPageShortUrl = 'index.asp?page=Flat+Earth+Dome+Model+only+works+Based+on+the+Heliocentric+Model';
+var ThisPageUrl = location.href;
+var ThisPageShortUrl = location.href;
 
 // set EarthMap colors and polygone mode (3D)
 EarthMap.SetWaterColor('#d3e2f5');
@@ -220,7 +220,6 @@ var FeDomeApp = {
       Width: '100%',
       Height: '56%',
       DrawFunc: function (g) { FeDomeApp.Draw(g); },
-      //OnClick: function(e,g) { FeDomeApp.DrawMousePos(g,e.offsetX,e.offsetY); },
       AutoReset: false,
       AutoClear: false,
       AutoScalePix: true,
@@ -666,7 +665,6 @@ var FeDomeApp = {
     g.Marker3D(this.SunDomeCoord, 3);
     g.ResetTrans3D();
 
-    // DrawDateTime and DrawSunMoonAzimuthElevation suppressed — duplicated by top-bar displays
     if (!this.ShowStars && this.RayTarget == 0) {
       this.DrawMoonPhase(g);
     }
@@ -676,18 +674,6 @@ var FeDomeApp = {
     g.SetLineAttr('#ddd', 1);
     g.Frame();
 
-  },
-
-  DrawMousePos: function (g, x, y) {
-    var oldTrans = g.SelectTrans('viewport');
-    var txt = 'Pos = ' + Math.round(x) + ', ' + Math.round(y);
-    g.SetTextAttr('Arial', 12, 'black', 'normal', 'normal', 'right', 'top', 2);
-    g.SetAreaAttr('white', 'white', 1);
-    var tx = g.VpInnerWidth - 3;
-    var ty = g.VpInnerHeight / 2 - 3;
-    g.TextBox(txt, tx, ty, 3);
-    g.Text(txt, tx, ty);
-    g.SelectTrans(oldTrans);
   },
 
   DrawDescription: function (g) {
@@ -758,50 +744,6 @@ var FeDomeApp = {
       s = s + '|Equinox';
     }
     return s;
-  },
-
-  DrawDateTime: function (g) {
-    var oldTrans = g.SelectTrans('viewport');
-    var txt = this.DateTimeToString(this.DateTime);
-    var txtl = txt.split('|');
-    g.SetTextAttr('Arial', 12, 'black', 'normal', 'normal', 'right', 'top', 2);
-    g.SetAreaAttr('white', 'white', 1);
-    var tx = g.VpInnerWidth - 3;
-    g.TextBox(txtl[0], tx, 3, 3);
-    g.Text(txtl[0], tx, 3);
-    if (txtl.length > 1) {
-      g.TextBox(txtl[1], tx, 3 + 14, 3);
-      g.Text(txtl[1], tx, 3 + 14);
-    }
-    g.SelectTrans(oldTrans);
-  },
-
-  DrawSunMoonAzimuthElevation: function (g) {
-    var oldTrans = g.SelectTrans('viewport');
-    g.SetTextAttr('Arial', 12, 'black', 'normal', 'normal', 'right', 'top', 2);
-    var tx = g.VpInnerWidth - 3;
-    var ty = 36;
-    var format = { Mode: 'fix0', Precision: 1 };
-    if (this.SunFeCelestSphereCoord[2] > 0) {
-      var txt =
-        'Sun: azim = ' + NumFormatter.NumToString(this.SunAnglesGlobe.azimuth, format) +
-        ' / elev = ' + NumFormatter.NumToString(this.SunAnglesGlobe.elevation, format);
-    } else {
-      var txt = 'Sun: not visible';
-    }
-    g.TextBox(txt, tx, ty, 3);
-    g.Text(txt, tx, ty);
-    ty += 14;
-    if (this.MoonFeCelestSphereCoord[2] > 0) {
-      var txt =
-        'Moon: azim = ' + NumFormatter.NumToString(this.MoonAnglesGlobe.azimuth, format) +
-        ' / elev = ' + NumFormatter.NumToString(this.MoonAnglesGlobe.elevation, format);
-    } else {
-      var txt = 'Moon: not visible';
-    }
-    g.TextBox(txt, tx, ty, 3);
-    g.Text(txt, tx, ty);
-    g.SelectTrans(oldTrans);
   },
 
   DrawMoonPhase: function (g) {
@@ -1587,7 +1529,6 @@ function UpdateAll(stopAnimation) {
       FeDomeApp.ClearDescription();
     }
     FeDomeApp.Update();
-    ControlPanels.Update();
     FeDomeApp.Draw();
   }
   finally {
@@ -2057,7 +1998,6 @@ xOnDomReady(
 
 // Animation helper functions
 
-var AnimRestartAction = 'stop';
 var AnimTxt = 500 / AnimationSpeed;
 var AnimT1 = 1000 / AnimationSpeed;
 var AnimT2 = 2000 / AnimationSpeed;
@@ -3275,7 +3215,7 @@ Object.assign(globalThis, {
   ThisPageUrl, ThisPageShortUrl, FeDomeAppMetaData, FeDomeApp,
   UpdateAllRunning, UpdateAll, ResetApp, TFE, HandleUrlCommands,
   AnimationSpeed, Demos,
-  AnimRestartAction, AnimTxt,
+  AnimTxt,
   AnimT1, AnimT2, AnimT3, AnimT4, AnimT5, AnimT6, AnimT7, AnimT8, AnimT9, AnimT10,
   Tpse, Ttxt, Tpnt, Tval,
   ToRad, ToDeg, sqr, Limit1, Limit01, ToRange,
@@ -3284,7 +3224,7 @@ export {
   ThisPageUrl, ThisPageShortUrl, FeDomeAppMetaData, FeDomeApp,
   UpdateAllRunning, UpdateAll, ResetApp, TFE, HandleUrlCommands,
   AnimationSpeed, Demos,
-  AnimRestartAction, AnimTxt,
+  AnimTxt,
   AnimT1, AnimT2, AnimT3, AnimT4, AnimT5, AnimT6, AnimT7, AnimT8, AnimT9, AnimT10,
   Tpse, Ttxt, Tpnt, Tval,
   ToRad, ToDeg, sqr, Limit1, Limit01, ToRange,

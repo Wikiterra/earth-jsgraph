@@ -130,3 +130,31 @@
 - `src/main.js` rewired: imports CSS + all 13 `./lib/*.js` in order + `../js/ui.js`; URL override at end
 - `index.html`: removed `<script src="/assets/wiki.js">` from `<head>` and all 12 legacy body script tags
 - `npm run build` passes: 19 modules transformed → 418 kB bundle
+
+---
+
+## Cleanup pass (2026-05-17)
+
+- Deleted `assets/init.js`, `assets/controlPanels.js`, `assets/optionPanel.js` — none were imported by `main-v2.js`; controlPanels/optionPanel had created the obsolete `#SliderPanel`/`#OptionPanel` tables replaced by native bars in Phase 2
+- Kept `assets/ControlPanel.js` — `app.js` still calls `ControlPanels.Update()`
+- Removed the `.ControlPanel*` and `#SliderPanel*`/`#OptionPanel` CSS block (~60 lines) — no DOM generates those classes now
+- Removed dead `DrawDateTime`, `DrawSunMoonAzimuthElevation`, `DrawMousePos` methods from `app.js` (replaced by top-bar displays; the only call sites were the suppression comment and a commented-out `OnClick`)
+- Inlined `ThisPageUrl`/`ThisPageShortUrl` = `location.href` at the top of `app.js`; dropped the post-import override block in `main-v2.js`
+
+## Dead variable removal (2026-05-17)
+
+- `AnimRestartAction = 'stop'` in `app.js` was declared, exported, never read. Dropped both the declaration and the two export-list entries.
+
+## ControlPanel engine removal (2026-05-17)
+
+- Removed the no-op `ControlPanels.Update()` call from `UpdateAll` in `app.js`
+- Deleted `assets/ControlPanel.js` and `assets/Slider.js` — no panels were ever created (controlPanels.js / optionPanel.js were the only consumers, both deleted earlier)
+- Dropped the corresponding imports from `js/main-v2.js`
+- Removed the orphan `div.Slider*`, `.FieldGrid`, `.FieldCell`, `.FieldCaption`, `.Disabled` CSS (~45 lines)
+
+## ui.js split (2026-05-17)
+
+- `js/ui.js` (613 lines) split into `js/ui/{layers,rays,sliders,sunmoon,calendar,playback}.js` + an 88-line orchestrator
+- Each submodule exports `init()` + `sync()`; orchestrator wraps `UpdateAll` once and iterates
+- Dropped IIFE wrapper; `var` → `const`/`let` and arrow functions in moved code
+- Fixed lingering bug: removed dangling `applyCalendarInput()` call from the outside-click handler (function never existed)

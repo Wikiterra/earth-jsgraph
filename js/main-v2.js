@@ -8,14 +8,8 @@ import '../assets/jsg.js';
 import '../assets/jsgx3d.js';
 import '../assets/jsgMouseHandler.js';
 import '../assets/EarthMap.js';
-import '../assets/Slider.js';
 import '../assets/Tabs.js';
 import '../assets/DataX.js';
-import '../assets/ControlPanel.js';
 import '../assets/ModelAnimation.js';
 import '../assets/app.js';
 import './ui.js';
-
-// app.js lines 1-2 hardcode Walter's site URLs; override with the actual page origin.
-globalThis.ThisPageUrl = location.href;
-globalThis.ThisPageShortUrl = location.href;
