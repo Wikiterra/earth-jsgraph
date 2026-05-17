@@ -41,3 +41,5 @@ return x;},FECoordOfPoint:function(p,coord){coord=coord||this.p;coord[0]=(1-JsgV
 var limit=-(90-dLat/2);for(var a=-dLat;a>limit;a-=dLat){this.DrawFlatEarthLatitude(g,a);}
 var limit=180-dLng/2;for(var a=0;a<limit;a+=dLng){this.DrawFlatEarthLongitude(g,a,true);}},DrawFlatEarthEquator:function(g){this.DrawFlatEarthLatitude(g,0);},DrawFlatEarthBorder:function(g){this.DrawFlatEarthLatitude(g,-90);},DrawFlatEarthMeridian:function(g){this.DrawFlatEarthLongitude(g,0);},DrawFlatEarthLatitude:function(g,lat){var r=(90-lat)*this.Radius/180;if(this.FEMode>=2){g.CircleOnPlane(0,0,r,1);}else{g.Circle(0,0,r,1);}},DrawFlatEarthLongitude:function(g,lng,asGreatCircle){var p1=JsgVect2.Set(this.p1,0,0);var p2=this.PointOnFE(-90,lng,this.p2);if(asGreatCircle){JsgVect2.Set(p1,-p2[0],-p2[1]);}
 if(this.FEMode>=2){g.LineOnPlane(p1,p2);}else{g.Line(p1,p2);}},}
+Object.assign(globalThis, { EarthMap });
+export { EarthMap };

@@ -1,6 +1,6 @@
 // (C) http://walter.bislins.ch/doku/NumFormatter
 
-function CNumFormatter(){this.Lang='iso';this.DecimalChar=',';this.MantGrpChar=' ';this.MantGrpSize=3;this.MantGrpMinSize=4;this.FracGrpChar=' ';this.FracGrpSize=3;this.FracGrpMinSize=4;this.TableLike=true;this.ExpChar=' E';this.ExpLeadZero=2;this.ShowExpPlus=true;this.HideZeroExp=false;this.UnitSepChar=' ';this.Mode='std';this.AltMode='eng';this.AltPrec=13;this.Precision=8;this.Prefix=['a','f','p','n','µ','m','','k','M','G','T','P','E'];this.Prefix0=6;this.MaxPrec=13;this.MaxDigits=17;try{this.SetFormat(NUMBER_FORMATING);}catch(e){}}
+function CNumFormatter(){this.Lang='iso';this.DecimalChar=',';this.MantGrpChar=' ';this.MantGrpSize=3;this.MantGrpMinSize=4;this.FracGrpChar=' ';this.FracGrpSize=3;this.FracGrpMinSize=4;this.TableLike=true;this.ExpChar=' E';this.ExpLeadZero=2;this.ShowExpPlus=true;this.HideZeroExp=false;this.UnitSepChar=' ';this.Mode='std';this.AltMode='eng';this.AltPrec=13;this.Precision=8;this.Prefix=['a','f','p','n','Âµ','m','','k','M','G','T','P','E'];this.Prefix0=6;this.MaxPrec=13;this.MaxDigits=17;try{this.SetFormat(NUMBER_FORMATING);}catch(e){}}
 CNumFormatter.prototype.SetLang=function(aLang){this.SetFormat(aLang);}
 CNumFormatter.prototype.SetFormat=function(aLang){aLang=aLang.toLowerCase();if(aLang=='calc'){this.DecimalChar='.';this.MantGrpChar='';this.MantGrpSize=3;this.MantGrpMinSize=4;this.FracGrpChar='';this.FracGrpSize=3;this.FracGrpMinSize=4;}else if(aLang=='en'){this.DecimalChar='.';this.MantGrpChar=',';this.MantGrpSize=3;this.MantGrpMinSize=4;this.FracGrpChar='';this.FracGrpSize=3;this.FracGrpMinSize=4;}else if(aLang=='de'){this.DecimalChar=',';this.MantGrpChar='.';this.MantGrpSize=3;this.MantGrpMinSize=4;this.FracGrpChar='';this.FracGrpSize=3;this.FracGrpMinSize=4;}else if(aLang=='ch'){this.DecimalChar=',';this.MantGrpChar='\'';this.MantGrpSize=3;this.MantGrpMinSize=4;this.FracGrpChar='';this.FracGrpSize=3;this.FracGrpMinSize=4;}else{this.DecimalChar=',';this.MantGrpChar=' ';this.MantGrpSize=3;this.MantGrpMinSize=4;this.FracGrpChar=' ';this.FracGrpSize=3;this.FracGrpMinSize=4;}
 this.Lang=aLang;}
@@ -62,7 +62,7 @@ if(this.DecimalChar==','){s=replaceRegExp(s,',','.');}
 return s;}
 CNumFormatter.prototype.StringToNum=function(aStr){var s=this.NormalizeNumStr(aStr,true);return Number(s);}
 CNumFormatter.prototype.DegToDMS=function(x){var d=Math.abs(x);var s=x<0?-1:1;var r={sign:s,d:0,m:0,s:0};r.d=Math.floor(d);d=(d%1)*60;r.m=Math.floor(d);r.s=(d%1)*60;return r;}
-CNumFormatter.prototype.FormatXms=function(num,format,prec){var saveMantGrpChar=this.MantGrpChar;var saveFracGrpChar=this.FracGrpChar;var saveDecimalChar=this.DecimalChar;this.MantGrpChar='';this.FracGrpChar='';this.DecimalChar='.';var sep1='°';var sep2='\'';var sep3='"';if(format=='hms'){sep1=':';sep2=':';sep3='';}
+CNumFormatter.prototype.FormatXms=function(num,format,prec){var saveMantGrpChar=this.MantGrpChar;var saveFracGrpChar=this.FracGrpChar;var saveDecimalChar=this.DecimalChar;this.MantGrpChar='';this.FracGrpChar='';this.DecimalChar='.';var sep1='Â°';var sep2='\'';var sep3='"';if(format=='hms'){sep1=':';sep2=':';sep3='';}
 var dms=this.DegToDMS(num);var s='';var p='';if(format=='dmsS'||format=='dmS'){if(dms.sign<0){p=' S';}else{p=' N';}}else if(format=='dmsW'||format=='dmW'){if(dms.sign<0){p=' W';}else{p=' E';}}else if(format=='Sdms'||format=='Sdm'){if(dms.sign<0){s='S ';}else{s='N ';}}else if(format=='Wdms'||format=='Wdm'){if(dms.sign<0){s='W ';}else{s='E ';}}else{if(dms.sign<0){s='-';}}
 if(prec<=0){if(dms.m>=30)dms.d+=1;s+=this.Format(dms.d,'fix',0);if(format!='hms')s+=sep1;s+=p;}else if(prec<=2){if(dms.s>=30)dms.m+=1;if(dms.m>=60){dms.d+=1;dms.m=0;}
 var ms=this.Format(dms.m,'fix',0);if(ms.length<2)ms='0'+ms;s+=this.Format(dms.d,'fix',0)+sep1+ms;if(format!='hms')s+=sep2;s+=p;}else if(format.indexOf('dm')>=0&&format.indexOf('ms')<0){prec-=2;dms.m+=dms.s/60;if(prec<0)prec=0;var ms=this.Format(dms.m,'fix0',prec);if(ms.length<2||ms.indexOf(this.DecimalChar)==1)ms='0'+ms;if(ms.indexOf('60')==0){ms=ms.replace(/^6/,'0');dms.d+=1;}
@@ -73,9 +73,9 @@ CNumFormatter.prototype.HmsStrToNum=function(str){return this.DmsStrToNum(str,fa
 CNumFormatter.prototype.DmsStrToNum=function(str,acceptDirection){var normNumStr=this.IsValidNumStr(str);if(normNumStr!=''){return this.StringToNum(normNumStr);}
 acceptDirection=xDefBool(acceptDirection,true);var neg=(str.indexOf('S')>=0||str.indexOf('s')>=0||str.indexOf('W')>=0||str.indexOf('w')>=0)?-1:1;if(acceptDirection){str=str.replace(/(^ *[nNsSeEwW])|([nNsSeEwW] *$)/g,'');}else{neg=1;}
 str=str.replace(/^ +/,'').replace(/ +$/,'');str=str.replace(/^\\+/g,'');if(str.indexOf('-')==0){neg=-1;str=str.replace(/^-/g,'');}
-if(str.indexOf('°')>0&&str.indexOf('"')>0&&str.indexOf('\'')<0){str=str.replace(/°/,'°0\'');}
+if(str.indexOf('Â°')>0&&str.indexOf('"')>0&&str.indexOf('\'')<0){str=str.replace(/Â°/,'Â°0\'');}
 if(str.indexOf('"')>0&&str.indexOf('\'')<0){str='0\''+str;}
-if(str.indexOf('\'')>0&&str.indexOf('°')<0){str='0°'+str;}
+if(str.indexOf('\'')>0&&str.indexOf('Â°')<0){str='0Â°'+str;}
 str=str.replace(/[^0-9\.]/g,' ');str=str.replace(/ +/g,' ').replace(/^ /,'').replace(/ $/,'');if(str=='')return 0;var parts=str.split(' ');var res=0;var fract=1;var n=parts.length;if(n>3)n=3;for(var i=0;i<n;i++){var num=parseFloat(parts[i]);if(isNaN(num))break;res+=num/fract;fract*=60;}
 return neg*res;}
 CNumFormatter.prototype.DateStrToNum=function(str,zeroDate){var normNumStr=this.IsValidNumStr(str);if(normNumStr!=''){return parseInt(normNumStr);}
@@ -84,3 +84,5 @@ if(!hasName){if(del=='.'&&parts.length>1){var month=parts[1];parts[1]=parts[0];p
 str=parts.join('/');}
 var ms=Date.parse(str);if(isNaN(ms))return 0;var res=Math.round(ms/86400000);return res-zeroDate;}
 var NumFormatter=new CNumFormatter();
+Object.assign(globalThis, { CNumFormatter, NumFormatter });
+export { CNumFormatter, NumFormatter };

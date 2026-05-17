@@ -144,3 +144,5 @@ ModelAnimation.prototype.AnimationToState=function(id,params){if(!xAny(params.Mo
 if(!xFunc(params.OnModelChange)&&xFunc(this.OnModelChange)){params.OnModelChange=this.OnModelChange;}
 return this.ModelAnimationToState(id,params);}
 ModelAnimation.prototype.ModelAnimationToState=function(id,params){var animation=NewAnimation(params);this.ResizeStateLists(id);this.ToStateAnimationList[id]=animation;return animation;}
+Object.assign(globalThis, { Animations, AnimatorTask, Animator, NewAnimation, ModelAnimation, NewModelAnimation });
+export { Animations, AnimatorTask, Animator, NewAnimation, ModelAnimation, NewModelAnimation };

@@ -38,3 +38,5 @@ return buttonDomList;},InitBoxDataList:function(boxTab){function getTabIndexes(i
 return indexList;}
 var boxContainer=boxTab.BoxContainer;if(!boxContainer.DomObj)return;var boxDomList=this.CollectBoxDoms(boxContainer.DomObj);var nBoxDoms=boxDomList.length;if(nBoxDoms==0)return false;for(var i=0;i<nBoxDoms;i++){var boxDom=boxDomList[i];var tabixDataset=xDataset(boxDom,'tabix');var indexes=tabixDataset?getTabIndexes(tabixDataset):i;var boxData={BoxTab:boxTab,DomObj:boxDom,Indexes:indexes,IsVisible:false,VisiChangeHandlers:new xCallbackChain()};boxContainer.BoxDataList.push(boxData);this.BoxDataList.push(boxData);}},CollectBoxDoms:function(boxContainerDom){var divDomList=xGetByTag('div',boxContainerDom);var boxDomList=[];var nDivDoms=divDomList.length;for(var i=0;i<nDivDoms;i++){var divDom=divDomList[i];if((xParent(divDom)==boxContainerDom)&&!xHasClass(divDom,'NoTabBox'))boxDomList.push(divDom);}
 return boxDomList;},};xOnDomReady(function CB_Init_Tabs(){Tabs.Init();});
+Object.assign(globalThis, { Tabs });
+export { Tabs };

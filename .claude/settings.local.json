@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls \"d:\\\\Workspaces\\\\Curiosity432-user\\\\wikiterra-apps\\\\Flat-Earth-Dome\")",
+      "Read(//d/Workspaces/Curiosity432-user/wikiterra-apps/Flat-Earth-Dome/**)",
+      "Bash(Get-Content \"d:\\\\Workspaces\\\\Curiosity432-user\\\\wikiterra-apps\\\\Flat-Earth-Dome\\\\fed-wabis-v2\\\\assets\\\\ControlPanel.js\")",
+      "Bash(Measure-Object -Line)",
+      "Bash(mkdir -p \"d:/Workspaces/Curiosity432-user/wikiterra-apps/Flat-Earth-Dome/fed-wabis-v3/src/lib\")",
+      "PowerShell(Copy-Item \"d:\\\\Workspaces\\\\Curiosity432-user\\\\wikiterra-apps\\\\Flat-Earth-Dome\\\\fed-wabis-v2\\\\roadmap\\\\DO.md\" \"d:\\\\Workspaces\\\\Curiosity432-user\\\\wikiterra-apps\\\\Flat-Earth-Dome\\\\fed-wabis-v3\\\\roadmap\\\\DO.md\" -Force)",
+      "PowerShell(Copy-Item \"d:\\\\Workspaces\\\\Curiosity432-user\\\\wikiterra-apps\\\\Flat-Earth-Dome\\\\fed-wabis-v2\\\\roadmap\\\\DONE.md\" \"d:\\\\Workspaces\\\\Curiosity432-user\\\\wikiterra-apps\\\\Flat-Earth-Dome\\\\fed-wabis-v3\\\\roadmap\\\\DONE.md\" -Force)"
+    ],
+    "additionalDirectories": [
+      "d:\\Workspaces\\Curiosity432-user\\wikiterra-apps\\Flat-Earth-Dome\\fed-wabis-v3\\src"
+    ]
+  }
+}

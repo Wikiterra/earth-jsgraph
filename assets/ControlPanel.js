@@ -249,3 +249,11 @@ CpSliderField.prototype.Update=function(){if(!this.DgdSlider)return;var v=this.V
 var x=(vs-this.Min)/(this.Max-this.Min);if(x<0)x=0;if(x>1)x=1;this.DgdSlider.setValue(x,0,true);this.LastValue=v;this.LastSliderPos=x;}
 var enable=this.GetEnabledFromModel();this.SetGuiEnabled(enable);}
 CpSliderField.prototype.UpdateLayout=function(visiState){if(!this.DgdSlider||visiState==0)return;this.DgdSlider.updateLayout();if(this.LastSliderPos==-1){this.Update();}else{this.DgdSlider.setValue(this.LastSliderPos,0,true);}}
+Object.assign(globalThis, {
+  ControlPanels, ControlPanel,
+  CpField, CpHtmlField, CpTextField, CpCheckboxField, CpRadiobuttonField, CpSliderField,
+});
+export {
+  ControlPanels, ControlPanel,
+  CpField, CpHtmlField, CpTextField, CpCheckboxField, CpRadiobuttonField, CpSliderField,
+};

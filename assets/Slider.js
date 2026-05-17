@@ -32,3 +32,5 @@ if(e.preventDefault){e.preventDefault();}
 e.returnValue=false;if(selection&&document.selection){document.selection.empty();}},cancelEvent:function(e){if(!e){e=window.event;}
 if(e.stopPropagation){e.stopPropagation();}
 e.cancelBubble=true;}};
+Object.assign(globalThis, { DgdCursor, DgdPosition, DgdSliderHtml, DgdSlider });
+export { DgdCursor, DgdPosition, DgdSliderHtml, DgdSlider };

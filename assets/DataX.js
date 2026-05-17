@@ -39,3 +39,5 @@ this.StreamPropToObj(obj[propName],arrProp);}}else{this.StreamIsNone();}}}else i
 this.SetAppState();if(this.SaveRestoreAfterSetStateCallback){this.SaveRestoreAfterSetStateCallback();}
 return false;}
 return true;}};
+Object.assign(globalThis, { DataX });
+export { DataX };

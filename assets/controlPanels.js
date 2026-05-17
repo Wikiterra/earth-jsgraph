@@ -53,7 +53,7 @@ ControlPanels.NewSliderPanel({
     Max: 90,
     SnapTo: [0.00001, 23.44, 45],
     Inc: 1,
-    Units: '°',
+    Units: 'Â°',
     Digits: 3,
     Format: 'fix',
 }).AddValueSliderField({
@@ -63,7 +63,7 @@ ControlPanels.NewSliderPanel({
     Max: 90,
     SnapTo: [0, 5.145],
     Inc: 1,
-    Units: '°',
+    Units: 'Â°',
     Digits: 3,
     Format: 'fix',
 }).AddValueSliderField({

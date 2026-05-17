@@ -23,6 +23,8 @@
     syncRayControls();
     syncParamSliders();
     updateCalendarDisplay();
+    updateSunMoonStrip();
+    updateYearProgress();
   };
 
   /* ── Layer toggle state sync ─────────────────────────────────────────────── */
@@ -134,10 +136,43 @@
         if (statusEl) statusEl.textContent = s;
       }
       if (calendarOpen) {
-        var inp = document.getElementById('cal-input');
-        if (inp && inp !== document.activeElement) inp.value = s;
+        parseCalFromDateTime();
+        renderCalDigits();
       }
     } catch (e) { /* not yet initialised */ }
+  }
+
+  /* ── Sun / Moon info strip ──────────────────────────────────────────────── */
+
+  function updateSunMoonStrip() {
+    var sunEl  = document.getElementById('sms-sun');
+    var moonEl = document.getElementById('sms-moon');
+    if (!sunEl || !moonEl) return;
+    try {
+      var deg = function (n) { return n.toFixed(0) + '°'; };
+      if (FeDomeApp.SunFeCelestSphereCoord[2] > 0) {
+        sunEl.textContent = '☀ ' + deg(FeDomeApp.SunAnglesGlobe.azimuth) + ' / ' + deg(FeDomeApp.SunAnglesGlobe.elevation);
+      } else {
+        sunEl.textContent = '☀ below';
+      }
+      if (FeDomeApp.MoonFeCelestSphereCoord[2] > 0) {
+        moonEl.textContent = '☾ ' + deg(FeDomeApp.MoonAnglesGlobe.azimuth) + ' / ' + deg(FeDomeApp.MoonAnglesGlobe.elevation);
+      } else {
+        moonEl.textContent = '☾ below';
+      }
+    } catch (e) {}
+  }
+
+  /* ── Year progress track ─────────────────────────────────────────────────── */
+
+  function updateYearProgress() {
+    var fill = document.getElementById('cal-year-fill');
+    if (!fill) return;
+    try {
+      var pct = Math.min(100, Math.max(0, (FeDomeApp.DayOfYear / 364) * 100));
+      fill.style.width = pct + '%';
+      fill.parentElement.setAttribute('aria-valuenow', Math.round(FeDomeApp.DayOfYear));
+    } catch (e) {}
   }
 
   var calendarOpen = false;
@@ -145,14 +180,16 @@
   function openCalendar() {
     var toggle   = document.getElementById('calendar-toggle');
     var dropdown = document.getElementById('calendar-dropdown');
-    var input    = document.getElementById('cal-input');
     if (!toggle || !dropdown) return;
     calendarOpen = true;
     dropdown.hidden = false;
+    dropdown.setAttribute('aria-modal', 'true');
     toggle.setAttribute('aria-expanded', 'true');
-    try { input.value = FeDomeApp.DateTimeToString(FeDomeApp.DateTime).split('|')[0].trim(); } catch (e) {}
-    input.focus();
-    input.select();
+    parseCalFromDateTime();
+    renderCalDigits();
+    updateYearProgress();
+    var firstSpin = document.getElementById('cs-month');
+    if (firstSpin) firstSpin.focus();
   }
 
   function closeCalendar() {
@@ -161,47 +198,96 @@
     if (!toggle || !dropdown) return;
     calendarOpen = false;
     dropdown.hidden = true;
+    dropdown.removeAttribute('aria-modal');
     toggle.setAttribute('aria-expanded', 'false');
   }
 
-  /* Parse "Jan 01 2024 / 12:30 UTC" → FeDomeApp.DateTime value.
-     Formula mirrors DateTimeToString: ms = (ZeroDate + dateTime) * msPerDay */
-  function parseDateTimeString(s) {
-    var months = { Jan:0, Feb:1, Mar:2, Apr:3, Mai:4, Jun:5, Jul:6, Aug:7, Sep:8, Oct:9, Nov:10, Dec:11 };
-    s = s.split('|')[0].trim();
-    var m = s.match(/^(\w{3})\s+(\d{1,2})\s+(\d{4})\s*\/\s*(\d{1,2}):(\d{2})/);
-    if (!m) return null;
-    var month = months[m[1]];
-    if (month === undefined) return null;
-    var d = new Date(0);
-    d.setUTCFullYear(parseInt(m[3]), month, parseInt(m[2]));
-    d.setUTCHours(parseInt(m[4]), parseInt(m[5]), 0, 0);
-    return d.getTime() / FeDomeApp.msPerDay - FeDomeApp.ZeroDate;
+  /* ── Calendar digit-scroll helpers ─────────────────────────────────────── */
+
+  var _MNAMES  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var _MFULL   = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var calState = { month: 0, day: 1, year: 2024, hour: 12, min: 0 };
+
+  function _daysInMonth(y, m) { return new Date(y, m + 1, 0).getDate(); }
+
+  function parseCalFromDateTime() {
+    try {
+      var d = new Date((FeDomeApp.ZeroDate + FeDomeApp.DateTime) * FeDomeApp.msPerDay);
+      calState.month = d.getUTCMonth();
+      calState.day   = d.getUTCDate();
+      calState.year  = d.getUTCFullYear();
+      calState.hour  = d.getUTCHours();
+      calState.min   = d.getUTCMinutes();
+    } catch (e) {}
   }
 
-  function applyCalendarInput() {
-    var input = document.getElementById('cal-input');
-    if (!input) return;
-    var raw = input.value.trim();
-    if (!raw) return;
+  function renderCalDigits() {
     try {
-      var dt = parseDateTimeString(raw);
-      if (dt !== null && !isNaN(dt)) {
-        FeDomeApp.DateTime = dt;
-        UpdateAll();
-      }
-    } catch (e) { /* parse failed — leave DateTime unchanged */ }
+      var sm = document.getElementById('cs-month');
+      sm.textContent = _MNAMES[calState.month];
+      sm.setAttribute('aria-valuenow',  calState.month);
+      sm.setAttribute('aria-valuetext', _MFULL[calState.month]);
+      var sd = document.getElementById('cs-day');
+      sd.textContent = String(calState.day).padStart(2, '0');
+      sd.setAttribute('aria-valuenow', calState.day);
+      var sy = document.getElementById('cs-year');
+      sy.textContent = calState.year;
+      sy.setAttribute('aria-valuenow', calState.year);
+      var sh = document.getElementById('cs-hour');
+      sh.textContent = String(calState.hour).padStart(2, '0');
+      sh.setAttribute('aria-valuenow', calState.hour);
+      var sn = document.getElementById('cs-min');
+      sn.textContent = String(calState.min).padStart(2, '0');
+      sn.setAttribute('aria-valuenow', calState.min);
+    } catch (e) {}
+  }
+
+  function applyCalDigits() {
+    try {
+      var d = new Date(0);
+      d.setUTCFullYear(calState.year, calState.month, calState.day);
+      d.setUTCHours(calState.hour, calState.min, 0, 0);
+      var dt = d.getTime() / FeDomeApp.msPerDay - FeDomeApp.ZeroDate;
+      if (!isNaN(dt)) { FeDomeApp.DateTime = dt; UpdateAll(); }
+    } catch (e) {}
+  }
+
+  function stepCalField(field, delta) {
+    var maxDay;
+    switch (field) {
+      case 'month':
+        calState.month = (calState.month + delta + 12) % 12;
+        maxDay = _daysInMonth(calState.year, calState.month);
+        if (calState.day > maxDay) calState.day = maxDay;
+        break;
+      case 'day':
+        maxDay = _daysInMonth(calState.year, calState.month);
+        calState.day = ((calState.day - 1 + delta + maxDay) % maxDay) + 1;
+        break;
+      case 'year':
+        calState.year = Math.max(1900, Math.min(2099, calState.year + delta));
+        maxDay = _daysInMonth(calState.year, calState.month);
+        if (calState.day > maxDay) calState.day = maxDay;
+        break;
+      case 'hour':
+        calState.hour = (calState.hour + delta + 24) % 24;
+        break;
+      case 'min':
+        calState.min = (calState.min + delta + 60) % 60;
+        break;
+    }
+    renderCalDigits();
+    applyCalDigits();
   }
 
   /* ── Playback ────────────────────────────────────────────────────────────── */
 
   var playback = {
-    active:     false,
-    rafId:      null,
-    lastTs:     null,
-    baseRate:   365.256,  /* days/sec at 1× for the selected cycle mode */
-    multiplier: 1,
-    stepSize:   365.256,  /* days per ⏮/⏭ step — equals one cycle unit */
+    active:   false,
+    rafId:    null,
+    lastTs:   null,
+    baseRate: 365.256,  /* days/sec — set by the speed dropdown */
+    stepSize: 365.256,  /* days per ⏮/⏭ step — equals one speed unit */
 
     start: function () {
       this.active = true;
@@ -227,7 +313,7 @@
       if (!this.active) return;
       if (this.lastTs !== null) {
         var elapsed = Math.min((ts - this.lastTs) / 1000, 0.1); /* cap at 100 ms */
-        FeDomeApp.DateTime += this.baseRate * this.multiplier * elapsed;
+        FeDomeApp.DateTime += this.baseRate * elapsed;
         UpdateAll();
       }
       this.lastTs = ts;
@@ -253,6 +339,8 @@
     syncRayControls();
     syncParamSliders();
     updateCalendarDisplay();
+    updateSunMoonStrip();
+    updateYearProgress();
 
     /* ── Layer toggle click handlers ── */
     var layerBtns = document.querySelectorAll('.layer-toggle[data-prop]');
@@ -339,27 +427,39 @@
     /* ── Calendar dropdown ── */
     var calToggle   = document.getElementById('calendar-toggle');
     var calDropdown = document.getElementById('calendar-dropdown');
-    var calInput    = document.getElementById('cal-input');
 
     calToggle.addEventListener('click', function (e) {
       e.stopPropagation();
       calendarOpen ? closeCalendar() : openCalendar();
     });
 
-    calInput.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter')  { applyCalendarInput(); closeCalendar(); }
-      if (e.key === 'Escape') { closeCalendar(); }
-      if (e.key === 'ArrowRight') { FeDomeApp.DateTime += 1;      UpdateAll(); e.preventDefault(); }
-      if (e.key === 'ArrowLeft')  { FeDomeApp.DateTime -= 1;      UpdateAll(); e.preventDefault(); }
-      if (e.key === 'ArrowUp')    { FeDomeApp.DateTime += 365.25; UpdateAll(); e.preventDefault(); }
-      if (e.key === 'ArrowDown')  { FeDomeApp.DateTime -= 365.25; UpdateAll(); e.preventDefault(); }
-    });
+    /* ── Digit-scroll spinbutton events: ↑↓ arrows + mouse wheel ── */
+    var _spinIds = ['cs-month', 'cs-day', 'cs-year', 'cs-hour', 'cs-min'];
+    _spinIds.forEach(function (id, idx) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      var field = el.dataset.field;
 
-    calInput.addEventListener('blur', function () {
-      /* small delay so cal-btn clicks register before blur closes the dropdown */
-      setTimeout(function () {
-        if (calendarOpen) { applyCalendarInput(); closeCalendar(); }
-      }, 150);
+      el.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowUp')    { e.preventDefault(); stepCalField(field, +1); }
+        if (e.key === 'ArrowDown')  { e.preventDefault(); stepCalField(field, -1); }
+        if (e.key === 'ArrowLeft')  {
+          e.preventDefault();
+          var prev = document.getElementById(_spinIds[Math.max(0, idx - 1)]);
+          if (prev) prev.focus();
+        }
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          var next = document.getElementById(_spinIds[Math.min(_spinIds.length - 1, idx + 1)]);
+          if (next) next.focus();
+        }
+        if (e.key === 'Escape') { closeCalendar(); }
+      });
+
+      el.addEventListener('wheel', function (e) {
+        e.preventDefault();
+        stepCalField(field, e.deltaY < 0 ? +1 : -1);
+      }, { passive: false });
     });
 
     var calStepBtns = calDropdown.querySelectorAll('.cal-btn[data-cal-step]');
@@ -368,15 +468,14 @@
         return function () {
           FeDomeApp.DateTime += parseFloat(btn.dataset.calStep);
           UpdateAll();
-          try { calInput.value = FeDomeApp.DateTimeToString(FeDomeApp.DateTime).split('|')[0].trim(); } catch (e) {}
         };
       })(calStepBtns[cs]));
     }
 
-    /* Focus trap: Tab key cycles within the open dropdown */
+    /* Focus trap: Tab key cycles within the open dropdown (spins + buttons) */
     calDropdown.addEventListener('keydown', function (e) {
       if (e.key !== 'Tab' || !calendarOpen) return;
-      var focusable = calDropdown.querySelectorAll('input, button');
+      var focusable = calDropdown.querySelectorAll('[tabindex="0"], button');
       var first = focusable[0];
       var last  = focusable[focusable.length - 1];
       if (e.shiftKey && document.activeElement === first) {
@@ -409,34 +508,25 @@
       playback.step(1);
     });
 
-    /* ── Cycle mode buttons ── */
-    var cycleBtns = document.querySelectorAll('.pb-cycle');
-    for (var cb = 0; cb < cycleBtns.length; cb++) {
-      cycleBtns[cb].addEventListener('click', (function (btn, all) {
-        return function () {
-          playback.baseRate = parseFloat(btn.dataset.rate);
-          playback.stepSize = parseFloat(btn.dataset.step);
-          for (var ci = 0; ci < all.length; ci++) {
-            all[ci].setAttribute('aria-pressed', all[ci] === btn ? 'true' : 'false');
-          }
-        };
-      })(cycleBtns[cb], cycleBtns));
+    /* ── Speed dropdown ── */
+    var speedSelect = document.getElementById('pb-speed');
+    if (speedSelect) {
+      var _syncSpeed = function () {
+        var opt = speedSelect.options[speedSelect.selectedIndex];
+        playback.baseRate = parseFloat(opt.dataset.rate);
+        playback.stepSize = parseFloat(opt.dataset.step);
+      };
+      _syncSpeed(); /* apply the HTML-selected default (1 yr/s) */
+      speedSelect.addEventListener('change', _syncSpeed);
     }
 
-    /* ── Speed multiplier buttons ── */
-    var multBtns = document.querySelectorAll('.pb-mult');
-    for (var mb = 0; mb < multBtns.length; mb++) {
-      multBtns[mb].addEventListener('click', (function (btn, all) {
-        return function () {
-          playback.multiplier = parseFloat(btn.dataset.mult);
-          /* Scale demo animation durations to match our speed setting.
-             TimeStrech > 1 = slower; TimeStrech < 1 = faster. */
-          if (window.Animations) Animations.TimeStrech = 1 / playback.multiplier;
-          for (var mi = 0; mi < all.length; mi++) {
-            all[mi].setAttribute('aria-pressed', all[mi] === btn ? 'true' : 'false');
-          }
-        };
-      })(multBtns[mb], multBtns));
+    /* ── Reset button ── */
+    var pbReset = document.getElementById('pb-reset');
+    if (pbReset) {
+      pbReset.addEventListener('click', function () {
+        playback.stop();
+        if (typeof ResetApp === 'function') ResetApp();
+      });
     }
 
     /* ── Stop our playback when a demo tab is activated ── */
@@ -464,6 +554,36 @@
       }
     }
 
+    /* ── ResizeObserver: accelerate jsg resize detection ── */
+    if (window.ResizeObserver) {
+      try {
+        var _g = FeDomeApp.GraphObject;
+        if (_g && _g.ContainerDiv) {
+          new ResizeObserver(function () {
+            if (_g.CheckResizeRegularly) _g.CheckResizeRegularly();
+          }).observe(_g.ContainerDiv);
+        }
+      } catch (e) {}
+    }
+
+    /* ── Screenshot export ── */
+    var screenshotBtn = document.getElementById('btn-screenshot');
+    if (screenshotBtn) {
+      screenshotBtn.addEventListener('click', function () {
+        try {
+          var canvas = FeDomeApp.GraphObject && FeDomeApp.GraphObject.Canvas;
+          if (!canvas) return;
+          var dataUrl = canvas.toDataURL('image/png');
+          var a = document.createElement('a');
+          var dateStr = '';
+          try { dateStr = '-' + FeDomeApp.DateTimeToString(FeDomeApp.DateTime).split('|')[0].trim().replace(/[^\w]/g, '-'); } catch (e) {}
+          a.download = 'fed' + dateStr + '.png';
+          a.href = dataUrl;
+          a.click();
+        } catch (e) { alert('Screenshot failed: ' + e.message); }
+      });
+    }
+
     /* ── Gesture hint: fade out after 5 s ── */
     var gestureHint = document.getElementById('gesture-hint');
     if (gestureHint) {
@@ -472,9 +592,6 @@
         setTimeout(function () { gestureHint.hidden = true; }, 950);
       }, 5000);
     }
-
-    /* Sync initial Animations.TimeStrech with default multiplier (1×) */
-    if (window.Animations) Animations.TimeStrech = 1 / playback.multiplier;
 
     /* Keyboard: Space = play/pause when not in an input */
     document.addEventListener('keydown', function (e) {

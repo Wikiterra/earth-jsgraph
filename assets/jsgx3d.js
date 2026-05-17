@@ -257,3 +257,11 @@ JsGraphX3D.prototype.CreateLinearGradient3D=function(aGradientDef){var p1VT,p2VT
 gradDef.X1=p1VT[0];gradDef.Y1=p1VT[1];gradDef.X2=p2VT[0];gradDef.Y2=p2VT[1];var grad=this.CreateLinearGradient(gradDef);grad.Def3D=aGradientDef;return grad}
 JsGraphX3D.prototype.SetLinearGradientGeom3D=function(aLinearGradient3D,aGeom){var p1VT,p2VT;var grad=aLinearGradient3D.Def3D;if(grad.Plane){var plane=grad.Plane;grad.X1=xDefNum(aGeom.X1,grad.X1);grad.Y1=xDefNum(aGeom.Y1,grad.Y1);grad.X2=xDefNum(aGeom.X2,grad.X2);grad.Y2=xDefNum(aGeom.Y2,grad.Y2);p1VT=this.Camera.Trans(plane.PointOnPlane(grad.X1,grad.Y1));p2VT=this.Camera.Trans(plane.PointOnPlane(grad.X2,grad.Y2));}else{grad.P1=xDefArray(aGeom.P1,grad.P1);grad.P2=xDefArray(aGeom.P2,grad.P2);p1VT=this.Camera.Trans(grad.P1);p2VT=this.Camera.Trans(grad.P2);}
 this.SetLinearGradientGeom(aLinearGradient3D,{X1:p1VT[0],Y1:p1VT[1],X1:p2VT[0],Y1:p2VT[1]});}
+Object.assign(globalThis, {
+  JsgPolyListIter, JsgVect3, JsgVect3List, JsgVect3Grid,
+  JsgMat3, JsgCamera, JsgPlane, NewGraphX3D, JsGraphX3D,
+});
+export {
+  JsgPolyListIter, JsgVect3, JsgVect3List, JsgVect3Grid,
+  JsgMat3, JsgCamera, JsgPlane, NewGraphX3D, JsGraphX3D,
+};

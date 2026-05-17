@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Interactive simulation proving the Flat Earth Dome Model only works when based on heliocentric parameters.">
   <title>Flat Earth Dome Model only works Based on the Heliocentric Model</title>
-  <script src="assets/wiki.js"></script>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -21,9 +20,9 @@
         <li class="TabButton TabEnabled" id="DayNightButton" role="tab" aria-selected="false" aria-controls="FeGraph-Canvas">DayNight</li>
         <li class="TabButton TabEnabled" id="PolesButton"    role="tab" aria-selected="false" aria-controls="FeGraph-Canvas">Poles</li>
         <li class="TabButton TabEnabled" id="StarsButton"    role="tab" aria-selected="false" aria-controls="FeGraph-Canvas">Stars</li>
-        <li class="TabButton TabEnabled" id="TFEButton"      role="tab" aria-selected="false" aria-controls="FeGraph-Canvas">TFE</li>
-        <li class="TabButton TabEnabled" id="ResetButton">Reset</li>
         <!-- Kept in DOM for Tabs.js — hidden visually -->
+        <li class="TabButton tab-hidden" id="TFEButton">TFE</li>
+        <li class="TabButton tab-hidden" id="ResetButton">Reset</li>
         <li class="TabButton tab-hidden" id="BackButton">&lt;&lt;</li>
         <li class="TabButton tab-hidden" id="PlayButton">Play</li>
         <li class="TabButton tab-hidden" id="ForwButton">&gt;&gt;</li>
@@ -44,19 +43,20 @@
           <button class="pb-btn" id="pb-step-fwd" aria-label="Step forward one cycle">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 18l8.5-6L6 6v12zm2-6 5.5 3.9V8.1L8 12zM16 6h2v12h-2z"/></svg>
           </button>
-          <!-- Cycle mode: sets base animation rate + step size -->
-          <div class="pb-cycles" role="radiogroup" aria-label="Animation cycle">
-            <button class="pb-cycle" data-rate="0.04167" data-step="0.04167" aria-pressed="false" title="Solar day — 1 model-hour per second">☀</button>
-            <button class="pb-cycle" data-rate="29.5306" data-step="29.5306" aria-pressed="false" title="Lunar cycle — 29.5 days per second">☾</button>
-            <button class="pb-cycle" data-rate="365.256" data-step="365.256" aria-pressed="true"  title="Solar year — 365 days per second">yr</button>
-          </div>
-          <!-- Speed multiplier -->
-          <div class="pb-mults" role="radiogroup" aria-label="Speed multiplier">
-            <button class="pb-mult" data-mult="0.5"  aria-pressed="false">½×</button>
-            <button class="pb-mult" data-mult="1"    aria-pressed="true">1×</button>
-            <button class="pb-mult" data-mult="1.5"  aria-pressed="false">1½×</button>
-            <button class="pb-mult" data-mult="2"    aria-pressed="false">2×</button>
-          </div>
+          <!-- Speed selector: rate (days/sec) and step size for ⏮/⏭ -->
+          <select id="pb-speed" class="pb-speed-select" aria-label="Playback speed">
+            <option data-rate="0.04167"  data-step="0.04167">1 h/s</option>
+            <option data-rate="0.5"      data-step="0.5">12 h/s</option>
+            <option data-rate="1"        data-step="1">1 d/s</option>
+            <option data-rate="7"        data-step="7">1 wk/s</option>
+            <option data-rate="30.437"   data-step="30.437">1 mo/s</option>
+            <option data-rate="365.256"  data-step="365.256" selected>1 yr/s</option>
+            <option data-rate="3652.56"  data-step="365.256">10 yr/s</option>
+          </select>
+          <!-- Reset: calls ResetApp() and restores default model state -->
+          <button class="pb-btn pb-reset" id="pb-reset" aria-label="Reset simulation" title="Reset simulation">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          </button>
         </div>
 
         <!-- Time of day slider -->
@@ -71,15 +71,44 @@
           <input class="tc-range" id="tc-day" type="range" min="0" max="364" step="1" value="82" aria-label="Day of year (0–364)">
         </div>
 
+        <!-- Sun / Moon info strip -->
+        <div id="sun-moon-strip" aria-live="polite" aria-atomic="true">
+          <span id="sms-sun"  class="sms-item" title="Sun azimuth / elevation">☀ —</span>
+          <span id="sms-moon" class="sms-item" title="Moon azimuth / elevation">☾ —</span>
+        </div>
+
         <!-- Calendar date picker -->
         <div id="calendar-widget">
           <button id="calendar-toggle" aria-expanded="false" aria-controls="calendar-dropdown" aria-label="Open date picker">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
             <span id="calendar-display" aria-live="polite">—</span>
           </button>
-          <div id="calendar-dropdown" hidden aria-label="Date picker">
-            <div class="cal-date-row">
-              <input id="cal-input" class="cal-date-input" type="text" aria-label="Enter date" placeholder="Jan 01 2024 / 12:00 UTC">
+          <div id="calendar-dropdown" hidden role="dialog" aria-label="Date picker">
+            <!-- Digit-scroll spinbuttons: ↑↓ arrows or scroll wheel on each field -->
+            <div class="cal-digits" role="group" aria-label="Date and time">
+              <span class="cal-spin" id="cs-month" role="spinbutton" tabindex="0"
+                    aria-label="Month" aria-valuenow="0" aria-valuemin="0" aria-valuemax="11"
+                    aria-valuetext="January" data-field="month">Jan</span>
+              <span class="cal-spin" id="cs-day" role="spinbutton" tabindex="0"
+                    aria-label="Day" aria-valuenow="1" aria-valuemin="1" aria-valuemax="31"
+                    data-field="day">01</span>
+              <span class="cal-spin cs-wide" id="cs-year" role="spinbutton" tabindex="0"
+                    aria-label="Year" aria-valuenow="2024" aria-valuemin="1900" aria-valuemax="2099"
+                    data-field="year">2024</span>
+              <span class="cal-sep">/</span>
+              <span class="cal-spin" id="cs-hour" role="spinbutton" tabindex="0"
+                    aria-label="Hour" aria-valuenow="12" aria-valuemin="0" aria-valuemax="23"
+                    data-field="hour">12</span>
+              <span class="cal-sep">:</span>
+              <span class="cal-spin" id="cs-min" role="spinbutton" tabindex="0"
+                    aria-label="Minute" aria-valuenow="0" aria-valuemin="0" aria-valuemax="59"
+                    data-field="min">00</span>
+              <span class="cal-utc">UTC</span>
+            </div>
+            <!-- Year progress: thin bar showing day position within the year -->
+            <div class="cal-year-track" role="progressbar"
+                 aria-label="Day of year" aria-valuemin="0" aria-valuemax="364" aria-valuenow="82">
+              <div class="cal-year-fill" id="cal-year-fill"></div>
             </div>
             <div class="cal-step-row">
               <button class="cal-btn" data-cal-step="-365.25" aria-label="Back 1 year">← 1yr</button>
@@ -92,28 +121,9 @@
       </div>
     </header>
 
-    <!--
-      Scripts are here so app.js's FeDomeApp.CreateFeGraph() call uses document.writeln()
-      to INSERT #FeGraph, #FeGraph-ClippingBox, #FeGraph-Canvas at this position.
-      DO NOT pre-define those elements — jsg must create them to avoid duplicate-ID overlay.
-    -->
-    <script src="assets/jsg.js"></script>
-    <script src="assets/jsgx3d.js"></script>
-    <script src="assets/jsgMouseHandler.js"></script>
-    <script src="assets/EarthMap.js"></script>
-    <script src="assets/NumFormatter.js"></script>
-    <script src="assets/Slider.js"></script>
-    <script src="assets/ControlPanel.js"></script>
-    <script src="assets/Tabs.js"></script>
-    <script src="assets/DataX.js"></script>
-    <script src="assets/xtc.js"></script>
-    <script src="assets/ModelAnimation.js"></script>
-    <script src="assets/app.js"></script>
-    <!-- Override CMS globals set by app.js lines 1-2 (Walter's site URL) with local href -->
-    <script>
-      if (typeof ThisPageUrl      !== 'undefined') ThisPageUrl      = location.href;
-      if (typeof ThisPageShortUrl !== 'undefined') ThisPageShortUrl = location.href;
-    </script>
+    <!-- Canvas mount: CreateDomObjects replaces this div with #FeGraph once modules load -->
+    <div id="jsg-canvas-mount"></div>
+    <script type="module" src="js/main-v2.js"></script>
     <!-- controlPanels.js + optionPanel.js removed: their #SliderPanel / #OptionPanel tables
          are replaced by native bars. ControlPanel engine (ControlPanel.js) stays for Tabs.js. -->
 
@@ -218,6 +228,7 @@
           <button type="button" onclick="DataX.GetAppStateUrl(ThisPageUrl)">Get App URL</button>
           <button type="button" onclick="DataX.SetAppState()">Set App State</button>
           <button type="button" onclick="DataX.ClearSaveRestoreDomObj()">Clear</button>
+          <button type="button" id="btn-screenshot">Screenshot PNG</button>
         </p>
       </div>
     </details>
@@ -230,7 +241,6 @@
       style="position:fixed;bottom:calc(var(--bottom-bar-h) + 14px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.62);color:rgba(255,255,255,0.85);font-size:11px;font-family:inherit;padding:5px 14px;border-radius:20px;pointer-events:none;z-index:500;white-space:nowrap;transition:opacity 0.9s;">
       Left-drag: rotate &nbsp;·&nbsp; Right-drag: observer position &nbsp;·&nbsp; Scroll: zoom
     </div>
-    <script src="js/ui.js"></script>
 
   </main>
 </body>

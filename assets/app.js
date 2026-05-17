@@ -666,10 +666,8 @@ var FeDomeApp = {
     g.Marker3D(this.SunDomeCoord, 3);
     g.ResetTrans3D();
 
-    this.DrawDateTime(g);
-
+    // DrawDateTime and DrawSunMoonAzimuthElevation suppressed — duplicated by top-bar displays
     if (!this.ShowStars && this.RayTarget == 0) {
-      this.DrawSunMoonAzimuthElevation(g);
       this.DrawMoonPhase(g);
     }
 
@@ -2290,7 +2288,7 @@ Demos.AddAnimation(
       Tval('ShowFeGrid', true, 1, AnimT3),
       Tval('ObserverLat', 90, AnimT5),
       Tval('ObserverLat', 45, AnimT3),
-      Tpnt('Observer Latitude = 45�', [243, 348], [386, 398]),
+      Tpnt('Observer Latitude = 45ï¿½', [243, 348], [386, 398]),
       {
         Mode: 'parallel',
         TaskList: [
@@ -2298,7 +2296,7 @@ Demos.AddAnimation(
           Tval('PointerTo[1]', 333, AnimT2),
         ],
       },
-      Tpnt('Elevation = 45�', [529, 307], [537, 146], AnimT2),
+      Tpnt('Elevation = 45ï¿½', [529, 307], [537, 146], AnimT2),
       {
         Mode: 'parallel',
         TaskList: [
@@ -2408,8 +2406,8 @@ Demos.AddAnimation(
   {
     Mode: 'serial',
     TaskList: [
-      Ttxt('Earth\'s Axes is tilted 23.4� with respect to its Orbital Plane around the Sun (Ecliptic).'),
-      Ttxt('So the Sun follows a 23.4� tilted Track on the Fixed Stars Background, causing Seasons.', AnimT5),
+      Ttxt('Earth\'s Axes is tilted 23.4ï¿½ with respect to its Orbital Plane around the Sun (Ecliptic).'),
+      Ttxt('So the Sun follows a 23.4ï¿½ tilted Track on the Fixed Stars Background, causing Seasons.', AnimT5),
       Tpnt('Suns Ecliptic = annual Track on the Dome', [372, 411], [400, 351], AnimT5),
       Tpse(AnimT5),
     ],
@@ -2417,7 +2415,7 @@ Demos.AddAnimation(
 );
 
 Demos.AddState(
-  'FeDomeApp = { "Description": "So the Sun follows a 23.4� tilted Track on the Fixed Stars Background, causing Seasons.", "PointerFrom": [ 400, 351 ], "PointerTo": [ 372, 414 ], "PointerText": "Suns Ecliptic = annual Track on the Dome", "ObserverLat": 90, "ObserverLong": 0, "Zoom": 1.25, "CameraDirection": 0, "CameraHeight": 89.9, "CameraDistance": 200150, "DateTime": 117.3933, "DomeSize": 1, "DomeHeight": 9000, "ShowFeGrid": false, "ShowShadow": false, "ShowDomeGrid": false, "ShowSunTrack": true, "ShowMoonTrack": false, "ShowSphere": false, "ShowStars": false, "ShowDomeRays": false, "ShowSphereRays": false, "ShowManyRays": false }'
+  'FeDomeApp = { "Description": "So the Sun follows a 23.4ï¿½ tilted Track on the Fixed Stars Background, causing Seasons.", "PointerFrom": [ 400, 351 ], "PointerTo": [ 372, 414 ], "PointerText": "Suns Ecliptic = annual Track on the Dome", "ObserverLat": 90, "ObserverLong": 0, "Zoom": 1.25, "CameraDirection": 0, "CameraHeight": 89.9, "CameraDistance": 200150, "DateTime": 117.3933, "DomeSize": 1, "DomeHeight": 9000, "ShowFeGrid": false, "ShowShadow": false, "ShowDomeGrid": false, "ShowSunTrack": true, "ShowMoonTrack": false, "ShowSphere": false, "ShowStars": false, "ShowDomeRays": false, "ShowSphereRays": false, "ShowManyRays": false }'
 );
 
 Demos.AddAnimation(
@@ -2495,7 +2493,7 @@ Demos.AddAnimation(
       Tval('ShowSunTrack', false, AnimT1),
       Tval('ShowMoonTrack', true, AnimT1),
       Tpnt('Moons Ecliptic = monthly Track on the Dome', [549, 172], [633, 120], AnimT5),
-      Ttxt('The Moon\'s Ecliptic plane is tilted 5.1� with respect to Sun\'s Ecliptic Plane.', AnimT5),
+      Ttxt('The Moon\'s Ecliptic plane is tilted 5.1ï¿½ with respect to Sun\'s Ecliptic Plane.', AnimT5),
       Ttxt('This means the Track of the Moon extends now farther north and south than the Sun.', AnimT7),
       Tpse(AnimT5),
     ],
@@ -2514,7 +2512,7 @@ Demos.AddAnimation(
       Tval('ShowSunTrack', true, AnimT1),
       Ttxt('The green dots are the intersection Knots of Sun and Moon Eclipse.'),
       Tpnt('Knot', [392, 415], [420, 342], AnimT1),
-      Ttxt('Due to Precession of the Moon\'s Orbit of 19.3� per year retrograde.', AnimT5),
+      Ttxt('Due to Precession of the Moon\'s Orbit of 19.3ï¿½ per year retrograde.', AnimT5),
       Ttxt('The green intersection Knots move slowly in the opposite direction of Sun and Moon.', AnimT5),
       Tpnt('Start Position', [392, 415], [420, 342]),
       {
@@ -3272,3 +3270,22 @@ Demos.AddAnimation(
 Demos.AddState(
   'FeDomeApp = { "Description": "Use the green Sliders to change the Star Position", "PointerFrom": [ 0, 0 ], "PointerTo": [ 0, 0 ], "PointerText": "", "ObserverLat": -70, "ObserverLong": -95, "Zoom": 1.2, "CameraDirection": -60, "CameraHeight": 36, "CameraDistance": 200150, "DateTime": 172.9, "DomeSize": 1, "DomeHeight": 9000, "ShowFeGrid": true, "ShowShadow": true, "ShowDomeGrid": false, "ShowSunTrack": false, "ShowMoonTrack": false, "ShowSphere": false, "ShowStars": true, "ShowDomeRays": false, "ShowSphereRays": false, "ShowManyRays": false, "RayParameter": 1, "RayTarget": 1, "RaySource": 2 }'
 );
+
+Object.assign(globalThis, {
+  ThisPageUrl, ThisPageShortUrl, FeDomeAppMetaData, FeDomeApp,
+  UpdateAllRunning, UpdateAll, ResetApp, TFE, HandleUrlCommands,
+  AnimationSpeed, Demos,
+  AnimRestartAction, AnimTxt,
+  AnimT1, AnimT2, AnimT3, AnimT4, AnimT5, AnimT6, AnimT7, AnimT8, AnimT9, AnimT10,
+  Tpse, Ttxt, Tpnt, Tval,
+  ToRad, ToDeg, sqr, Limit1, Limit01, ToRange,
+});
+export {
+  ThisPageUrl, ThisPageShortUrl, FeDomeAppMetaData, FeDomeApp,
+  UpdateAllRunning, UpdateAll, ResetApp, TFE, HandleUrlCommands,
+  AnimationSpeed, Demos,
+  AnimRestartAction, AnimTxt,
+  AnimT1, AnimT2, AnimT3, AnimT4, AnimT5, AnimT6, AnimT7, AnimT8, AnimT9, AnimT10,
+  Tpse, Ttxt, Tpnt, Tval,
+  ToRad, ToDeg, sqr, Limit1, Limit01, ToRange,
+};

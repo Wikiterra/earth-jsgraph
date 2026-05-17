@@ -63,12 +63,42 @@
 
 ---
 
+## UI refinements (completed)
+
+- **Calendar: digit-scroll input** — `.cal-spin` spinbuttons (`cs-month/day/year/hour/min`) wired with `keydown` (↑↓ step, ←→ move focus, Escape close) and `wheel` (scroll = step) handlers; old free-text `#cal-input` reference removed (was causing a null-ref crash on init); `applyCalendarInput` undefined call removed
+- **Sun/Moon info strip** — `#sun-moon-strip` with `#sms-sun` / `#sms-moon` spans added to the right of the calendar toggle; reads `FeDomeApp.SunAnglesGlobe` / `MoonAnglesGlobe` (azimuth + elevation) each `UpdateAll`; shows "below" when `SunFeCelestSphereCoord[2] ≤ 0`
+- **Year progress track** — thin 4px accent bar inside the calendar dropdown; width = `DayOfYear / 364 × 100%`; updated in `updateYearProgress()` each frame and on `openCalendar`
+
+- Speed dropdown replaces cycle-mode buttons + multiplier buttons: `1 h/s · 12 h/s · 1 d/s · 1 wk/s · 1 mo/s · 1 yr/s · 10 yr/s`; single `<select>` sets both `playback.baseRate` and `playback.stepSize`
+- TFE and Reset tabs removed from the visible tab list; both kept as hidden `<li>` elements in the DOM for Tabs.js
+- Reset moved to a standalone ↺ icon button in the playback cluster; calls `ResetApp()` and stops playback
+- Play button turns green (`#00b894`) while active — clearly distinct from the orange "press to play" resting state
+
+---
+
+## Future ideas (completed)
+
+- **Screenshot export** — `#btn-screenshot` in the save/restore panel; clicks `FeDomeApp.GraphObject.Canvas.toDataURL('image/png')` and triggers a filename-stamped `<a>.click()` download
+
+---
+
 ## Phase 5 — JS audit (completed items)
 
 - `controlPanels.js` + `optionPanel.js` removed; ControlPanel.js engine kept intact for Tabs.js
 - `ThisPageUrl` / `ThisPageShortUrl` overridden with `location.href` via inline `<script>` after `app.js` — "Get App URL" now produces a usable local URL instead of Walter's site
 - `Animations.TimeStrech` wired to speed multiplier: `TimeStrech = 1 / multiplier`
 - Playback RAF loop stops on any demo tab click — prevents race with Tabs.js Animator
+
+---
+
+## Phase 4 — CSS (completed items)
+
+- `ResizeObserver` on `FeDomeApp.GraphObject.ContainerDiv` in `init()` — fires `CheckResizeRegularly()` immediately on resize instead of waiting for jsg's 50ms poll loop
+
+- Mobile-first base: `.toggle-label { display: none }` by default; `@media (min-width: 768px)` shows them; `≤480px` media query tightens bars and hides `#sun-moon-strip`
+- `role="dialog"` + `aria-modal="true"` toggled on `#calendar-dropdown` via `openCalendar` / `closeCalendar`
+- `prefers-reduced-motion: reduce` → all transition/animation durations clamped to 0.01ms
+- Year progress track (see UI refinements above)
 
 ---
 
@@ -80,3 +110,23 @@
 - Playback: `aria-label` on ⏮/▶/⏭; ▶ label flips to "Pause" dynamically
 - Gesture hint pill overlay (left-drag / right-drag / scroll) fades out after 5 s
 - Calendar dropdown: full keyboard nav, Enter/Escape, focus trap
+
+---
+
+## Phase 7e — ES module conversion ✅ (v2 + v3)
+
+**Pattern:** each asset file appends `Object.assign(globalThis, {...})` + `export {...}` — backward-compatible with global-scope callers while enabling ES module imports. No explicit `import` statements needed in each file; module scope chain reads from `globalThis`.
+
+### v2 (`fed-wabis-v2/`)
+- All 13 asset files converted to ES modules with `globalThis` registration + named exports
+- `jsg.js`: `var JsgMat2={}` (fixed implicit global, was strict-mode ReferenceError); `document.writeln` → `jsg-canvas-mount` div-swap
+- `wiki.js`: page-load handler now also writes `globalThis.xOnLoadFinished=true` so other modules see the update; all symbols (~80) exported
+- All asset files re-encoded Latin-1 → UTF-8 (degree/micro signs in `NumFormatter.js`, `app.js`, `wiki.js`)
+- `js/main-v2.js` — single `type=module` entry: imports all 13 assets in dependency order, then `./ui.js`; fixes URL globals after import
+- `index.html`: removed `<script src="assets/wiki.js">` from `<head>`; replaced 13 `<script src="assets/...">` + inline URL patch with `<div id="jsg-canvas-mount"></div>` + `<script type="module" src="js/main-v2.js">`; removed `<script src="js/ui.js">`
+
+### v3 (`fed-wabis-v3/`)
+- Converted asset files copied to `src/lib/` (UTF-8, with export blocks)
+- `src/main.js` rewired: imports CSS + all 13 `./lib/*.js` in order + `../js/ui.js`; URL override at end
+- `index.html`: removed `<script src="/assets/wiki.js">` from `<head>` and all 12 legacy body script tags
+- `npm run build` passes: 19 modules transformed → 418 kB bundle

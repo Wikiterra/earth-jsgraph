@@ -140,6 +140,21 @@ body {
   gap: 3px;
 }
 
+/* Sun / Moon info strip */
+#sun-moon-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.sms-item {
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 /* Time / Day compact sliders */
 .tc-group {
   display: flex;
@@ -208,28 +223,58 @@ body {
 
 #calendar-dropdown[hidden] { display: none; }
 
-.cal-date-row {
+/* Digit-scroll spinbutton row */
+.cal-digits {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
+  justify-content: center;
+  padding: 2px 0 4px;
 }
 
-.cal-date-input {
-  flex: 1;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.18);
+.cal-spin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  padding: 4px 5px;
   border-radius: var(--radius-sm);
-  color: #fff;
-  font-size: 12px;
+  border: 1px solid transparent;
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.9);
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
-  padding: 5px 8px;
-  text-align: center;
+  font-weight: 500;
+  cursor: ns-resize;
+  user-select: none;
+  transition: background 0.1s, border-color 0.1s;
 }
 
-.cal-date-input:focus {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 1px;
-  background: rgba(255,255,255,0.12);
+.cal-spin.cs-wide { min-width: 44px; }
+
+.cal-spin:hover {
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.cal-spin:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  background: rgba(255,128,51,0.15);
+}
+
+.cal-sep {
+  color: rgba(255,255,255,0.35);
+  font-size: 12px;
+  padding: 0 1px;
+  user-select: none;
+}
+
+.cal-utc {
+  color: rgba(255,255,255,0.35);
+  font-size: 10px;
+  margin-left: 2px;
+  user-select: none;
 }
 
 .cal-step-row {
@@ -252,6 +297,22 @@ body {
 }
 
 .cal-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+/* Year progress track — thin bar at top of dropdown */
+.cal-year-track {
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.cal-year-fill {
+  height: 100%;
+  width: 0;
+  background: var(--color-accent);
+  border-radius: 2px;
+  transition: width 0.25s ease;
+}
 
 /* =============================================================
    Canvas — fills viewport between the two bars
@@ -334,43 +395,50 @@ body {
   border-color: #ff9a55;
 }
 
+/* Green when playing — clearly distinct from the orange "press to play" state */
 .pb-btn[aria-pressed="true"].pb-primary {
-  background: #e06020;
-  border-color: #e06020;
+  background: #00b894;
+  border-color: #00b894;
 }
 
-/* Cycle mode + multiplier toggle groups */
-.pb-cycles,
-.pb-mults {
-  display: flex;
-  gap: 2px;
+.pb-btn[aria-pressed="true"].pb-primary:hover {
+  background: #00cfa8;
+  border-color: #00cfa8;
 }
 
-.pb-cycle,
-.pb-mult {
-  padding: 4px 7px;
+/* Speed selector */
+.pb-speed-select {
+  height: 34px;
+  padding: 0 6px;
+  background: rgba(255,255,255,0.07);
   border: 1px solid rgba(255,255,255,0.15);
   border-radius: var(--radius-sm);
-  background: rgba(255,255,255,0.07);
-  color: rgba(255,255,255,0.65);
-  font-size: 11px;
+  color: var(--bar-text);
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  appearance: auto;
+  transition: background 0.15s, border-color 0.15s;
 }
 
-.pb-cycle:hover,
-.pb-mult:hover {
-  background: rgba(255,255,255,0.14);
-  color: rgba(255,255,255,0.9);
+.pb-speed-select:hover {
+  background: rgba(255,255,255,0.13);
+  border-color: rgba(255,255,255,0.3);
 }
 
-.pb-cycle[aria-pressed="true"],
-.pb-mult[aria-pressed="true"] {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  color: #fff;
+.pb-speed-select:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+/* Reset button — same size as other pb-btn, slightly muted */
+.pb-btn.pb-reset {
+  color: rgba(255,255,255,0.55);
+  margin-left: 2px;
+}
+
+.pb-btn.pb-reset:hover {
+  color: var(--bar-text);
 }
 
 /* Layer toggles */
@@ -414,6 +482,7 @@ body {
 .toggle-label {
   font-size: 10px;
   line-height: 1;
+  display: none; /* mobile-first: shown only at ≥768px */
 }
 
 /* =============================================================
@@ -662,23 +731,42 @@ div.Slider.ReadOnly { opacity: 0.45; pointer-events: none; }
 }
 
 /* =============================================================
-   Mobile (≤ 600px): icon-only layer toggles, smaller controls
+   ≥ 768px: show text labels under layer toggle icons
    ============================================================= */
-@media (max-width: 600px) {
+@media (min-width: 768px) {
+  .toggle-label { display: block; }
+}
+
+/* =============================================================
+   Mobile (≤ 480px): compact bars, icon-only toggles, scrollable top bar
+   ============================================================= */
+@media (max-width: 480px) {
   :root {
-    --top-bar-h:    48px;
-    --bottom-bar-h: 60px;
+    --top-bar-h:    44px;
+    --bottom-bar-h: 56px;
   }
 
-  .toggle-label { display: none; }
+  #top-bar { gap: 4px; padding: 0 6px; overflow-x: auto; }
 
-  .layer-toggle { min-width: 34px; padding: 6px 5px; }
+  #sun-moon-strip { display: none; }
 
-  .TabSelectors li { padding: 5px 10px; font-size: 12px; }
+  .layer-toggle { min-width: 32px; padding: 5px 4px; }
 
-  #slider-panel { width: calc(100vw - 24px); right: 12px; }
+  .TabSelectors li { padding: 4px 8px; font-size: 12px; }
 
-  .pb-btn { width: 30px; height: 30px; }
-  .pb-btn.pb-primary { width: 36px; height: 36px; }
-  .pb-select { font-size: 11px; }
+  .pb-btn { width: 28px; height: 28px; }
+  .pb-btn.pb-primary { width: 34px; height: 34px; }
+  .pb-speed-select { font-size: 11px; }
+
+  .tc-range { width: 52px; }
+}
+
+/* =============================================================
+   Reduced motion: cut all transitions and animations
+   ============================================================= */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
