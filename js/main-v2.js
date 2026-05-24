@@ -8,7 +8,6 @@ import '../assets/jsgx3d.js';
 import '../assets/jsgMouseHandler.js';
 import '../assets/EarthMap.js';
 import '../assets/earth-map-data.js';
-import '../assets/Tabs.js';
 import '../assets/DataX.js';
 import '../assets/ModelAnimation.js';
 import '../assets/app.js';

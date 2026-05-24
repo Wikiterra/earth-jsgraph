@@ -28,22 +28,6 @@ function init() {
 
   /* ── One-shot wirings that don't belong to a single concern ────────────── */
 
-  /* aria-selected sync: watch for TabSelected class added by Tabs.js */
-  const demoTabList = document.getElementById('DomeDemoTabs');
-  if (demoTabList && window.MutationObserver) {
-    const obs = new MutationObserver(mutations => {
-      for (const m of mutations) {
-        if (m.attributeName === 'class') {
-          m.target.setAttribute('aria-selected',
-            m.target.classList.contains('TabSelected') ? 'true' : 'false');
-        }
-      }
-    });
-    for (const tab of demoTabList.querySelectorAll('li[role="tab"]')) {
-      obs.observe(tab, { attributes: true, attributeFilter: ['class'] });
-    }
-  }
-
   /* ResizeObserver: accelerate jsg's 50 ms resize poll */
   if (window.ResizeObserver) {
     try {

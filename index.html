@@ -12,7 +12,7 @@
 
     <!-- Top bar: demo tabs (left) + time controls + calendar (right) -->
     <header id="top-bar">
-      <!-- TabSelectors class required by Tabs.js (xGetByClass lookup) -->
+      <!-- Demo tabs: TabSelectors / TabButton / TabEnabled / TabActive class names drive styling in styles.css -->
       <ul id="DomeDemoTabs" class="TabSelectors" role="tablist" aria-label="Demo scenarios">
         <li class="TabButton TabEnabled TabPrimary" id="IntroButton"   role="tab" aria-selected="false" aria-controls="FeGraph-Canvas">Intro</li>
         <li class="TabButton TabEnabled TabPrimary" id="EclipsesButton" role="tab" aria-selected="false" aria-controls="FeGraph-Canvas">Eclipses</li>
@@ -20,7 +20,7 @@
         <li class="TabButton TabEnabled" id="DayNightButton" role="tab" aria-selected="false" aria-controls="FeGraph-Canvas">DayNight</li>
         <li class="TabButton TabEnabled" id="PolesButton"    role="tab" aria-selected="false" aria-controls="FeGraph-Canvas">Poles</li>
         <li class="TabButton TabEnabled" id="StarsButton"    role="tab" aria-selected="false" aria-controls="FeGraph-Canvas">Stars</li>
-        <!-- Kept in DOM for Tabs.js — hidden visually -->
+        <!-- Hidden buttons: demos-manager.js wires these via wireButton(); kept in DOM for click delegation -->
         <li class="TabButton tab-hidden" id="TFEButton">TFE</li>
         <li class="TabButton tab-hidden" id="ResetButton">Reset</li>
         <li class="TabButton tab-hidden" id="BackButton">&lt;&lt;</li>

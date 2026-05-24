@@ -17,7 +17,12 @@
       "Bash(node --check js/ui.js)",
       "Bash(python)",
       "Bash(git checkout *)",
-      "Bash(python trim-wiki.py)"
+      "Bash(python trim-wiki.py)",
+      "Bash(ls \"C:\\\\Users\\\\d7\\\\.claude\\\\projects\\\\d--Workspaces-Curiosity432-user-wikiterra-apps-fed-wabis-v2\\\\memory\\\\\")",
+      "Read(//c/Users/d7/.claude/projects/d--Workspaces-Curiosity432-user-wikiterra-apps-fed-wabis-v2/**)",
+      "Bash(dir \"C:\\\\Users\\\\d7\\\\.claude\\\\projects\\\\d--Workspaces-Curiosity432-user-wikiterra-apps-fed-wabis-v2\\\\memory\\\\\")",
+      "Bash(git -C \"d:/Workspaces/Curiosity432-user/wikiterra-apps/fed-wabis-v2\" status)",
+      "Bash(node --check assets/demos-manager.js)"
     ],
     "additionalDirectories": [
       "d:\\Workspaces\\Curiosity432-user\\wikiterra-apps\\Flat-Earth-Dome\\fed-wabis-v3\\src"

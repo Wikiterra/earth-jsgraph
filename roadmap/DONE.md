@@ -236,3 +236,25 @@ Second pass after the big Phase 8 cleanup. Cross-grepped each helper for externa
 - Deleted: `xMoveTo`, `xLeft`, `xTop`, `xOpacity`, `xResizeTo`, `xVisibility`, `xShow`, `xHide`, `xDisplay`, `xIsDisplayed`, `xCreateTextNode`, `xAppendChild`, `xInsertBefore`, `xRemoveChild`, `xChildNodes`, `xHasChildNodes`, `xElementWidth`, `xElementHeight`, `xNaturalWidth`, `xNaturalHeight`, `xScrollWidth`, `xScrollHeight`, `xClientWidth`, `xClientHeight`, `xTagName`, `xZIndex`, `xCursor`, `xGetFirst`, `xArrayMap` — 29 leaf helpers, all `ext=0` and only their own declaration/export bookkeeping inside wiki.js.
 - Kept (still kept alive by internal callers): `xPageX`/`xPageY`/`xScrollLeft`/`xScrollTop` (used by `xEvent.Init` mouse wrapper), `xFStr` (used by `CImgCache.GetStatus`), `xMaskRegExp`/`xIsRoot`/`xIsElementAndNotRoot` (used by `xHasClass`/`xAddClass`/`xRemoveClass` + `xPageX`/`xPageY`).
 - File: 424 → 364 lines (−60). Object.assign and export lists pruned to match. Cross-codebase grep confirmed no residual references.
+
+---
+
+## Phase 9 — Tabs.js deletion (2026-05-24)
+
+`assets/Tabs.js` (Walter's 17 KB minified tab-system library, ~570 LOC) deleted. Every `<li>` in `#DomeDemoTabs` carried the `TabButton` class, so `CollectTabDoms` always returned an empty list, `Select()` was never reachable from a click, and the whole `BoxTab` / `BoxData` / `TabSelected` state machine was dead. Only `Tabs.AddButtonClickHandler` was actually being called — 8 sites in `demos-manager.js`.
+
+### Changes
+
+- **`assets/Tabs.js`** — deleted.
+- **`js/main-v2.js`** — `import '../assets/Tabs.js'` removed.
+- **`assets/demos-manager.js`** — added an 8-line `wireButton(id, fn)` helper (gated on `TabEnabled` class, same semantics as the old `Tabs` click gate). The two deferred-init blocks (`xOnLoad` + `xOnDomReady`) collapsed into a single `xOnDomReady` block now that there's no `Tabs.Init()` to wait for. The 8 `Tabs.AddButtonClickHandler(...)` calls became direct `wireButton(...)` calls.
+- **Aria-selected sync** — added `syncDemoAriaSelected(activeName)` helper, called from both branches of `UpdateDemoPanels`. The active demo's `<li>` now flips to `aria-selected="true"`; siblings flip to `"false"`. Replaces the `MutationObserver` in `js/ui.js` that watched for `TabSelected` (which was never added, so the observer was a no-op).
+- **`js/ui.js`** — the dead `MutationObserver` block removed.
+- **`css/styles.css`** — `.TabSelectors li.TabSelected` selector (dead, since `TabSelected` was never applied) → `.TabSelectors li[aria-selected="true"]`. Now the active demo lights up in accent color, which the original `TabSelected` rule was clearly intended to do.
+- **`index.html`** + **`css/styles.css`** — comments referencing "Tabs.js" rewritten.
+
+### Verification
+
+- `node --check` passes on `demos-manager.js`, `ui.js`, `main-v2.js`.
+- No references to `Tabs` remain in the active codebase (only historical references in `roadmap/DONE.md` and `roadmap/GUIDE.md`).
+- `TabEnabled`, `TabActive`, `TabHide`, `TabButton`, `TabPrimary`, `TabSelectors` class names retained — they're CSS hooks still manipulated by `demos-manager.js` and the original Tabs styling stays.

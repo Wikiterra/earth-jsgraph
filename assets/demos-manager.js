@@ -1,9 +1,28 @@
 // Demos Manager - extracted from app.js
-// Imports after app.js, so FeDomeApp, ResetApp, TFE, Tabs, xOnLoad, xOnDomReady are on globalThis.
+// Imports after app.js, so FeDomeApp, ResetApp, TFE, xOnDomReady are on globalThis.
 
 /* Demos Manager */
 
 var AnimationSpeed = 1;  // > 0
+
+// Click handler gated on the TabEnabled class (replaces Tabs.AddButtonClickHandler).
+function wireButton(id, fn) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('click', function (e) {
+    if (el.classList.contains('TabEnabled')) fn(e);
+  });
+}
+
+// Demo tabs carry role="tab"; mirror the active demo onto aria-selected.
+function syncDemoAriaSelected(activeName) {
+  var tabs = document.querySelectorAll('#DomeDemoTabs li[role="tab"]');
+  for (var i = 0; i < tabs.length; i++) {
+    var tab = tabs[i];
+    var isActive = activeName && tab.id === activeName + 'Button';
+    tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  }
+}
 
 var Demos = {
   DemoList: [],
@@ -28,15 +47,13 @@ var Demos = {
     // id as DemoList index or demo name
     if (xStr(id)) id = this.Find(id);
     var demoName = this.DemoList[id].Name;
-    Tabs.AddButtonClickHandler('DomeDemoTabs', demoName + 'Button',
-      function (buttonData, event) {
-        if (Demos.IsCurrDemoName(demoName) && Demos.IsPlaying()) {
-          Demos.Next(false, !Demos.IsTargetIsEndPos());
-        } else {
-          Demos.Play(demoName, true);
-        }
+    wireButton(demoName + 'Button', function () {
+      if (Demos.IsCurrDemoName(demoName) && Demos.IsPlaying()) {
+        Demos.Next(false, !Demos.IsTargetIsEndPos());
+      } else {
+        Demos.Play(demoName, true);
       }
-    );
+    });
   },
 
   SetButtonText: function (text, button) {
@@ -93,6 +110,7 @@ var Demos = {
       }
       xInnerHTML('CountButton', pos);
       xAddClass(this.CurrDemo.Name + 'Button', 'TabActive');
+      syncDemoAriaSelected(this.CurrDemo.Name);
     } else {
       if (this.SusDemo) {
         xInnerHTML('PlayButton', 'Resume');
@@ -107,6 +125,7 @@ var Demos = {
       xRemoveClass('CountButton', 'TabEnabled');
       xRemoveClass('BackButton', 'TabEnabled');
       xRemoveClass('ForwButton', 'TabEnabled');
+      syncDemoAriaSelected(null);
     }
   },
 
@@ -343,59 +362,25 @@ var Demos = {
   },
 };
 
-xOnLoad(
-  function () {
-    Demos.Init();
-    Tabs.AddButtonClickHandler('DomeDemoTabs', 'ResetButton',
-      function (buttonData) {
-        ResetApp();
-      }
-    );
-    Tabs.AddButtonClickHandler('DomeDemoTabs', 'TFEButton',
-      function (buttonData) {
-        TFE();
-      }
-    );
-  }
-);
-
-xOnDomReady(
-  function () {
-    var boxTabName = 'DomeDemoTabs';
-    Tabs.AddButtonClickHandler(boxTabName, 'BackButton',
-      function (buttonData) {
-        Demos.Prev();
-      }
-    );
-    Tabs.AddButtonClickHandler(boxTabName, 'ForwButton',
-      function (buttonData) {
-        Demos.Next(true);
-      }
-    );
-    Tabs.AddButtonClickHandler(boxTabName, 'PlayButton',
-      function (buttonData) {
-        if (Demos.IsActive()) {
-          if (Demos.IsPlaying()) {
-            Demos.Stop();
-          } else {
-            Demos.Play();
-          }
-        } else {
-          Demos.SetSusDemo();
-        }
-      }
-    );
-    Tabs.AddButtonClickHandler(boxTabName, 'CountButton',
-      function (buttonData) {
-        if (Demos.IsEndPos()) {
-          Demos.SetPos(0);
-        } else {
-          Demos.SetPos(Demos.GetLastPos());
-        }
-      }
-    );
-  }
-);
+xOnDomReady(function () {
+  Demos.Init();
+  wireButton('ResetButton',  function () { ResetApp(); });
+  wireButton('TFEButton',    function () { TFE(); });
+  wireButton('BackButton',   function () { Demos.Prev(); });
+  wireButton('ForwButton',   function () { Demos.Next(true); });
+  wireButton('PlayButton',   function () {
+    if (Demos.IsActive()) {
+      if (Demos.IsPlaying()) Demos.Stop();
+      else Demos.Play();
+    } else {
+      Demos.SetSusDemo();
+    }
+  });
+  wireButton('CountButton',  function () {
+    if (Demos.IsEndPos()) Demos.SetPos(0);
+    else Demos.SetPos(Demos.GetLastPos());
+  });
+});
 
 Object.assign(globalThis, { AnimationSpeed, Demos });
 export { AnimationSpeed, Demos };
