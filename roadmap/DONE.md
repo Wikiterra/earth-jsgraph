@@ -315,3 +315,72 @@ The five "minified library" files listed in TODO.md as readability nibbles got r
 ### `Demos.AddAnimation` typo fix
 
 `assets/demos-manager.js:177` had `if (!anim) reurn;` — a typo present since the initial Walter port. This meant any custom-demo `AddAnimation()` call without an active `CurrModAnim` would throw `ReferenceError: reurn is not defined` instead of returning early. Fixed to `return`. The built-in demos all set `CurrModAnim` via `Demos.New()` before calling `AddAnimation`, so the bug only fires from custom/user-defined demos — which is presumably why it survived this long.
+
+---
+
+## Phase 10 — Latent-bug sweep + polyfill removal + dead-state cleanup (2026-05-24)
+
+### Latent bug fixes (2 typos that silently misbehaved)
+
+- **`xCallbackChain.prototype.Add`** ([assets/wiki.js:172](assets/wiki.js#L172)): `this.Containes(aFunc)` → `this.Contains(aFunc)`. Original would throw `TypeError: this.Containes is not a function` on the rare `once=true` path. Gated by `if (once && ...)` short-circuit, so it never fired in practice (no current caller passes `once=true`), but the dedup-once semantics are now actually wired.
+- **`xArrFind` / `xArrFindIndex`** ([assets/wiki.js:27](assets/wiki.js#L27), [:32](assets/wiki.js#L32)): `arguments.lenth` (sic) → `arguments.length`. The `thisArg` parameter was silently ignored — `t` always stayed `undefined`, so callbacks ran with default `this`. No caller passes `thisArg` today, but the helper now actually respects the documented 4th arg.
+
+### Modern-browser polyfills removed from wiki.js
+
+Three IE-era polyfills targeting browsers older than anything the rest of the codebase assumes (it already uses `ResizeObserver`, `MutationObserver`, `classList`, CSS custom properties — all post-IE features):
+
+- `requestAnimationFrame` / `cancelAnimationFrame` vendor-prefix loop + `setTimeout(16ms)` fallback IIFE
+- `Object.create` shim
+- `Math.log10` shim
+
+Total ~15 lines of dead defensive code.
+
+### `Function.prototype.inheritsFrom` inlined
+
+The only caller was `assets/jsgx3d.js:145`. Replaced the global `Function.prototype` pollution with the three-line equivalent at the call site:
+
+```js
+JsGraphX3D.prototype = Object.create(JsGraph.prototype);
+JsGraphX3D.prototype.constructor = JsGraphX3D;
+JsGraphX3D.prototype.parentClass = JsGraph.prototype;
+```
+
+`parentClass` is still referenced by `jsgx3d.js:141` (`this.parentClass.constructor.call(this, aParams)`), so it has to stay on the prototype.
+
+### `UpdateAll(stopAnimation)` — 2-arg callers cleaned up
+
+The function declares one parameter (`stopAnimation`), but 5 call sites passed two — the second was always silently dropped. Removed the trailing dead arg from:
+
+- `assets/app.js` × 4 — `UpdateAll(true, false)` / `UpdateAll(false, false)` / `UpdateAll(true, true)` → 1-arg form
+- `assets/demos-manager.js` × 1 — same
+
+### Dead state: `TabActive` class + `Demos.LastDemo` field
+
+The `TabActive` class was set/cleared on the active demo button and the play button by `Demos.UpdateDemoPanels`, but no CSS rule targeted it — visually invisible since the initial port. Verified via grep: the class is never read by JS either. Dropped all `xAddClass(..., 'TabActive')` / `xRemoveClass(..., 'TabActive')` toggles from `demos-manager.js` (5 sites). The active demo is already indicated via `aria-selected="true"` + the matching CSS rule (Phase 9).
+
+`Demos.LastDemo` was assigned in `Reset()` and `SetNewDemo()` and cleared in `UpdateDemoPanels()`, but never read. Pure write-only state. Dropped the field declaration + the 3 assignment sites.
+
+`Demos.UpdateDemoPanels` body shrunk from 42 lines to 26 lines in the process (collapsed nested if/else into ternaries now that the duplicate `TabActive` branches are gone).
+
+### Gesture hint: corrected + touch-aware
+
+The hint pill in `index.html` said "Left-drag · Right-drag: observer position · Scroll: zoom". `FeDomeApp.OnMouseMove` actually distinguishes `event.ctrlKey`, not the mouse button — so "Right-drag" was just wrong. Fixed to "Ctrl-drag" for the observer-position gesture.
+
+Single-finger touch already routes through `jsgMouseHandler.OnTouchStart/Move/End` → same rotate-camera path as left-drag. Multi-touch and `wheel` events have no touch equivalent. New hint structure:
+
+```html
+<span>Drag: rotate</span><span class="gh-fine"> · Ctrl-drag: observer position · Scroll: zoom</span>
+```
+
+CSS rule `@media (hover: none) and (pointer: coarse) { .gh-fine { display: none; } }` hides the modifier + scroll segment on touch devices.
+
+While at it, moved the gesture-hint's inline `style="…"` block out of `index.html` and into `css/styles.css` (`#gesture-hint { … }`). All inline styles gone.
+
+### Result
+
+| File | Before | After |
+|---|---:|---:|
+| `assets/wiki.js` | 336 | 320 |
+| `assets/demos-manager.js` | 386 | 366 |
+
+`node --check` passes on every touched JS file. No remaining references to dropped symbols anywhere.
