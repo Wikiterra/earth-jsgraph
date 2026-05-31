@@ -258,3 +258,60 @@ Second pass after the big Phase 8 cleanup. Cross-grepped each helper for externa
 - `node --check` passes on `demos-manager.js`, `ui.js`, `main-v2.js`.
 - No references to `Tabs` remain in the active codebase (only historical references in `roadmap/DONE.md` and `roadmap/GUIDE.md`).
 - `TabEnabled`, `TabActive`, `TabHide`, `TabButton`, `TabPrimary`, `TabSelectors` class names retained — they're CSS hooks still manipulated by `demos-manager.js` and the original Tabs styling stays.
+
+---
+
+## Phase 9b — wiki.js third pruning pass (2026-05-24)
+
+After dropping Tabs.js (which was the last consumer of several wiki helpers and the whole `LayoutChange`/`WindowResize`/`DisplayChange` event-manager cluster), a cross-codebase grep surfaced another batch of orphan symbols. Cross-checked each against `assets/*.js`, `js/*.js`, and `index.html` before removing.
+
+### Removed
+
+**Predicates / type-guard helpers (0 ext refs):** `xArgsToArray`, `xInnerText`, `xGetAll`, `xGetByTag`, `xGetByClass`, `xToggleClass`, `xSetClassIf`, `xSetEnabled`, `xSetDisabled`.
+
+**Lifecycle wrappers (0 ext refs):** `xOnUnload`, `xImgOnLoad`, `xEvent.prototype.StopPropagation`.
+
+**Event-manager cluster (0 ext refs — all dead after Tabs.js deletion):**
+- `xAddEventLayoutChange`, `xRemoveEventLayoutChange`, `xTriggerEventLayoutChange`
+- `xAddEventDisplayChange`, `xRemoveEventDisplayChange`, `xTriggerEventDisplayChange`
+- `xAddEventWindowResize`, `xRemoveEventWindowResize`
+- `xEventManager`'s `LayoutChangeHandlers`/`MyLayoutChangeHandler`/`LayoutChangeTimer`/`LayoutChangeTimerDelay`/`WindowResizeHandlers`/`WindowResizeTimer`/`MyWindowResizeHandler`/`DisplayChangeHandlers`/`PageUnloadHandlers`/`OldWindowOnUnloadHandler`/`MyPageUnloadHandler`/`AddLayoutChangeHandler`/`RemoveLayoutChangeHandler`/`TriggerLayoutChange`/`AddWindowResizeHandler`/`RemoveWindowResizeHandler`/`TriggerWindowResize`/`AddDisplayChangeHandler`/`RemoveDisplayChangeHandler`/`TriggerDisplayChange`/`AddPageUnloadHandler`/`RemovePageUnloadHander`/`TriggerPageUnload`/`RemovePageLoadHander`/`TriggerPageLoad`/`RemoveDomReadyHandler`
+
+The IE-only fallback paths (`document.addEventListener` else `this.DomReadyHandlers.Add(...)`, `xDef(e.currentStyle)` browser-quirk branches) were collapsed since the codebase already targets modern browsers (uses `ResizeObserver`, `classList`, `CSS custom properties`).
+
+### Kept (still have callers)
+
+- `xFuncOrNull` — used by `jsgx3d.js` (`SetAll`) + transitively by `xDefFuncOrNull` (used by `ModelAnimation.js`)
+- `xObjOrNull` — used by `DataX.js` (type-match `'obj'`)
+- `xDefObjOrNull` — used by `jsgx3d.js` (`JsgPolyListIter`)
+- `xDefAnyOrNull` — used by `jsg.js` (`SetDrawFunc`)
+- `xDefFuncOrNull` — used by `ModelAnimation.js`
+- `xCreateElement` — used by `jsg.js` (`JsgSnapshot`)
+- `xWidth`/`xHeight`/`xGetCS`/`xSetCW`/`xSetCH` — used by `jsg.js` resize handling
+- `xStyle` — used by `jsg.js`
+- `xIsNumeric` — used by `jsg.js` (`IsNumericPercent`)
+
+### Result
+
+`wiki.js`: 364 → 336 lines (-7%). Symbol-count drop is bigger than the line drop because the legacy minified `xEventManager` was rewritten as a clean multi-line block (more readable but more lines per remaining symbol). `node --check assets/wiki.js` passes; `grep -rE` confirms 0 references to any removed symbol in the rest of the codebase.
+
+---
+
+## Phase 9c — Library reformatting + `reurn` typo fix (2026-05-24)
+
+### Library-code reformatting
+
+The five "minified library" files listed in TODO.md as readability nibbles got reformatted in this pass (multi-line, with whitespace). No behavior changes; just readable. `node --check` passes on each.
+
+| File | Before | After |
+|---|---:|---:|
+| `assets/DataX.js` | 43 | 125 |
+| `assets/EarthMap.js` | 45 | 95 |
+| `assets/ModelAnimation.js` | 148 | 242 |
+| `assets/jsg.js` | 665 | 1073 |
+| `assets/jsgx3d.js` | 267 | 459 |
+| `assets/jsgMouseHandler.js` | 37 | 61 |
+
+### `Demos.AddAnimation` typo fix
+
+`assets/demos-manager.js:177` had `if (!anim) reurn;` — a typo present since the initial Walter port. This meant any custom-demo `AddAnimation()` call without an active `CurrModAnim` would throw `ReferenceError: reurn is not defined` instead of returning early. Fixed to `return`. The built-in demos all set `CurrModAnim` via `Demos.New()` before calling `AddAnimation`, so the bug only fires from custom/user-defined demos — which is presumably why it survived this long.

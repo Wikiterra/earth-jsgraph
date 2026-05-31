@@ -174,7 +174,7 @@ var Demos = {
 
   AddAnimation: function (animDef) {
     var anim = this.CurrModAnim;
-    if (!anim) reurn;
+    if (!anim) return;
     anim.AnimationToState(this.CurrAnimStep, animDef);
   },
 
@@ -364,11 +364,11 @@ var Demos = {
 
 xOnDomReady(function () {
   Demos.Init();
-  wireButton('ResetButton',  function () { ResetApp(); });
-  wireButton('TFEButton',    function () { TFE(); });
-  wireButton('BackButton',   function () { Demos.Prev(); });
-  wireButton('ForwButton',   function () { Demos.Next(true); });
-  wireButton('PlayButton',   function () {
+  wireButton('ResetButton', function () { ResetApp(); });
+  wireButton('TFEButton', function () { TFE(); });
+  wireButton('BackButton', function () { Demos.Prev(); });
+  wireButton('ForwButton', function () { Demos.Next(true); });
+  wireButton('PlayButton', function () {
     if (Demos.IsActive()) {
       if (Demos.IsPlaying()) Demos.Stop();
       else Demos.Play();
@@ -376,7 +376,7 @@ xOnDomReady(function () {
       Demos.SetSusDemo();
     }
   });
-  wireButton('CountButton',  function () {
+  wireButton('CountButton', function () {
     if (Demos.IsEndPos()) Demos.SetPos(0);
     else Demos.SetPos(Demos.GetLastPos());
   });

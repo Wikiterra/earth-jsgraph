@@ -10,10 +10,12 @@ Completed items are recorded in [DONE.md](DONE.md). The pending list below cover
 
 ## Nibble candidates (low-priority, low-payoff)
 
-- [x] **`wiki.js` (424 → 364 lines) — 29 dead `x*` helpers removed.** Deleted: `xMoveTo`, `xLeft`, `xTop`, `xOpacity`, `xResizeTo`, `xVisibility`, `xShow`, `xHide`, `xDisplay`, `xIsDisplayed`, `xCreateTextNode`, `xAppendChild`, `xInsertBefore`, `xRemoveChild`, `xChildNodes`, `xHasChildNodes`, `xElementWidth`, `xElementHeight`, `xNaturalWidth`, `xNaturalHeight`, `xScrollWidth`, `xScrollHeight`, `xClientWidth`, `xClientHeight`, `xTagName`, `xZIndex`, `xCursor`, `xGetFirst`, `xArrayMap`. Cross-checked: `xPageX`/`xPageY`/`xScrollLeft`/`xScrollTop` kept (used by `xEvent.Init`), `xFStr` kept (used by `CImgCache.GetStatus`), `xMaskRegExp`/`xIsRoot`/`xIsElementAndNotRoot` kept (used by class helpers + transitively).
-- [x] **`Tabs.js` deleted.** All `<li>`s in `#DomeDemoTabs` were `TabButton`s, so the Select/Box tab-switching state machine never ran — only `AddButtonClickHandler` was used. Replaced with an 8-line `wireButton(id, fn)` helper in `demos-manager.js` (gated on the `TabEnabled` class). `Tabs.js` (17 KB minified, ~570 lines) removed from `assets/` and its import dropped from `main-v2.js`.
-- [ ] **`assets/DataX.js` (43 minified lines)** — reformat to multi-line for readability. No behavior change; risk of breakage if anything mismatches. Library code; works as-is.
-- [ ] **`assets/jsg.js`/`jsgx3d.js`** — same: minified library code; reformat-only would be readability-only.
+- [x] **`wiki.js` (424 → 364 lines) — 29 dead `x*` helpers removed.** (See DONE.md Phase 8 follow-up.)
+- [x] **`Tabs.js` deleted (Phase 9).** Replaced with an 8-line `wireButton(id, fn)` helper in `demos-manager.js`.
+- [x] **`wiki.js` (364 → 336 lines) — third pruning pass (Phase 9b).** Dropped 8 more `x*` leaves + the `LayoutChange`/`WindowResize`/`DisplayChange` event-manager cluster (~20 symbols across the wrapper functions and `xEventManager` state). The cluster only died once Tabs.js (its last consumer) was gone.
+- [x] **`assets/DataX.js` reformatted** — 43 minified lines → 125 multi-line. No behavior change.
+- [x] **`assets/jsg.js`/`jsgx3d.js` reformatted** — 665 → 1073 and 267 → 459 multi-line. No behavior change.
+- [x] **`Demos.AddAnimation` typo fix** — `if (!anim) reurn;` → `return`. Latent bug since the initial commit; custom-demo `AddAnimation()` calls would have thrown `ReferenceError: reurn is not defined` instead of returning early.
 
 ## Out of scope
 

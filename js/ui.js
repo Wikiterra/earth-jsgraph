@@ -4,10 +4,10 @@
  * Wraps the legacy UpdateAll so every model change re-syncs the UI, then
  * delegates to focused modules in js/ui/.
  */
-import * as layers   from './ui/layers.js';
-import * as rays     from './ui/rays.js';
-import * as sliders  from './ui/sliders.js';
-import * as sunmoon  from './ui/sunmoon.js';
+import * as layers from './ui/layers.js';
+import * as rays from './ui/rays.js';
+import * as sliders from './ui/sliders.js';
+import * as sunmoon from './ui/sunmoon.js';
 import * as calendar from './ui/calendar.js';
 import * as playback from './ui/playback.js';
 import * as saveRestore from './ui/save-restore.js';
@@ -36,7 +36,7 @@ function init() {
         new ResizeObserver(() => g.CheckResizeRegularly && g.CheckResizeRegularly())
           .observe(g.ContainerDiv);
       }
-    } catch (e) {}
+    } catch (e) { }
   }
 
   /* Screenshot export */
@@ -48,7 +48,7 @@ function init() {
         if (!canvas) return;
         const a = document.createElement('a');
         let dateStr = '';
-        try { dateStr = '-' + FeDomeApp.DateTimeToString(FeDomeApp.DateTime).split('|')[0].trim().replace(/[^\w]/g, '-'); } catch (e) {}
+        try { dateStr = '-' + FeDomeApp.DateTimeToString(FeDomeApp.DateTime).split('|')[0].trim().replace(/[^\w]/g, '-'); } catch (e) { }
         a.download = 'fed' + dateStr + '.png';
         a.href = canvas.toDataURL('image/png');
         a.click();

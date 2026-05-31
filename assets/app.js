@@ -439,8 +439,6 @@ function HandleUrlCommands() {
 
 }
 
-
-
 Object.assign(globalThis, {
   ThisPageUrl, ThisPageShortUrl, FeDomeAppMetaData, FeDomeApp,
   UpdateAllRunning, UpdateAll, ResetApp, TFE, HandleUrlCommands,

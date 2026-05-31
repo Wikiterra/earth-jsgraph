@@ -21,7 +21,6 @@ function xDefArray(aRef, aDefault) { return xArray(aRef) ? aRef : aDefault; }
 function xDefStr(aRef, aDefault) { return (typeof (aRef) === 'string') ? aRef : aDefault; }
 function xDefNum(aRef, aDefault) { return (typeof (aRef) === 'number') ? aRef : aDefault; }
 function xDefBool(aRef, aDefault) { return (typeof (aRef) === 'boolean') ? aRef : aDefault; }
-function xArgsToArray(args) { return Array.prototype.slice.call(args); }
 function xFStr(format, etc) { var arg = arguments; var i = 1; return format.replace(/(#(#)?)/g, function (match, p1, p2) { return p2 || arg[i++]; }); }
 function xArrFind(start, arr, func, thisArg) {
   if (!xNum(start)) return xArrFind(0, start, arr, func); var t, undef
@@ -50,17 +49,11 @@ function xArrRemoveAll(arr, func, thisArg) {
 }
 function xGet(id) { return document.getElementById(id); }
 
-function xGetAll(selectors) { return document.querySelectorAll(selectors); }
 function xElement(e) { return (typeof (e) === 'string') ? document.getElementById(e) : e; }
 function xDataset(e, name) { return xElement(e).getAttribute('data-' + name); }
 function xInnerHTML(e, t) {
   if (xStr(t)) { xElement(e).innerHTML = t; } else { t = xElement(e).innerHTML; }
   return t;
-}
-function xInnerText(e, defaultText) {
-  e = xElement(e); if (xDef(e.innerText)) { return e.innerText; }
-  if (xDef(e.textContent)) { return e.textContent; }
-  return defaultText;
 }
 
 
@@ -147,10 +140,6 @@ function xMaskRegExp(s) { return s.replace(/\-/g, '\\-'); }
 function xHasClass(e, cls) { if (!(e = xElement(e))) return false; if (xDef(e.classList)) { return e.classList.contains(cls); } else { if (xIsRoot(e)) return false; return xDef(e.className) && xDef(e.className.match) && e.className.match(new RegExp('(\\s|^)' + xMaskRegExp(cls) + '(\\s|$)')); } }
 function xAddClass(e, cls) { if (!(e = xElement(e))) return; if (xDef(e.classList)) { e.classList.add(cls); } else { if (xIsRoot(e)) return; if (xDef(e.className) && !this.xHasClass(e, cls)) e.className += ' ' + cls; } }
 function xRemoveClass(e, cls) { if (!(e = xElement(e))) return; if (xDef(e.classList)) { e.classList.remove(cls); } else { if (xIsRoot(e)) return; if (xDef(e.className) && xHasClass(e, cls)) { var reg = new RegExp('(\\s|^)' + xMaskRegExp(cls) + '(\\s|$)'); e.className = e.className.replace(reg, ' ').replace(/^\s+|\s+$/g, ''); } } }
-function xToggleClass(e, cls) { if (!(e = xElement(e))) return; if (xDef(e.classList)) { e.classList.toggle(cls); } else { if (xHasClass(e, cls)) { xRemoveClass(e, cls); } else { xAddClass(e, cls); } } }
-function xSetClassIf(e, cond, cls) { if (cond) { xAddClass(e, cls); } else { xRemoveClass(e, cls); } }
-function xSetEnabled(e, enabled, cls) { xSetClassIf(e, enabled, xDefStr(cls, 'enabled')); }
-function xSetDisabled(e, disabled, cls) { xSetClassIf(e, disabled, xDefStr(cls, 'disabled')); }
 function xParent(e, bNode) {
   bNode = xDefBool(bNode, true); if (bNode) { return xElement(e).parentNode; }
   else { return xElement(e).offsetParent; }
@@ -159,11 +148,6 @@ function xCreateElement(sTag) { return document.createElement(sTag); }
 
 
 
-
-
-
-function xGetByTag(t, p) { t = t || '*'; p = p || document; return p.getElementsByTagName(t); }
-function xGetByClass(className, p) { p = p || document; return p.getElementsByClassName(className); }
 function xAddEvent(e, eventType, callback, cap) { cap = xDefBool(cap, false); var wrapper = function xOnCallbackEventWrapper(e) { callback(new xEvent(e)); }; callback.xWrapperFunc = wrapper; xElement(e).addEventListener(eventType, wrapper, cap); }
 function xRemoveEvent(e, eventType, callback, cap) { cap = xDefBool(cap, false); xElement(e).removeEventListener(eventType, callback.xWrapperFunc, cap); }
 function xEvent(evt) { this.Init(evt); }
@@ -182,11 +166,9 @@ xEvent.prototype.Init = function (evt) {
       else if (e.button & 2) { this.button = 2; }
     }
   }
-}; xEvent.prototype.PreventDefault = function () { if (!this.event) return; if (this.event.preventDefault) this.event.preventDefault(); this.event.returnValue = false; }; xEvent.prototype.StopPropagation = function () { if (!this.event) return; if (this.event.stopPropagation) this.event.stopPropagation(); this.event.cancelBubble = true; }; function xImgOnLoad(img, loadCallback, errorCallback) {
-  img = xElement(img); loadCallback = xDefFuncOrNull(loadCallback, null); errorCallback = xDefFuncOrNull(errorCallback, null); var helperImg = new Image(); img._xHelperImg = helperImg; if (loadCallback) { helperImg.addEventListener('load', function CB_OnImgLoad() { img._xHelperImg = null; loadCallback(img); }, false); }
-  if (errorCallback) { helperImg.addEventListener('error', function CB_OnImgError() { img._xHelperImg = null; errorCallback(img, false); }, false); helperImg.addEventListener('abort', function CB_OnImgAbort() { img._xHelperImg = null; errorCallback(img, true); }, false); }
-  helperImg.src = img.src;
-}
+};
+xEvent.prototype.PreventDefault = function () { if (!this.event) return; if (this.event.preventDefault) this.event.preventDefault(); this.event.returnValue = false; };
+
 function xCallbackChain() { this.FuncList = []; this.ParamList = []; this.Active = false; }
 xCallbackChain.prototype.Add = function (aFunc, once, param) { once = xDefBool(once, false); param = xDefAny(param, null); if (once && this.Containes(aFunc)) return false; this.FuncList.push(aFunc); this.ParamList.push(param); return true; }
 xCallbackChain.prototype.Contains = function (aFunc) { return xDef(xArrFind(this.FuncList, function CB_Compare_Funcs(func) { return func == aFunc; })); }
@@ -195,57 +177,53 @@ xCallbackChain.prototype.Call = function (aArg, aExceptionFunc) {
   if (this.FuncList.length == 0 || this.Active) return; this.Active = true; var funcListCopy = this.FuncList.slice(); var paramListCopy = this.ParamList.slice(); for (var i = 0; i < funcListCopy.length; i++) { try { funcListCopy[i](aArg, paramListCopy[i]); } catch (e) { if (xFunc(aExceptionFunc)) aExceptionFunc(e); } }
   this.Active = false;
 }
-var xOnLoadFinished = false; var xEventManager = {
-  DomReadyHandlers: new xCallbackChain(), MyDomReadyHandlers: [], DomReadyFired: false, PageLoadHandlers: new xCallbackChain(), MyPageLoadHandler: null, PageLoadFired: false, PageUnloadHandlers: new xCallbackChain(), OldWindowOnUnloadHandler: null, MyPageUnloadHandler: null, LayoutChangeHandlers: new xCallbackChain(), MyLayoutChangeHandler: null, WindowResizeHandlers: new xCallbackChain(), WindowResizeTimer: null, MyWindowResizeHandler: null, DisplayChangeHandlers: new xCallbackChain(), AddDomReadyHandler: function (aFunc) {
-    var myDomReadyHandler = function xOnEventManager_DomReady() { xEventManager.DomReadyFired = true; xEventManager.RemoveDomReadyHandler(aFunc); try { aFunc(); } catch (e) { }; }
-    this.MyDomReadyHandlers.push({ Func: aFunc, Handler: myDomReadyHandler }); if (this.DomReadyFired) { setTimeout(myDomReadyHandler, 1); } else if (document.addEventListener) { document.addEventListener("DOMContentLoaded", myDomReadyHandler, false); } else { this.DomReadyHandlers.Add(myDomReadyHandler); }
-  }, RemoveDomReadyHandler: function (aFunc) {
-    var handlerInfo = xArrFind(this.MyDomReadyHandlers, function CB_Compare_Funcs(item) { return item.Func == aFunc; }); if (!handlerInfo) return; var myDomReadyHandler = handlerInfo.Handler; if (document.addEventListener) { document.removeEventListener("DOMContentLoaded", myDomReadyHandler, false); } else { this.DomReadyHandlers.Remove(myDomReadyHandler); }
-    xArrRemoveAll(this.MyDomReadyHandlers, function CB_Compare_Funcs(item) { return item.Func == aFunc; });
-  }, AddPageLoadHandler: function (aFunc) {
+var xOnLoadFinished = false;
+var xEventManager = {
+  DomReadyHandlers: new xCallbackChain(),
+  MyDomReadyHandlers: [],
+  DomReadyFired: false,
+  PageLoadHandlers: new xCallbackChain(),
+  MyPageLoadHandler: null,
+  PageLoadFired: false,
+  AddDomReadyHandler: function (aFunc) {
+    var myDomReadyHandler = function xOnEventManager_DomReady() {
+      xEventManager.DomReadyFired = true;
+      xEventManager.RemoveDomReadyHandler(aFunc);
+      try { aFunc(); } catch (e) {}
+    };
+    this.MyDomReadyHandlers.push({ Func: aFunc, Handler: myDomReadyHandler });
+    if (this.DomReadyFired) {
+      setTimeout(myDomReadyHandler, 1);
+    } else {
+      document.addEventListener('DOMContentLoaded', myDomReadyHandler, false);
+    }
+  },
+  RemoveDomReadyHandler: function (aFunc) {
+    var handlerInfo = xArrFind(this.MyDomReadyHandlers, function (item) { return item.Func == aFunc; });
+    if (!handlerInfo) return;
+    document.removeEventListener('DOMContentLoaded', handlerInfo.Handler, false);
+    xArrRemoveAll(this.MyDomReadyHandlers, function (item) { return item.Func == aFunc; });
+  },
+  AddPageLoadHandler: function (aFunc) {
     if (!this.MyPageLoadHandler) {
-      this.MyPageLoadHandler = function xOnEventManager_PageLoad() { xEventManager.PageLoadFired = true; xEventManager.DomReadyHandlers.Call(); xEventManager.PageLoadHandlers.Call(); xOnLoadFinished = true; globalThis.xOnLoadFinished = true; }
+      this.MyPageLoadHandler = function xOnEventManager_PageLoad() {
+        xEventManager.PageLoadFired = true;
+        xEventManager.DomReadyHandlers.Call();
+        xEventManager.PageLoadHandlers.Call();
+        xOnLoadFinished = true;
+        globalThis.xOnLoadFinished = true;
+      };
       window.addEventListener('load', this.MyPageLoadHandler);
     }
-    if (this.PageLoadFired) { setTimeout(function CB_OnTimeout_PageLoadFired() { try { aFunc(); } catch (e) { } }, 1); } else { this.PageLoadHandlers.Add(aFunc); }
-  }, RemovePageLoadHander: function (aFunc) { this.PageLoadHandlers.Remove(aFunc); }, TriggerPageLoad: function () { this.PageLoadHandlers.Call(window); }, AddPageUnloadHandler: function (aFunc) {
-    if (!this.MyPageUnloadHandler) {
-      this.OldWindowOnUnloadHandler = window.onunload; this.MyPageUnloadHandler = function xOnEventManager_CallingOldUnloadHandler() {
-        if (xEventManager.OldWindowOnUnloadHandler) { try { xEventManager.OldWindowOnUnloadHandler(); } catch (e) { } }
-        xEventManager.PageUnloadHandlers.Call();
-      }
-      window.onunload = this.MyPageUnloadHandler;
+    if (this.PageLoadFired) {
+      setTimeout(function () { try { aFunc(); } catch (e) {} }, 1);
+    } else {
+      this.PageLoadHandlers.Add(aFunc);
     }
-    this.PageUnloadHandlers.Add(aFunc);
-  }, RemovePageUnloadHander: function (aFunc) { this.PageUnloadHandlers.Remove(aFunc); }, TriggerPageUnload: function () { this.PageUnloadHandlers.Call(window); }, AddLayoutChangeHandler: function (aFunc, any) {
-    this.LayoutChangeHandlers.Add(aFunc, false, any); if (!this.MyLayoutChangeHandler) {
-      this.MyLayoutChangeHandler = function xOnEventManager_OnLayoutChange(arg) { xEventManager.TriggerLayoutChange(arg); }
-      this.AddWindowResizeHandler(this.MyLayoutChangeHandler);
-    }
-  }, RemoveLayoutChangeHandler: function (aFunc) { this.LayoutChangeHandlers.Remove(aFunc); }, LayoutChangeTimer: null, LayoutChangeTimerDelay: 1, TriggerLayoutChange: function (aArg) {
-    if (this.LayoutChangeTimer) { clearTimeout(this.LayoutChangeTimer); this.LayoutChangeTimer = null; }
-    var self = this; this.LayoutChangeTimer = setTimeout(function OnLayoutChangeEvent(aArg) { clearTimeout(self.LayoutChangeTimer); self.LayoutChangeTimer = null; self.LayoutChangeHandlers.Call(aArg); }, this.LayoutChangeTimerDelay);
-  }, AddWindowResizeHandler: function (aFunc) {
-    if (!this.MyWindowResizeHandler) {
-      this.MyWindowResizeHandler = function xOnEventManager_OnWindowResize() {
-        if (xEventManager.WindowResizeTimer) { clearTimeout(xEventManager.WindowResizeTimer); }
-        xEventManager.WindowResizeTimer = setTimeout(function CB_OnTimeout_WindowResize() { clearTimeout(xEventManager.WindowResizeTimer); xEventManager.WindowResizeTimer = null; xEventManager.WindowResizeHandlers.Call(); }, 250);
-      }
-      xAddEvent(window, 'resize', this.MyWindowResizeHandler);
-    }
-    this.WindowResizeHandlers.Add(aFunc);
-  }, RemoveWindowResizeHandler: function (aFunc) { this.WindowResizeHandlers.Remove(aFunc); }, TriggerWindowResize: function (aArg) { this.WindowResizeHandlers.Call(aArg); }, AddDisplayChangeHandler: function (aFunc) { this.DisplayChangeHandlers.Add(aFunc); }, RemoveDisplayChangeHandler: function (aFunc) { this.DisplayChangeHandlers.Remove(aFunc); }, TriggerDisplayChange: function (aArg) { this.DisplayChangeHandlers.Call(aArg); },
-}; function xAddEventLayoutChange(aFunc, any) { xEventManager.AddLayoutChangeHandler(aFunc, any); }
-function xRemoveEventLayoutChange(aFunc) { xEventManager.RemoveLayoutChangeHandler(aFunc); }
-function xTriggerEventLayoutChange(aArg) { xEventManager.TriggerLayoutChange(aArg); }
-function xAddEventDisplayChange(aFunc) { xEventManager.AddDisplayChangeHandler(aFunc); }
-function xRemoveEventDisplayChange(aFunc) { xEventManager.RemoveDisplayChangeHandler(aFunc); }
-function xTriggerEventDisplayChange(aEle) { xEventManager.TriggerDisplayChange(aEle); }
-function xAddEventWindowResize(aFunc) { xEventManager.AddWindowResizeHandler(aFunc); }
-function xRemoveEventWindowResize(aFunc) { xEventManager.RemoveWindowResizeHandler(aFunc); }
+  },
+};
 function xOnDomReady(aFunc) { xEventManager.AddDomReadyHandler(aFunc); }
 function xOnLoad(aFunc) { xEventManager.AddPageLoadHandler(aFunc); }
-function xOnUnload(aFunc) { xEventManager.AddPageUnloadHandler(aFunc); }
 function xTimeMS() { return (new Date()).getTime(); }
 function xSetCookie(name, value, days) { days = days || 1; var date = new Date(); date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000)); var expires = '; expires=' + date.toGMTString(); document.cookie = name + '=' + escape(value) + expires + '; path=/'; }
 function xGetCookie(name) {
@@ -333,15 +311,12 @@ CImgCache.prototype.CallOnLoadFuncs = function (aImageID) {
 Object.assign(globalThis, {
   xClass2Type, xType, xDef, xAny, xObj, xObjOrNull, xFunc, xFuncOrNull, xArray, xStr, xNum, xBool, xIsNumeric,
   xDefAny, xDefAnyOrNull, xDefObj, xDefObjOrNull, xDefFunc, xDefFuncOrNull, xDefArray, xDefStr, xDefNum, xDefBool,
-  xArgsToArray, xFStr, xArrFind, xArrFindIndex, xArrForEach, xArrRemove, xArrRemoveAll,
-  xGet, xGetAll, xElement, xDataset, xInnerHTML, xInnerText, xWidth, xHeight, xGetCS, xSetCW, xSetCH, xPageX, xPageY, xIsRoot, xIsElementAndNotRoot, xScrollLeft, xScrollTop, xStyle,
-  xMaskRegExp, xHasClass, xAddClass, xRemoveClass, xToggleClass, xSetClassIf, xSetEnabled, xSetDisabled,
-  xParent, xCreateElement, xGetByTag, xGetByClass, xAddEvent, xRemoveEvent, xEvent,
+  xFStr, xArrFind, xArrFindIndex, xArrForEach, xArrRemove, xArrRemoveAll,
+  xGet, xElement, xDataset, xInnerHTML, xWidth, xHeight, xGetCS, xSetCW, xSetCH, xPageX, xPageY, xIsRoot, xIsElementAndNotRoot, xScrollLeft, xScrollTop, xStyle,
+  xMaskRegExp, xHasClass, xAddClass, xRemoveClass,
+  xParent, xCreateElement, xAddEvent, xRemoveEvent, xEvent,
   xCallbackChain, xOnLoadFinished, xEventManager,
-  xAddEventLayoutChange, xRemoveEventLayoutChange, xTriggerEventLayoutChange,
-  xAddEventDisplayChange, xRemoveEventDisplayChange, xTriggerEventDisplayChange,
-  xAddEventWindowResize, xRemoveEventWindowResize,
-  xOnDomReady, xOnLoad, xOnUnload,
+  xOnDomReady, xOnLoad,
   xTimeMS, xSetCookie, xGetCookie, xDeleteCookie,
   xLog,
   CImgCache, IC,
@@ -349,15 +324,12 @@ Object.assign(globalThis, {
 export {
   xClass2Type, xType, xDef, xAny, xObj, xObjOrNull, xFunc, xFuncOrNull, xArray, xStr, xNum, xBool, xIsNumeric,
   xDefAny, xDefAnyOrNull, xDefObj, xDefObjOrNull, xDefFunc, xDefFuncOrNull, xDefArray, xDefStr, xDefNum, xDefBool,
-  xArgsToArray, xFStr, xArrFind, xArrFindIndex, xArrForEach, xArrRemove, xArrRemoveAll,
-  xGet, xGetAll, xElement, xDataset, xInnerHTML, xInnerText, xWidth, xHeight, xGetCS, xSetCW, xSetCH, xPageX, xPageY, xIsRoot, xIsElementAndNotRoot, xScrollLeft, xScrollTop, xStyle,
-  xMaskRegExp, xHasClass, xAddClass, xRemoveClass, xToggleClass, xSetClassIf, xSetEnabled, xSetDisabled,
-  xParent, xCreateElement, xGetByTag, xGetByClass, xAddEvent, xRemoveEvent, xEvent,
+  xFStr, xArrFind, xArrFindIndex, xArrForEach, xArrRemove, xArrRemoveAll,
+  xGet, xElement, xDataset, xInnerHTML, xWidth, xHeight, xGetCS, xSetCW, xSetCH, xPageX, xPageY, xIsRoot, xIsElementAndNotRoot, xScrollLeft, xScrollTop, xStyle,
+  xMaskRegExp, xHasClass, xAddClass, xRemoveClass,
+  xParent, xCreateElement, xAddEvent, xRemoveEvent, xEvent,
   xCallbackChain, xOnLoadFinished, xEventManager,
-  xAddEventLayoutChange, xRemoveEventLayoutChange, xTriggerEventLayoutChange,
-  xAddEventDisplayChange, xRemoveEventDisplayChange, xTriggerEventDisplayChange,
-  xAddEventWindowResize, xRemoveEventWindowResize,
-  xOnDomReady, xOnLoad, xOnUnload,
+  xOnDomReady, xOnLoad,
   xTimeMS, xSetCookie, xGetCookie, xDeleteCookie,
   xLog,
   CImgCache, IC,
