@@ -4,6 +4,17 @@ function fmtDist(km) {
   return Math.round(km) + '';
 }
 
+/* Map day-of-year (0..364, non-leap baseline) to "Mon DD" for the timeline label.
+   Walter's calendar treats day 0 = Jan 1. */
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTH_START_DAY = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]; // Jan..Dec
+function fmtDayOfYear(doy) {
+  const d = Math.max(0, Math.min(364, Math.round(doy)));
+  let m = 0;
+  for (let i = 11; i >= 0; i--) { if (d >= MONTH_START_DAY[i]) { m = i; break; } }
+  return MONTHS[m] + ' ' + (d - MONTH_START_DAY[m] + 1);
+}
+
 function setIfNotFocused(input, valEl, value, text) {
   if (!input || input === document.activeElement) return;
   input.value = value;
@@ -18,7 +29,7 @@ export function sync() {
 
     setIfNotFocused(document.getElementById('tc-day'),
                     document.getElementById('tc-day-val'),
-                    FeDomeApp.DayOfYear, Math.round(FeDomeApp.DayOfYear));
+                    FeDomeApp.DayOfYear, fmtDayOfYear(FeDomeApp.DayOfYear));
 
     setIfNotFocused(document.getElementById('ps-moon-ecl'),
                     document.getElementById('pv-moon-ecl'),
@@ -57,7 +68,7 @@ export function init() {
   document.getElementById('tc-day').addEventListener('input', function () {
     const v = parseInt(this.value);
     FeDomeApp.DateTime = v + FeDomeApp.Time / 24;
-    document.getElementById('tc-day-val').textContent = v;
+    document.getElementById('tc-day-val').textContent = fmtDayOfYear(v);
     UpdateAll();
   });
 

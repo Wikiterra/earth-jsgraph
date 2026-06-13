@@ -37,13 +37,12 @@ export const playback = {
   },
 
   _setPlayUI(playing) {
-    const btn   = document.getElementById('pb-play');
-    const play  = btn.querySelector('.icon-play');
-    const pause = btn.querySelector('.icon-pause');
+    const btn  = document.getElementById('pb-play');
+    const path = document.getElementById('pb-play-icon');
     btn.setAttribute('aria-pressed', playing ? 'true' : 'false');
     btn.setAttribute('aria-label',   playing ? 'Pause' : 'Play');
-    play.hidden  =  playing;
-    pause.hidden = !playing;
+    /* Single SVG path: triangle for play, two bars for pause. */
+    path.setAttribute('d', playing ? 'M6 5h4v14H6zm8 0h4v14h-4z' : 'M8 5v14l11-7z');
   }
 };
 
@@ -62,15 +61,38 @@ export function init() {
     playback.step(1);
   });
 
-  const speedSelect = document.getElementById('pb-speed');
-  if (speedSelect) {
-    const syncSpeed = () => {
-      const opt = speedSelect.options[speedSelect.selectedIndex];
-      playback.baseRate = parseFloat(opt.dataset.rate);
-      playback.stepSize = parseFloat(opt.dataset.step);
+  /* Speed cycle button: click → next preset, shift-click / right-click → previous.
+     Each preset sets both the RAF rate (days/sec) and the ⏮/⏭ jump size (days). */
+  const SPEED_PRESETS = [
+    { label: '1 h/s',   rate: 0.04167,  step: 0.04167 },
+    { label: '12 h/s',  rate: 0.5,      step: 0.5 },
+    { label: '1 d/s',   rate: 1,        step: 1 },
+    { label: '1 wk/s',  rate: 7,        step: 7 },
+    { label: '1 mo/s',  rate: 30.437,   step: 30.437 },
+    { label: '1 yr/s',  rate: 365.256,  step: 365.256 },
+  ];
+  const speedBtn   = document.getElementById('pb-speed-btn');
+  const speedLabel = document.getElementById('pb-speed-label');
+  if (speedBtn && speedLabel) {
+    let speedIx = SPEED_PRESETS.findIndex(p => p.label === speedLabel.textContent.trim());
+    if (speedIx < 0) speedIx = SPEED_PRESETS.length - 1; // default to last (1 yr/s)
+    const applySpeed = () => {
+      const p = SPEED_PRESETS[speedIx];
+      playback.baseRate = p.rate;
+      playback.stepSize = p.step;
+      speedLabel.textContent = p.label;
     };
-    syncSpeed();
-    speedSelect.addEventListener('change', syncSpeed);
+    const cycle = (dir) => {
+      speedIx = (speedIx + dir + SPEED_PRESETS.length) % SPEED_PRESETS.length;
+      applySpeed();
+    };
+    applySpeed();
+    speedBtn.addEventListener('click', e => cycle(e.shiftKey ? -1 : 1));
+    speedBtn.addEventListener('contextmenu', e => { e.preventDefault(); cycle(-1); });
+    speedBtn.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); cycle(1); }
+      if (e.key === 'ArrowLeft'  || e.key === 'ArrowDown') { e.preventDefault(); cycle(-1); }
+    });
   }
 
   const pbReset = document.getElementById('pb-reset');

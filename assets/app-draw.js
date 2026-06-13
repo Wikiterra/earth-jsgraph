@@ -142,21 +142,25 @@ Object.assign(FeDomeApp, {
     }
 
     // draw moon
-    g.SetMarkerAttr('Circle', 10, '#888', 'white', 1);
-    g.Marker3D(this.MoonDomeCoord, 3);
+    if (this.ShowMoon) {
+      g.SetMarkerAttr('Circle', 10, '#888', 'white', 1);
+      g.Marker3D(this.MoonDomeCoord, 3);
+    }
 
     // draw sun
-    g.SetMarkerAttr('Circle', 20, 'white', 'white', 1);
-    g.SetAlpha(0.5);
-    g.Marker3D(this.SunDomeCoord, 2);
-    g.SetMarkerAttr('Circle', 15, 'white', 'white', 1);
-    g.Marker3D(this.SunDomeCoord, 2);
-    g.SetMarkerAttr('Circle', 10, 'orange', 'white', 1);
-    g.SetAlpha(1);
-    g.Marker3D(this.SunDomeCoord, 3);
+    if (this.ShowSun) {
+      g.SetMarkerAttr('Circle', 20, 'white', 'white', 1);
+      g.SetAlpha(0.5);
+      g.Marker3D(this.SunDomeCoord, 2);
+      g.SetMarkerAttr('Circle', 15, 'white', 'white', 1);
+      g.Marker3D(this.SunDomeCoord, 2);
+      g.SetMarkerAttr('Circle', 10, 'orange', 'white', 1);
+      g.SetAlpha(1);
+      g.Marker3D(this.SunDomeCoord, 3);
+    }
     g.ResetTrans3D();
 
-    if (!this.ShowStars && this.RayTarget == 0) {
+    if (this.ShowMoon && !this.ShowStars && this.RayTarget == 0) {
       this.DrawMoonPhase(g);
     }
 
@@ -248,30 +252,18 @@ Object.assign(FeDomeApp, {
     // Note: This function does not have any flat earth calculations at all. 
     // It only uses heliocentric and globe model values, transformations and calculations.
 
-    // compute coloring of moon and background depending on its position
+    // Moon phase widget: neutral palette. Bright = lit side, dark = unlit + background.
+    // When the moon is below horizon the whole widget is dimmed so the user can tell
+    // at a glance the moon isn't currently visible — without resorting to time-of-day
+    // tinted backgrounds (the old palette used blue for daytime + green for below-horizon,
+    // which made the widget hard to read).
 
     if (this.MoonFeCelestSphereCoord[2] > 0) {
-      // moon above horizon
-      if (this.SunFeCelestSphereCoord[2] > 0) {
-        // daytime
-        var brightColor = '#bbf';
-        var darkColor = '#22f';
-      } else {
-        // night
-        var brightColor = '#fff';
-        var darkColor = '#000';
-      }
+      var brightColor = '#fff';
+      var darkColor   = '#1a1a1a';
     } else {
-      // moon below horizon
-      if (this.SunFeCelestSphereCoord[2] > 0) {
-        // daytime
-        var brightColor = '#2a2';
-        var darkColor = '#090';
-      } else {
-        // night
-        var brightColor = '#151';
-        var darkColor = '#030';
-      }
+      var brightColor = '#5a5a5a';
+      var darkColor   = '#1a1a1a';
     }
 
     // calculate direction of moon shadow in heliocentric (celestial) coordinates
@@ -630,7 +622,7 @@ Object.assign(FeDomeApp, {
         g.SetLineAttr('darkorange', 1);
         g.Line3D(this.ObserverFeCoord, this.SunFeCelestSphereCoord);
       }
-      if (this.ShowSphere) {
+      if (this.ShowSphere && this.ShowSun) {
         // sphere sun
         g.SetMarkerAttr('Circle', 8, 'orange', 'white', 1);
         g.Marker3D(this.SunFeCelestSphereCoord);
@@ -659,7 +651,7 @@ Object.assign(FeDomeApp, {
         g.SetLineAttr('#666', 1);
         g.Line3D(this.ObserverFeCoord, this.MoonFeCelestSphereCoord);
       }
-      if (this.ShowSphere) {
+      if (this.ShowSphere && this.ShowMoon) {
         // sphere moon
         g.SetMarkerAttr('Circle', 8, '#888', 'white', 1);
         g.Marker3D(this.MoonFeCelestSphereCoord);

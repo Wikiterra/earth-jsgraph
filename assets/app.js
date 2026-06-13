@@ -47,6 +47,8 @@ var FeDomeAppMetaData = {
     { Name: 'ShowFeGrid', Type: 'bool', Default: true },
     { Name: 'ShowShadow', Type: 'bool', Default: true },
     { Name: 'ShowDomeGrid', Type: 'bool', Default: true },
+    { Name: 'ShowSun', Type: 'bool', Default: true },
+    { Name: 'ShowMoon', Type: 'bool', Default: true },
     { Name: 'ShowSunTrack', Type: 'bool', Default: false },
     { Name: 'ShowMoonTrack', Type: 'bool', Default: false },
     { Name: 'ShowSphere', Type: 'bool', Default: true },
@@ -119,6 +121,8 @@ var FeDomeApp = {
   ShowFeGrid: true,
   ShowShadow: true,
   ShowDomeGrid: true,
+  ShowSun: true,
+  ShowMoon: true,
   ShowSunTrack: false,
   ShowMoonTrack: false,
   ShowSphere: true,
@@ -380,7 +384,7 @@ function UpdateAll(stopAnimation) {
 function ResetApp() {
   Demos.Reset(false);
   DataX.JsonToAppState(
-    'FeDomeApp = { "Description": "", "PointerFrom": [ 0, 0 ], "PointerTo": [ 0, 0 ], "PointerText": "", "ObserverLat": 0, "ObserverLong": 15, "Zoom": 1.4, "CameraDirection": 30, "CameraHeight": 25, "CameraDistance": 200150, "DateTime": 360.5, "DomeSize": 1, "DomeHeight": 9000, "ShowFeGrid": true, "ShowShadow": true, "ShowDomeGrid": true, "ShowSunTrack": false, "ShowMoonTrack": false, "ShowSphere": true, "ShowStars": false, "ShowDomeRays": true, "ShowSphereRays": true, "ShowManyRays": false }');
+    'FeDomeApp = { "Description": "", "PointerFrom": [ 0, 0 ], "PointerTo": [ 0, 0 ], "PointerText": "", "ObserverLat": 0, "ObserverLong": 15, "Zoom": 1.4, "CameraDirection": 30, "CameraHeight": 25, "CameraDistance": 200150, "DateTime": 360.5, "DomeSize": 1, "DomeHeight": 9000, "ShowFeGrid": true, "ShowShadow": true, "ShowDomeGrid": true, "ShowSun": true, "ShowMoon": true, "ShowSunTrack": false, "ShowMoonTrack": false, "ShowSphere": true, "ShowStars": false, "ShowDomeRays": true, "ShowSphereRays": true, "ShowManyRays": false }');
   UpdateAll(true);
   Demos.UpdateDemoPanels();
 }
@@ -388,7 +392,7 @@ function ResetApp() {
 function TFE() {
   Demos.Reset(false);
   DataX.JsonToAppState(
-    'FeDomeApp = { "Description": "TFE", "PointerFrom": [ 0, 0 ], "PointerTo": [ 0, 0 ], "PointerText": "", "ObserverLat": -79.78324896, "ObserverLong": -83.33692904, "Zoom": 1.4, "CameraDirection": -50, "CameraHeight": 25, "CameraDistance": 200150, "DateTime": 2904.5, "DomeSize": 1, "DomeHeight": 9000, "ShowFeGrid": true, "ShowShadow": true, "ShowDomeGrid": true, "ShowSunTrack": true, "ShowMoonTrack": true, "ShowSphere": true, "ShowStars": false, "ShowDomeRays": true, "ShowSphereRays": true, "ShowManyRays": false }');
+    'FeDomeApp = { "Description": "TFE", "PointerFrom": [ 0, 0 ], "PointerTo": [ 0, 0 ], "PointerText": "", "ObserverLat": -79.78324896, "ObserverLong": -83.33692904, "Zoom": 1.4, "CameraDirection": -50, "CameraHeight": 25, "CameraDistance": 200150, "DateTime": 2904.5, "DomeSize": 1, "DomeHeight": 9000, "ShowFeGrid": true, "ShowShadow": true, "ShowDomeGrid": true, "ShowSun": true, "ShowMoon": true, "ShowSunTrack": true, "ShowMoonTrack": true, "ShowSphere": true, "ShowStars": false, "ShowDomeRays": true, "ShowSphereRays": true, "ShowManyRays": false }');
   UpdateAll(true);
   Demos.UpdateDemoPanels();
 }

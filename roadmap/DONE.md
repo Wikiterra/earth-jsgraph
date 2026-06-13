@@ -384,3 +384,204 @@ While at it, moved the gesture-hint's inline `style="…"` block out of `index.h
 | `assets/demos-manager.js` | 386 | 366 |
 
 `node --check` passes on every touched JS file. No remaining references to dropped symbols anywhere.
+
+---
+
+## Phase 11 — Year timeline scrubber + speed cycle button (2026-05-24)
+
+### Timeline scrubber
+
+Replaced the 68px-wide `#tc-day` slider with a full-width timeline pinned next to the playback cluster in `#top-bar`. Click anywhere on the track to seek; drag to scrub. Touch is native — the underlying `<input type="range">` handles pointer events for mouse + touch + pen without extra JS. Keyboard ←/→ steps the slider.
+
+Visuals:
+- Thin 4px track in `rgba(255,255,255,0.18)`
+- 4×14px accent-colour handle with a 3px black halo for contrast against the canvas behind
+- Month tick labels (Jan…Dec) floated above the track at day-0 of each month: `--p` custom property = `monthStartDay / 364`
+- Day-label below the track reads "Mar 23" instead of a raw day number (`fmtDayOfYear()` in [js/ui/sliders.js](js/ui/sliders.js))
+
+Layout:
+- `#top-controls` switched from `flex-shrink: 0` to `flex: 1 1 auto` so the cluster grows
+- `.TabSelectors` switched from `flex: 1` to `flex: 0 1 auto` (don't grow, can shrink) — demo tabs still scroll horizontally on overflow but yield space to the timeline
+- `.tc-timeline` itself uses `flex: 1 1 auto` with `min-width: 140px` / `max-width: 360px`
+
+### Speed cycle button
+
+The `<select id="pb-speed">` dropdown is replaced with `<button id="pb-speed-btn">` that cycles through the same 7 presets:
+
+```
+1 h/s → 12 h/s → 1 d/s → 1 wk/s → 1 mo/s → 1 yr/s → 10 yr/s → wraps
+```
+
+- Click: next preset
+- Shift-click / right-click / ArrowLeft / ArrowDown: previous preset
+- ArrowRight / ArrowUp also advance (matches `<select>` keyboard mental model)
+- Each preset still sets both `playback.baseRate` (RAF rate, days/sec) and `playback.stepSize` (the ⏮/⏭ jump size, days)
+
+The label lives in a `<span id="pb-speed-label">` so handlers update text without touching button attributes. Initial preset is read from the span's text — no duplication between HTML and JS.
+
+### Files touched
+
+- [index.html](index.html) — `<select>` → `<button>`, new `<div class="tc-timeline">` block with 12 month tick spans and the re-purposed `#tc-day` range
+- [css/styles.css](css/styles.css) — new `.pb-speed-btn`, `.tc-timeline`, `.timeline-shell`, `.timeline-ticks`, `.timeline-range` (with `::-webkit-` / `::-moz-` thumb + track styling), `≤480px` responsive tweaks; `#top-controls` and `.TabSelectors` flex rules adjusted
+- [js/ui/playback.js](js/ui/playback.js) — `SPEED_PRESETS` array, `cycle(dir)`, click / contextmenu / keydown wiring
+- [js/ui/sliders.js](js/ui/sliders.js) — `fmtDayOfYear()` helper using `MONTHS` + `MONTH_START_DAY`; `tc-day` sync + input handler now write formatted labels
+
+`node --check` passes on `sliders.js` and `playback.js`.
+
+---
+
+## Phase 12 — Play/pause unification, Luminaries section, save/restore restyle (2026-05-24)
+
+### Play / pause: one SVG instead of two
+
+The play button had two separate `<svg>` children (one for the triangle, one for the pause bars) with one always carrying `hidden`. Collapsed to a single SVG containing one `<path id="pb-play-icon">`; [js/ui/playback.js](js/ui/playback.js)'s `_setPlayUI()` now sets the path's `d` attribute (triangle → bars) instead of toggling element visibility. Fewer DOM nodes, less swap-flicker, single source of truth.
+
+### Luminaries section (Sun / Moon / Stars)
+
+A dedicated, visible section at the bottom-right replaces the cramped Obs/FE + ☀☾★ radio group.
+
+- New `<div class="luminary-section">` after the parameter sliders, with three `<button class="layer-toggle luminary-btn" data-prop="…">` controls:
+  - **Sun** → toggles `FeDomeApp.ShowSunTrack`
+  - **Moon** → toggles `FeDomeApp.ShowMoonTrack`
+  - **Stars** → toggles `FeDomeApp.ShowStars`
+- Buttons reuse the existing `.layer-toggle` styling + the auto-wiring in [js/ui/layers.js](js/ui/layers.js) (any `.layer-toggle[data-prop]` is toggled on click + aria-synced each frame). No new JS wiring required.
+
+### Removed from the layer-section
+
+The `Sun Track` / `Moon Track` / `Stars` buttons were lifted out of the main layer toggle row so the row no longer mixes "luminary visibility" with "structural overlays" (Grid / Dome / Shadow / Sphere / D·Rays / S·Rays / Rays+). Cleaner mental grouping; the layer-section now reads as just "structure + rays".
+
+### Removed: bottom-right ray-section
+
+The whole `.ray-section` block is gone (`Obs/FE` target picker + `☀ ☾ ★` source picker). `RayTarget` and `RaySource` fall back to their `FeDomeApp` defaults (`0` / `0`). The user's read on `Obs/FE` was that it duplicates the `Rays+` (`ShowManyRays`) toggle — confirmed in [assets/app.js:288-289](assets/app.js#L288), where `ManyRaysEnabled` already turns on whenever `RayTarget == 1` or stars + dome-rays are both on. The visible Rays+ toggle is enough.
+
+The `rays.js` UI module (which wired `.ray-opt` clicks) had nothing left to do and was deleted; its `import` line was dropped from [js/ui.js](js/ui.js) and from the `MODULES` array.
+
+### Save / restore panel: matched to bar styling
+
+The save/restore drawer was sitting on a light-themed white panel (`--color-surface`) while the rest of the chrome is the dark blurred bar. Restyled so the drawer matches:
+
+- Panel: `var(--bar-bg)` + `backdrop-filter: blur(12px)` + 1px translucent white border
+- Summary text: `var(--bar-text)`; expand indicator `+` / `−` muted to `rgba(255,255,255,0.5)`
+- Textarea: translucent dark fill, white text, accent-coloured focus border
+- Buttons: identical to `.pb-speed-btn` styling — `rgba(255,255,255,0.07)` fill, `rgba(255,255,255,0.15)` border, 26px tall
+
+Now the panel reads as part of the same UI as the bars instead of a stray light-theme card.
+
+### Files touched
+
+- [index.html](index.html) — single-SVG play button; removed three buttons from `.layer-section` (Sun Track, Moon Track, Stars); removed the `.ray-section` block; added new `.luminary-section` with three `.layer-toggle.luminary-btn` controls
+- [css/styles.css](css/styles.css) — `.ray-section` / `.ray-opt` rules dropped; new `.luminary-section` rule; `.save-restore` + `.save-restore-body` rules rewritten in the dark/translucent bar style
+- [js/ui/playback.js](js/ui/playback.js) — `_setPlayUI()` swaps a single SVG `d` instead of toggling two SVGs
+- [js/ui.js](js/ui.js) — dropped `import * as rays` + the `MODULES` slot
+- [js/ui/rays.js](js/ui/rays.js) — file deleted (18 lines, both module functions unused after the ray-section was removed)
+
+`node --check` passes on every touched JS file.
+
+---
+
+## Phase 13 — Bottom bar regrouped: Layers / Params / Rays / Luminaries (2026-05-24)
+
+### New `ShowSun` + `ShowMoon` model flags
+
+Until now the sun and moon orbs drew unconditionally in `app-draw.js`; only their _tracks_ were toggleable. Added two boolean properties to `FeDomeApp` (default `true`) + matching entries in `FeDomeAppMetaData.Properties` so save/restore round-trips them. Also threaded the new flags into the `ResetApp` and `TFE` JSON blobs in [assets/app.js](assets/app.js).
+
+Drawing call sites gated:
+
+- Dome view ([app-draw.js:144-158](assets/app-draw.js#L144)) — sun marker stack (3 layered circles for the glow + body) and the moon marker now sit behind `if (this.ShowSun)` / `if (this.ShowMoon)`. The trailing `DrawMoonPhase` is gated on `ShowMoon` too (no point drawing the phase wedge if the moon is hidden).
+- Sphere view ([app-draw.js:633](assets/app-draw.js#L633), [:662](assets/app-draw.js#L662)) — the celestial-sphere sun + moon markers (drawn inside `DrawSunRayToObserver` / `DrawMoonRayToObserver`) now require `ShowSphere && ShowSun` / `ShowSphere && ShowMoon` instead of just `ShowSphere`.
+
+Sphere rays (the lines from observer to body on the celestial sphere) remain independent — the user toggles them via the S·Rays button, not by hiding the body. That matches the mental model: "I want to see where the ray is going even if I've hidden the marker."
+
+### Bottom bar: 4 sections
+
+The bottom bar now reads as four distinct groups, each with its own left-divider on the right-side groups:
+
+```
+[ Layers: Grid Dome Shadow Sphere ]  [ Param sliders ]  [ Rays: D·Rays S·Rays Rays+ ]  [ Luminaries: Sun Moon Stars Orbits ]
+```
+
+- **Layers** (`.layer-section`): structural overlays only — Grid, Dome, Shadow, Sphere. D·Rays / S·Rays / Rays+ moved out.
+- **Rays** (`.rays-section`, new): D·Rays, S·Rays, Rays+ in their own visually-grouped section.
+- **Luminaries** (`.luminary-section`, restructured): Sun, Moon, Stars now toggle the bodies themselves (the three new `data-prop` targets are `ShowSun`, `ShowMoon`, `ShowStars`). New **Orbits** button at the right toggles both `ShowSunTrack` and `ShowMoonTrack` together — the user explicitly said orbits aren't per-luminary, that's what the body buttons are for.
+
+### `data-prop-list` multi-prop support in layers.js
+
+`js/ui/layers.js` was a hardcoded "click → flip one `FeDomeApp[prop]`". The Orbits button needs to flip *two* props in lockstep, so the module now supports both forms:
+
+- `data-prop="ShowSun"` → single-prop, same as before
+- `data-prop-list="ShowSunTrack,ShowMoonTrack"` → multi-prop: aria-pressed iff *every* listed prop is `true`; click sets all of them to `!pressed`
+
+`pressedState()` and `propsOf()` helpers added; the existing `.layer-toggle[data-prop]` selectors widened to just `.layer-toggle` so multi-prop buttons get picked up too.
+
+### Icon refresh
+
+- Sun button got a proper sun glyph (filled disc + 8 rays) instead of the dotted-track motif it inherited from the old "Sun Track" button — the icon now clearly indicates a body, not an orbit.
+- Moon button keeps the crescent but drops the dotted-track underline.
+- Orbits button is a new icon: two crossed dashed ellipses suggesting orbital paths.
+
+### Files touched
+
+- [assets/app.js](assets/app.js) — added `ShowSun` / `ShowMoon` to `FeDomeApp` defaults + `FeDomeAppMetaData.Properties`; threaded the new keys into `ResetApp` and `TFE` JSON strings
+- [assets/app-draw.js](assets/app-draw.js) — gated dome sun/moon markers + sphere sun/moon markers on the new flags; `DrawMoonPhase` also gated on `ShowMoon`
+- [index.html](index.html) — split the layer-section, new `.rays-section`, restructured `.luminary-section` with 4 buttons (Sun/Moon body icons; new Orbits button using `data-prop-list`)
+- [css/styles.css](css/styles.css) — `.rays-section` shares the `.luminary-section` rule (flex row, left divider, 3px padding)
+- [js/ui/layers.js](js/ui/layers.js) — `propsOf()` + `pressedState()` helpers; `data-prop-list` multi-prop support
+
+`node --check` passes on every touched JS file.
+
+---
+
+## Phase 14 — Polish pass (2026-05-24)
+
+### Speed presets: 10 yr/s dropped
+
+The fastest preset jumped a year per `⏮/⏭` press but only advanced 10× during playback — that asymmetry (`rate=3652.56` but `step=365.256`) was an artefact of the original `<select>` and confused the mental model. 1 yr/s is plenty for navigating eclipse cycles, and the speed cycle now wraps cleanly through 6 presets.
+
+```
+1 h/s → 12 h/s → 1 d/s → 1 wk/s → 1 mo/s → 1 yr/s → wraps
+```
+
+The default-preset fallback in [js/ui/playback.js](js/ui/playback.js) (`speedIx = SPEED_PRESETS.length - 1`) now points at the last preset by length instead of a hardcoded index so future preset edits don't accidentally land on the wrong default.
+
+### Moon phase widget: neutral palette
+
+The `DrawMoonPhase` panel in [assets/app-draw.js:255](assets/app-draw.js#L255) had a 4-way colour matrix encoding both moon-above/below and sun-above/below:
+
+| | Sun above (daytime) | Sun below (night) |
+|---|---|---|
+| Moon above | bright `#bbf`, dark `#22f` (blue) | bright `#fff`, dark `#000` |
+| Moon below | bright `#2a2`, dark `#090` (green) | bright `#151`, dark `#030` |
+
+The blue daytime and green below-horizon tints made the phase silhouette hard to read. Collapsed to a 2-way neutral palette:
+
+- Moon above horizon: white lit side, near-black unlit side (`#fff` / `#1a1a1a`)
+- Moon below horizon: dimmed grey lit side, same dark unlit (`#5a5a5a` / `#1a1a1a`)
+
+The "moon hidden" affordance is now just the bright-side being grey instead of white — still discernible at a glance, but the widget reads as a clean B&W phase indicator regardless of time of day.
+
+### Save/restore panel: moved to top-left under the top bar
+
+The panel was pinned `position: fixed; bottom: 56px + bottom-bar-h; left: 12px` — sitting on the canvas above the layer toggles, where the visualisation's primary focus is. Moved to `top: var(--top-bar-h) + 8px; left: 12px` and capped to `width: 280px` with `max-height: calc(100vh - top-bar-h - bottom-bar-h - 24px)` so it never overlaps either bar. Collapsed by default; expand inline via the `<summary>` click. The textarea + buttons keep the bar-styled appearance from Phase 12.
+
+### Calendar pinned to the right via flex auto-margin
+
+`#calendar-widget` got `margin-left: auto`. Inside `#top-controls` (flex row), this absorbs all leftover space and pushes the calendar to the right edge regardless of how the timeline / sun-moon-strip / playback cluster grow or shrink. No grid restructure needed — flex auto-margins are deterministic and well-supported.
+
+### Demo tabs unified
+
+Removed the `TabPrimary` class from `IntroButton`, `EclipsesButton`, `EquinoxButton`. The first three tabs previously rendered with a slightly more prominent background — an artefact of the original 3+3 split when DayNight/Poles/Stars were newer. Now all 6 demos share:
+
+- Same `<li class="TabButton TabEnabled">` markup
+- Same click wiring through `Demos.AddButtonClickHandler` (already iterated over all `DemoList[i]` since Phase 8 — no change)
+- Same styling: faded by default (`color: rgba(255,255,255,0.65)`), hover brightens, active demo gets the accent-colour background via `[aria-selected="true"]`
+
+The `.TabSelectors li.TabPrimary` and `:hover` rules in `styles.css` were dropped — 9 lines of dead CSS gone.
+
+### Files touched
+
+- [js/ui/playback.js](js/ui/playback.js) — `SPEED_PRESETS` dropped to 6 entries; fallback index uses `.length - 1`
+- [assets/app-draw.js](assets/app-draw.js) — `DrawMoonPhase` colour-table replaced with the neutral two-row palette
+- [css/styles.css](css/styles.css) — `.save-restore` repositioned top-left, narrowed to 280px, height-capped; `#calendar-widget` got `margin-left: auto`; `.TabPrimary` rules deleted
+- [index.html](index.html) — `TabPrimary` class removed from the three Intro/Eclipses/Equinox `<li>`s; comment updated
+
+`node --check` passes on every touched JS file.
