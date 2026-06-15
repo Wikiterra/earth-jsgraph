@@ -25,7 +25,7 @@ ControlPanels.NewPanel( {
   Name: 'HorizDropAnglFromEyeLvl',
   Label: 'Dip Angle',
   Mult: Math.PI / 180,
-  Units: '�'
+  Units: '°'
 
 } ).AddTextField( {
   Name: 'HorizDistLineOfSight',
@@ -65,7 +65,7 @@ ControlPanels.NewPanel( {
 } ).AddTextField( {
   Name: 'HorizLftRgtDropAngl',
   Label: 'Left-Right Drop Angle',
-  Units: '&deg;'
+  Units: '°'
 
 } ).AddTextField( {
   Name: 'HorizLftRgtWidth',

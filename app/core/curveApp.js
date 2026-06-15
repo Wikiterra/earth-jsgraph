@@ -25,7 +25,7 @@ function CurveAppClass() {
   };
   this.GradientUnits = {
     Selection: '.UnitsType',
-    Units: [ '�C/m', '�C/ft', '�C/ft' ],
+    Units: [ '°C/m', '°C/ft', '°C/ft' ],
     Mults: [ 1, 1/0.3048, 1/0.3048 ]
   };
 

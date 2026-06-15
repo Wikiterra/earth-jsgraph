@@ -318,7 +318,7 @@ function DrawModel( g ) {
     // measurements
     var numFormat = { Mode: 'fix0', Precision: 4, UsePrefix: false, Units: '' };
 
-    var txt = NumFormatter.NumToString( m.TheodoliteTilt, numFormat ) + '�';
+    var txt = NumFormatter.NumToString( m.TheodoliteTilt, numFormat ) + '°';
     g.SetBgColor( 'white' );
     g.SetTextAttr( 'Arial', 12, 'black', 'normal', 'normal', 'left', 'bottom', 5, 2 );
     g.SetAlpha( 0.8 * m.AlphaOpaque );
@@ -326,7 +326,7 @@ function DrawModel( g ) {
     g.SetAlpha( m.AlphaOpaque );
     g.TextOnPlane( txt, 0.1*m.SceneWidth, 0 );
 
-    var txt = NumFormatter.NumToString( m.Pan, numFormat ) + '�';
+    var txt = NumFormatter.NumToString( m.Pan, numFormat ) + '°';
     g.SetTextAttr( 'Arial', 12, 'black', 'normal', 'normal', 'left', 'top', 5, 2 );
     g.SetAlpha( 0.8 * m.AlphaOpaque );
     g.Rect( g.GetTextBoxOnPlane( txt, 0, -0.35*m.SceneHeight ), 2 );
@@ -430,7 +430,7 @@ function DrawModel( g ) {
     g.Arrow( posDropLineX, posTextY, posDropLineX, posDropLineY, 9 );
     g.SetBgColor( 'white' );
 
-    var txt = 'Left-Right Drop Angle = ' + NumFormatter.NumToString( m.HorizLftRgtDropAngl, numFormat ) + '�';
+    var txt = 'Left-Right Drop Angle = ' + NumFormatter.NumToString( m.HorizLftRgtDropAngl, numFormat ) + '°';
     var ty = posTextY + lineHeight;
     g.TextBox( txt, posTextX, ty, 2 );
     g.Text( txt, posTextX, ty );
@@ -499,7 +499,7 @@ function DrawModel( g ) {
       g.TextBox( txt, posTextX, ty, 2 );
       g.Text( txt, posTextX, ty );
 
-      var txt = 'Horizon Dip Angle = ' + NumFormatter.NumToString( toDeg( m.HorizDropAnglFromEyeLvl ), numFormat ) + '�';
+      var txt = 'Horizon Dip Angle = ' + NumFormatter.NumToString( toDeg( m.HorizDropAnglFromEyeLvl ), numFormat ) + '°';
       ty -= lineHeight;
       g.TextBox( txt, posTextX, ty, 2 );
       g.Text( txt, posTextX, ty );
@@ -536,20 +536,20 @@ function DrawModel( g ) {
       var a = m.ObjSizeAngl;
       if (a < 1e-5) a = 0;
       if (m.IsVariableSizeObject(objIx)) eq = ' <= ';
-      var txt = 'Size ' + eq + NumFormatter.NumToString( HVal(m.ObjNearSize), numFormat4 ) + HUnit() + '; Angular Size = ' + NumFormatter.NumToString( a, numFormat ) + '�';
+      var txt = 'Size ' + eq + NumFormatter.NumToString( HVal(m.ObjNearSize), numFormat4 ) + HUnit() + '; Angular Size = ' + NumFormatter.NumToString( a, numFormat ) + '°';
       g.SetBgColor( 'white' );
       g.TextBox( txt, tx, ty, 2 );
       g.Text( txt, tx, ty );
       ty += lineHeight;
 
-      var txt = 'Drop = ' + NumFormatter.NumToString( HVal(m.ObjDropFromObsSurf), numFormat ) + HUnit() + '; Drop Angle = ' + NumFormatter.NumToString( m.ObjDropAnglFromObsSurf, numFormat4 ) + '�';
+      var txt = 'Drop = ' + NumFormatter.NumToString( HVal(m.ObjDropFromObsSurf), numFormat ) + HUnit() + '; Drop Angle = ' + NumFormatter.NumToString( m.ObjDropAnglFromObsSurf, numFormat4 ) + '°';
       g.TextBox( txt, tx, ty, 2 );
       g.Text( txt, tx, ty );
       ty += lineHeight;
 
       var va = m.ObjTopAnglFromEyeLvl;
       if (Math.abs(va) < 1e-5) va = 0;
-      var txt = 'Top Angle = ' + NumFormatter.NumToString( va, numFormat ) + '�; Tilt = ' + NumFormatter.NumToString( m.ObjNearTilt, numFormat4 ) + '�';
+      var txt = 'Top Angle = ' + NumFormatter.NumToString( va, numFormat ) + '°; Tilt = ' + NumFormatter.NumToString( m.ObjNearTilt, numFormat4 ) + '°';
       g.TextBox( txt, tx, ty, 2 );
       g.Text( txt, tx, ty );
       ty += lineHeight;
@@ -590,7 +590,7 @@ function DrawModel( g ) {
       ty += lineHeight;
 
       g.SetTextColor( 'darkred' );
-      var txt = 'Refraction Angle = ' + NumFormatter.NumToString( m.ObjRefrAngl, numFormat ) + '�';
+      var txt = 'Refraction Angle = ' + NumFormatter.NumToString( m.ObjRefrAngl, numFormat ) + '°';
       g.TextBox( txt, tx, ty, 2 );
       g.Text( txt, tx, ty );
       ty += lineHeight;
@@ -627,7 +627,7 @@ function DrawModel( g ) {
       var a = m.ObjSizeAngl;
       if (a < 1e-5) a = 0;
       if (m.IsVariableSizeObject(objIx)) eq = ' <= ';
-      var txt = 'Size ' + eq + NumFormatter.NumToString( HVal(m.ObjNearSize), numFormat4 ) + HUnit() + '; Angular Size = ' + NumFormatter.NumToString( a, numFormat ) + '�';
+      var txt = 'Size ' + eq + NumFormatter.NumToString( HVal(m.ObjNearSize), numFormat4 ) + HUnit() + '; Angular Size = ' + NumFormatter.NumToString( a, numFormat ) + '°';
       g.SetBgColor( 'white' );
       g.TextBox( txt, tx, ty, 2 );
       g.Text( txt, tx, ty );
@@ -635,7 +635,7 @@ function DrawModel( g ) {
 
       var va = m.ObjTopAnglFromEyeLvlFE;
       if (Math.abs(va) < 1e-5) va = 0;
-      var txt = 'Top Angle = ' + NumFormatter.NumToString( va, numFormat ) + '�';
+      var txt = 'Top Angle = ' + NumFormatter.NumToString( va, numFormat ) + '°';
       g.TextBox( txt, tx, ty, 2 );
       g.Text( txt, tx, ty );
       ty += lineHeight;

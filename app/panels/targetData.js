@@ -30,13 +30,13 @@ ControlPanels.NewPanel( {
   Name: 'ObjVisibleAngl',
   Label: 'Angular Visible',
   ReadOnly: true,
-  Units: '�',
+  Units: '°',
 
 } ).AddTextField( {
   Name: 'ObjHiddenAngl',
   Label: 'Angular Hidden',
   ReadOnly: true,
-  Units: '�',
+  Units: '°',
 
 } ).AddTextField( {
   Name: 'ObjDropFromObsSurf',
@@ -46,19 +46,19 @@ ControlPanels.NewPanel( {
 } ).AddTextField( {
   Name: 'ObjDropAnglFromObsSurf',
   Label: 'Drop Angle<sup>*</sup>',
-  Units: '�',
+  Units: '°',
 
 } ).AddTextField( {
   Name: 'ObjSizeAngl',
   Label: 'Angular Size',
   ReadOnly: true,
-  Units: '�',
+  Units: '°',
 
 } ).AddTextField( {
   Name: 'ObjRefrAngl',
   Label: 'Refraction Angle',
   ReadOnly: true,
-  Units: '�',
+  Units: '°',
 
 } ).AddTextField( {
   Name: 'ObjLiftAbs',
@@ -75,17 +75,17 @@ ControlPanels.NewPanel( {
 } ).AddTextField( {
   Name: 'ObjTopAnglFromEyeLvl',
   Label: 'Target Top Angle',
-  Units: '�',
+  Units: '°',
 
 } ).AddTextField( {
   Name: 'ObjTopAnglFromEyeLvlFE',
   Label: 'Target Top Angle FE',
-  Units: '�',
+  Units: '°',
 
 } ).AddTextField( {
   Name: 'ObjNearTilt',
   Label: 'Tilt<sup>*</sup>',
-  Units: '�'
+  Units: '°'
 
 } ).AddTextField( {
   Name: 'Bulge',

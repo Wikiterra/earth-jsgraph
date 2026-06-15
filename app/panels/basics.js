@@ -70,7 +70,7 @@ ControlPanels.NewSliderPanel( {
   Label: 'View&ang;',
   ValueRef: 'ViewAngleField',
   SliderValueRef: 'ViewAngleSlider',
-  Units: '�',
+  Units: '°',
   Color: 'black',
   Min: 0.247517,
   Max: 91.6,

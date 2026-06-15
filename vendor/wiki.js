@@ -711,7 +711,7 @@ function AddToCookie(aName, aValue, aSep, aDays) {
     var value = xGetCookie(aName) || ''; if (value != '') { value += aSep; }
     value += aValue; xSetCookie(aName, value, aDays);
 }
-function AddCBReq(aText) { AddToCookie('AddCBReq', aText, '�', 1); }
+function AddCBReq(aText) { AddToCookie('AddCBReq', aText, '|', 1); }
 xOnDomReady(InitWikiJS); function SEL(grp, idList, bUpdateLayout) {
     function isInList(l, ele) {
         for (var i = 0; i < l.length; i++) { if (l[i] == ele) { return true; } }

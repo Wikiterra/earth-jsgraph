@@ -203,7 +203,7 @@ ControlPanels.NewPanel( {
 } ).AddTextField( {
   Name: 'Temperature_C',
   Label: 'Temp. T',
-  Units: '�C',
+  Units: '°C',
   Inc: 0.1,
 
 } ).AddTextField( {
@@ -280,7 +280,7 @@ ControlPanels.NewPanel( {
 } ).AddTextField( {
   Name: 'BaroModel.T_C',
   Label: 'T(h)',
-  Units: '�C',
+  Units: '°C',
 
 } ).AddTextField( {
   Name: 'BaroModel.alpha',
