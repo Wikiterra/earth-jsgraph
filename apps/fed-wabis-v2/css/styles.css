@@ -1,0 +1,803 @@
+/* =============================================================
+   Custom properties
+   ============================================================= */
+:root {
+  --top-bar-h:    52px;
+  --bottom-bar-h: 72px;
+
+  --color-accent:   #ff8033;
+  --color-primary:  #2d3436;
+  --color-surface:  #fff;
+  --color-bg:       #1a1a24;
+  --color-border:   #e0e0e0;
+  --color-text:     #222;
+  --color-muted:    #666;
+
+  --bar-bg:   rgba(16, 16, 24, 0.96);
+  --bar-text: rgba(255, 255, 255, 0.9);
+
+  --radius-sm: 5px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --shadow-sm: 0 2px 6px rgba(0,0,0,0.12);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.18);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.28);
+}
+
+/* =============================================================
+   Base reset
+   ============================================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;          /* no page scroll — canvas IS the page */
+  background: var(--color-bg);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-text);
+}
+
+#app {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* =============================================================
+   Top bar
+   ============================================================= */
+#top-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--top-bar-h);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  background: var(--bar-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+
+/* Demo tab container (#DomeDemoTabs) — class names retained from legacy Tabs styling */
+.TabSelectors {
+  display: flex;
+  gap: 4px;
+  list-style: none;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 4px 0;
+}
+
+.TabSelectors::-webkit-scrollbar { display: none; }
+
+.TabSelectors li {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.65);
+  background: transparent;
+  border: 1px solid transparent;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.TabSelectors li.TabEnabled:hover {
+  color: var(--bar-text);
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.15);
+}
+
+.TabSelectors li[aria-selected="true"] {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-accent);
+}
+
+/* Hidden buttons kept in DOM for click wiring (Reset / Play / etc.) — not shown to user */
+.tab-hidden { display: none !important; }
+
+/* Top-right control cluster: playback + time + timeline + calendar.
+   Allowed to grow so the timeline can stretch; demo tabs (left) compress and scroll. */
+#top-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.top-playback {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* Sun / Moon info strip */
+#sun-moon-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.sms-item {
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Time / Day compact sliders */
+.tc-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.tc-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.6);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.tc-range {
+  width: 68px;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+  height: 14px;
+}
+
+/* Year timeline scrubber.
+   The .timeline-range below is a native <input type=range>, restyled into a thin track
+   with a chunky accent-coloured thumb. Click-anywhere + drag + touch are all free from the browser. */
+.tc-timeline {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1px;
+  flex: 1 1 auto;
+  min-width: 140px;
+  max-width: 360px;
+}
+
+.timeline-shell {
+  position: relative;
+  height: 26px;
+  padding: 0 1px;
+}
+
+.timeline-ticks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  font-size: 8.5px;
+  color: rgba(255,255,255,0.4);
+  font-variant-numeric: tabular-nums;
+}
+
+.timeline-ticks .tk {
+  position: absolute;
+  top: 1px;
+  left: calc(var(--p) * 100%);
+  transform: translateX(-50%);
+  line-height: 1;
+  white-space: nowrap;
+  padding-top: 0;
+}
+.timeline-ticks .tk::after {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 5px;
+  margin: 1px auto 0;
+  background: rgba(255,255,255,0.25);
+}
+
+/* Native range restyled as a flat timeline track + chunky handle */
+.timeline-range {
+  position: absolute;
+  inset: auto 0 0 0;
+  width: 100%;
+  height: 14px;
+  margin: 0;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.timeline-range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.18);
+}
+.timeline-range::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.18);
+}
+
+.timeline-range::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 4px;
+  height: 14px;
+  margin-top: -5px;
+  border-radius: 2px;
+  background: var(--color-accent);
+  border: none;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.35);
+  cursor: grab;
+}
+.timeline-range:active::-webkit-slider-thumb { cursor: grabbing; }
+.timeline-range::-moz-range-thumb {
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--color-accent);
+  border: none;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.35);
+  cursor: grab;
+}
+.timeline-range:active::-moz-range-thumb { cursor: grabbing; }
+
+.timeline-range:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+.timeline-range:focus-visible::-moz-range-thumb {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.timeline-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.7);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+/* Calendar display — pinned to the right edge of the top bar regardless of how
+   the timeline / sun-moon strip / playback cluster grow. `margin-left: auto`
+   absorbs any leftover flex space before the calendar. */
+#calendar-widget {
+  position: relative;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+#calendar-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.75);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+#calendar-toggle:hover { background: rgba(255,255,255,0.13); }
+#calendar-toggle[aria-expanded="true"] { background: rgba(255,255,255,0.15); color: #fff; }
+
+#calendar-display { font-size: 12px; }
+
+/* Calendar dropdown */
+#calendar-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 200;
+  min-width: 230px;
+  background: var(--bar-bg);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#calendar-dropdown[hidden] { display: none; }
+
+/* Digit-scroll spinbutton row */
+.cal-digits {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  justify-content: center;
+  padding: 2px 0 4px;
+}
+
+.cal-spin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  padding: 4px 5px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.9);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  cursor: ns-resize;
+  user-select: none;
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.cal-spin.cs-wide { min-width: 44px; }
+
+.cal-spin:hover {
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.cal-spin:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  background: rgba(255,128,51,0.15);
+}
+
+.cal-sep {
+  color: rgba(255,255,255,0.35);
+  font-size: 12px;
+  padding: 0 1px;
+  user-select: none;
+}
+
+.cal-utc {
+  color: rgba(255,255,255,0.35);
+  font-size: 10px;
+  margin-left: 2px;
+  user-select: none;
+}
+
+.cal-step-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 4px;
+}
+
+.cal-btn {
+  padding: 5px 4px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.8);
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.cal-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+/* Year progress track — thin bar at top of dropdown */
+.cal-year-track {
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.cal-year-fill {
+  height: 100%;
+  width: 0;
+  background: var(--color-accent);
+  border-radius: 2px;
+  transition: width 0.25s ease;
+}
+
+/* =============================================================
+   Canvas — fills viewport between the two bars
+   ============================================================= */
+/* jsg creates #FeGraph via document.writeln(). Do NOT pre-define this element in HTML.
+   jsg sets inline height = 56% of width; our CSS positions it below the top bar. */
+#FeGraph {
+  position: fixed !important;
+  top: var(--top-bar-h) !important;
+  left: 0 !important;
+  right: 0 !important;
+  border: none;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  background: #000;
+  z-index: 1;
+}
+
+.JsGraph-ClippingBox {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  font-size: 0;
+  line-height: 0;
+}
+
+/* jsg sets position, top, left, width, height on the canvas via inline styles. */
+.JsGraph-Canvas { display: block; }
+
+/* =============================================================
+   Bottom bar
+   ============================================================= */
+#bottom-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--bottom-bar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 10px;
+  background: var(--bar-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.4);
+}
+
+.pb-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.07);
+  color: var(--bar-text);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.pb-btn:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.3);
+}
+
+.pb-btn.pb-primary {
+  width: 40px;
+  height: 40px;
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  border-radius: var(--radius-md);
+}
+
+.pb-btn.pb-primary:hover {
+  background: #ff9a55;
+  border-color: #ff9a55;
+}
+
+/* Green when playing — clearly distinct from the orange "press to play" state */
+.pb-btn[aria-pressed="true"].pb-primary {
+  background: #00b894;
+  border-color: #00b894;
+}
+
+.pb-btn[aria-pressed="true"].pb-primary:hover {
+  background: #00cfa8;
+  border-color: #00cfa8;
+}
+
+/* Speed cycle button — click cycles forward, shift-click / right-click cycles back */
+.pb-speed-btn {
+  height: 30px;
+  min-width: 56px;
+  padding: 0 10px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-sm);
+  color: var(--bar-text);
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, transform 0.08s;
+}
+
+.pb-speed-btn:hover {
+  background: rgba(255,255,255,0.13);
+  border-color: rgba(255,255,255,0.3);
+}
+
+.pb-speed-btn:active { transform: scale(0.96); }
+
+.pb-speed-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+/* Reset button — same size as other pb-btn, slightly muted */
+.pb-btn.pb-reset {
+  color: rgba(255,255,255,0.55);
+  margin-left: 2px;
+}
+
+.pb-btn.pb-reset:hover {
+  color: var(--bar-text);
+}
+
+/* Layer toggles */
+.layer-section {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.layer-section::-webkit-scrollbar { display: none; }
+
+.layer-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 7px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: rgba(255,255,255,0.35);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  min-width: 44px;
+}
+
+.layer-toggle:hover {
+  color: rgba(255,255,255,0.75);
+  background: rgba(255,255,255,0.08);
+}
+
+.layer-toggle[aria-pressed="true"] {
+  color: #fff;
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.toggle-label {
+  font-size: 10px;
+  line-height: 1;
+  display: none; /* mobile-first: shown only at ≥768px */
+}
+
+/* =============================================================
+   Rays + Luminaries sections (bottom bar, right side).
+   Each is a dedicated visually-separated group with a divider on its left edge. */
+.rays-section,
+.luminary-section {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  border-left: 1px solid rgba(255,255,255,0.12);
+  flex-shrink: 0;
+}
+
+/* Parameter sliders in bottom bar */
+.param-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.param-slider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.param-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.55);
+  white-space: nowrap;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+
+.param-val {
+  color: rgba(255,255,255,0.85);
+  font-weight: 500;
+}
+
+.param-range {
+  width: 72px;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+  height: 14px;
+}
+
+/* =============================================================
+   Save / Restore panel — styled to match the dark top/bottom bars.
+   Positioned top-left under the top bar (out of the canvas focus area) and
+   collapsed by default; click the summary to expand inline. */
+.save-restore {
+  position: fixed;
+  top: calc(var(--top-bar-h) + 8px);
+  left: 12px;
+  width: 280px;
+  background: var(--bar-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  color: var(--bar-text);
+  z-index: 900;
+  max-height: calc(100vh - var(--top-bar-h) - var(--bottom-bar-h) - 24px);
+  overflow: auto;
+}
+
+.save-restore summary {
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--bar-text);
+  list-style: none;
+  user-select: none;
+}
+
+.save-restore summary::-webkit-details-marker { display: none; }
+.save-restore summary::before { content: '+ '; color: rgba(255,255,255,0.5); font-weight: 400; }
+.save-restore[open] summary::before { content: '− '; }
+
+.save-restore-body { padding: 10px 14px 14px; border-top: 1px solid rgba(255,255,255,0.1); }
+
+.save-restore-body textarea {
+  width: 100%;
+  font-family: 'SF Mono', Consolas, monospace;
+  font-size: 11px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  resize: vertical;
+  background: rgba(255,255,255,0.05);
+  color: var(--bar-text);
+}
+
+.save-restore-body textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  background: rgba(255,255,255,0.08);
+}
+
+.save-restore-body p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+/* Match the .pb-speed-btn styling so the playback bar and save/restore feel like one app. */
+.save-restore-body button {
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.07);
+  color: var(--bar-text);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.save-restore-body button:hover {
+  background: rgba(255,255,255,0.13);
+  border-color: rgba(255,255,255,0.3);
+}
+
+/* =============================================================
+   Focus — never suppress globally
+   ============================================================= */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* =============================================================
+   ≥ 768px: show text labels under layer toggle icons
+   ============================================================= */
+@media (min-width: 768px) {
+  .toggle-label { display: block; }
+}
+
+/* =============================================================
+   Mobile (≤ 480px): compact bars, icon-only toggles, scrollable top bar
+   ============================================================= */
+@media (max-width: 480px) {
+  :root {
+    --top-bar-h:    44px;
+    --bottom-bar-h: 56px;
+  }
+
+  #top-bar { gap: 4px; padding: 0 6px; overflow-x: auto; }
+
+  #sun-moon-strip { display: none; }
+
+  .layer-toggle { min-width: 32px; padding: 5px 4px; }
+
+  .TabSelectors li { padding: 4px 8px; font-size: 12px; }
+
+  .pb-btn { width: 28px; height: 28px; }
+  .pb-btn.pb-primary { width: 34px; height: 34px; }
+  .pb-speed-btn { font-size: 11px; height: 26px; min-width: 48px; padding: 0 7px; }
+  .tc-timeline { min-width: 100px; }
+  .timeline-ticks { font-size: 7.5px; }
+
+  .tc-range { width: 52px; }
+}
+
+/* =============================================================
+   Gesture hint pill (fades out via ui.js after 5 s)
+   ============================================================= */
+#gesture-hint {
+  position: fixed;
+  bottom: calc(var(--bottom-bar-h) + 14px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.62);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 11px;
+  font-family: inherit;
+  padding: 5px 14px;
+  border-radius: 20px;
+  pointer-events: none;
+  z-index: 500;
+  white-space: nowrap;
+  transition: opacity 0.9s;
+}
+
+/* Touch-only / coarse-pointer devices: hide modifier + scroll hint */
+@media (hover: none) and (pointer: coarse) {
+  .gh-fine { display: none; }
+}
+
+/* =============================================================
+   Reduced motion: cut all transitions and animations
+   ============================================================= */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Interactive simulation proving the Flat Earth Dome Model">
+  <title>WikiTerra - Flat Earth Dome Model</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main id="app">
+
+    <!-- Top bar: demo tabs (left) + time controls + calendar (right) -->
+    <header id="top-bar">
+      <!-- Demo tabs: all 6 share the same UI + click wiring (demos-manager.js wireButton).
+           TabSelectors / TabButton / TabEnabled class names drive styling in styles.css. -->
+      <ul id="DomeDemoTabs" class="TabSelectors" role="tablist" aria-label="Demo scenarios">
+        <li class="TabButton TabEnabled" id="IntroButton"    role="tab" aria-selected="false" aria-controls="FeGraph-Canvas">Intro</li>
+        <li class="TabButton TabEnabled" id="EclipsesButton" role="tab" aria-selected="false" aria-controls="FeGraph-Canvas">Eclipses</li>
+        <li class="TabButton TabEnabled" id="EquinoxButton"  role="tab" aria-selected="false" aria-controls="FeGraph-Canvas">Equinox</li>
+        <li class="TabButton TabEnabled" id="DayNightButton" role="tab" aria-selected="false" aria-controls="FeGraph-Canvas">DayNight</li>
+        <li class="TabButton TabEnabled" id="PolesButton"    role="tab" aria-selected="false" aria-controls="FeGraph-Canvas">Poles</li>
+        <li class="TabButton TabEnabled" id="StarsButton"    role="tab" aria-selected="false" aria-controls="FeGraph-Canvas">Stars</li>
+        <!-- Hidden buttons: demos-manager.js wires these via wireButton(); kept in DOM for click delegation -->
+        <li class="TabButton tab-hidden" id="TFEButton">TFE</li>
+        <li class="TabButton tab-hidden" id="ResetButton">Reset</li>
+        <li class="TabButton tab-hidden" id="BackButton">&lt;&lt;</li>
+        <li class="TabButton tab-hidden" id="PlayButton">Play</li>
+        <li class="TabButton tab-hidden" id="ForwButton">&gt;&gt;</li>
+        <li class="TabButton tab-hidden" id="CountButton">x</li>
+      </ul>
+
+      <!-- Right cluster: playback + time + day + calendar -->
+      <div id="top-controls">
+        <!-- Playback -->
+        <div class="top-playback" role="group" aria-label="Playback controls">
+          <button class="pb-btn" id="pb-step-back" aria-label="Step back one cycle">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+          </button>
+          <button class="pb-btn pb-primary" id="pb-play" aria-label="Play" aria-pressed="false">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path id="pb-play-icon" d="M8 5v14l11-7z"/>
+            </svg>
+          </button>
+          <button class="pb-btn" id="pb-step-fwd" aria-label="Step forward one cycle">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 18l8.5-6L6 6v12zm2-6 5.5 3.9V8.1L8 12zM16 6h2v12h-2z"/></svg>
+          </button>
+          <!-- Speed selector: click cycles forward, shift-click / right-click steps back.
+               Rate (days/sec) sets RAF playback; step (days) sets the ⏮/⏭ jump. -->
+          <button id="pb-speed-btn" class="pb-speed-btn" type="button"
+                  aria-label="Playback speed (click to cycle, shift-click to step back)"
+                  title="Click: next speed · Shift-click / right-click: previous">
+            <span id="pb-speed-label">1 yr/s</span>
+          </button>
+          <!-- Reset: calls ResetApp() and restores default model state -->
+          <button class="pb-btn pb-reset" id="pb-reset" aria-label="Reset simulation" title="Reset simulation">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          </button>
+        </div>
+
+        <!-- Time of day slider -->
+        <div class="tc-group">
+          <span class="tc-label">T <span id="tc-time-val">12.0</span>h</span>
+          <input class="tc-range" id="tc-time" type="range" min="0" max="24" step="0.1" value="12" aria-label="Time of day (hours)">
+        </div>
+
+        <!-- Year timeline scrubber: click anywhere to seek, drag to scrub (mouse + touch).
+             Backed by a native range for keyboard / a11y; CSS adds the ticks + handle styling. -->
+        <div class="tc-timeline" role="group" aria-label="Year timeline">
+          <div class="timeline-shell">
+            <div class="timeline-ticks" aria-hidden="true">
+              <span class="tk" style="--p: 0">Jan</span>
+              <span class="tk" style="--p: 0.0850">Feb</span>
+              <span class="tk" style="--p: 0.1622">Mar</span>
+              <span class="tk" style="--p: 0.2472">Apr</span>
+              <span class="tk" style="--p: 0.3296">May</span>
+              <span class="tk" style="--p: 0.4148">Jun</span>
+              <span class="tk" style="--p: 0.4973">Jul</span>
+              <span class="tk" style="--p: 0.5824">Aug</span>
+              <span class="tk" style="--p: 0.6676">Sep</span>
+              <span class="tk" style="--p: 0.7500">Oct</span>
+              <span class="tk" style="--p: 0.8352">Nov</span>
+              <span class="tk" style="--p: 0.9176">Dec</span>
+            </div>
+            <input class="timeline-range" id="tc-day" type="range" min="0" max="364" step="1" value="82" aria-label="Day of year (0–364)">
+          </div>
+          <span class="timeline-label" id="tc-day-val">Mar 23</span>
+        </div>
+
+        <!-- Sun / Moon info strip -->
+        <div id="sun-moon-strip" aria-live="polite" aria-atomic="true">
+          <span id="sms-sun"  class="sms-item" title="Sun azimuth / elevation">☀ —</span>
+          <span id="sms-moon" class="sms-item" title="Moon azimuth / elevation">☾ —</span>
+        </div>
+
+        <!-- Calendar date picker -->
+        <div id="calendar-widget">
+          <button id="calendar-toggle" aria-expanded="false" aria-controls="calendar-dropdown" aria-label="Open date picker">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+            <span id="calendar-display" aria-live="polite">—</span>
+          </button>
+          <div id="calendar-dropdown" hidden role="dialog" aria-label="Date picker">
+            <!-- Digit-scroll spinbuttons: ↑↓ arrows or scroll wheel on each field -->
+            <div class="cal-digits" role="group" aria-label="Date and time">
+              <span class="cal-spin" id="cs-month" role="spinbutton" tabindex="0"
+                    aria-label="Month" aria-valuenow="0" aria-valuemin="0" aria-valuemax="11"
+                    aria-valuetext="January" data-field="month">Jan</span>
+              <span class="cal-spin" id="cs-day" role="spinbutton" tabindex="0"
+                    aria-label="Day" aria-valuenow="1" aria-valuemin="1" aria-valuemax="31"
+                    data-field="day">01</span>
+              <span class="cal-spin cs-wide" id="cs-year" role="spinbutton" tabindex="0"
+                    aria-label="Year" aria-valuenow="2024" aria-valuemin="1900" aria-valuemax="2099"
+                    data-field="year">2024</span>
+              <span class="cal-sep">/</span>
+              <span class="cal-spin" id="cs-hour" role="spinbutton" tabindex="0"
+                    aria-label="Hour" aria-valuenow="12" aria-valuemin="0" aria-valuemax="23"
+                    data-field="hour">12</span>
+              <span class="cal-sep">:</span>
+              <span class="cal-spin" id="cs-min" role="spinbutton" tabindex="0"
+                    aria-label="Minute" aria-valuenow="0" aria-valuemin="0" aria-valuemax="59"
+                    data-field="min">00</span>
+              <span class="cal-utc">UTC</span>
+            </div>
+            <!-- Year progress: thin bar showing day position within the year -->
+            <div class="cal-year-track" role="progressbar"
+                 aria-label="Day of year" aria-valuemin="0" aria-valuemax="364" aria-valuenow="82">
+              <div class="cal-year-fill" id="cal-year-fill"></div>
+            </div>
+            <div class="cal-step-row">
+              <button class="cal-btn" data-cal-step="-365.25" aria-label="Back 1 year">← 1yr</button>
+              <button class="cal-btn" data-cal-step="-1"     aria-label="Back 1 day">← 1d</button>
+              <button class="cal-btn" data-cal-step="1"      aria-label="Forward 1 day">1d →</button>
+              <button class="cal-btn" data-cal-step="365.25" aria-label="Forward 1 year">1yr →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Canvas mount: CreateDomObjects replaces this div with #FeGraph once modules load -->
+    <div id="jsg-canvas-mount"></div>
+    <script type="module" src="js/main-v2.js"></script>
+
+    <!-- Bottom bar: layer toggles + param sliders + ray controls -->
+    <footer id="bottom-bar">
+
+      <!-- Layer toggle section -->
+      <div class="layer-section" role="group" aria-label="Canvas layer visibility">
+        <button class="layer-toggle" data-prop="ShowFeGrid" aria-pressed="true" aria-label="FE Grid">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16M8 3v18M16 3v18"/></svg>
+          <span class="toggle-label">Grid</span>
+        </button>
+        <button class="layer-toggle" data-prop="ShowDomeGrid" aria-pressed="true" aria-label="Dome Grid">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M3 20a9 9 0 0 1 18 0M12 11v9M6 18a7 7 0 0 1 12 0"/></svg>
+          <span class="toggle-label">Dome</span>
+        </button>
+        <button class="layer-toggle" data-prop="ShowShadow" aria-pressed="true" aria-label="Shadow">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="7" r="3"/><path d="M10.2 9.8 19 21H5z" fill="currentColor" fill-opacity="0.3"/></svg>
+          <span class="toggle-label">Shadow</span>
+        </button>
+        <button class="layer-toggle" data-prop="ShowSphere" aria-pressed="true" aria-label="Sphere">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><ellipse cx="12" cy="12" rx="8" ry="3.5"/></svg>
+          <span class="toggle-label">Sphere</span>
+        </button>
+      </div>
+
+      <!-- Rays section: dome rays / sphere rays / many-rays mode -->
+      <div class="rays-section" role="group" aria-label="Rays">
+        <button class="layer-toggle ray-btn" data-prop="ShowDomeRays" aria-pressed="true" aria-label="Dome Rays">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M3 20a9 9 0 0 1 18 0M12 20v-8M7.5 20 11 13M16.5 20 13 13"/></svg>
+          <span class="toggle-label">D·Rays</span>
+        </button>
+        <button class="layer-toggle ray-btn" data-prop="ShowSphereRays" aria-pressed="true" aria-label="Sphere Rays">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M9 11 5 20M12 11v9M15 11l4 9"/></svg>
+          <span class="toggle-label">S·Rays</span>
+        </button>
+        <button class="layer-toggle ray-btn" data-prop="ShowManyRays" aria-pressed="false" aria-label="Many Rays">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M3 5l18 9M3 12h18M3 19l18-9"/></svg>
+          <span class="toggle-label">Rays+</span>
+        </button>
+      </div>
+
+      <!-- Parameter sliders: MoonEcliptic, DistSun, DistMoon, DomeHeight, DomeSize, RayParam -->
+      <div class="param-section" role="group" aria-label="Model parameters">
+        <div class="param-slider">
+          <label class="param-label" for="ps-moon-ecl">M.Ecl <span class="param-val" id="pv-moon-ecl">5.1°</span></label>
+          <input type="range" id="ps-moon-ecl" class="param-range" min="-90" max="90" step="0.5" value="5.145" aria-label="Moon ecliptic angle (degrees)">
+        </div>
+        <div class="param-slider">
+          <label class="param-label" for="ps-dist-sun">☀Dist <span class="param-val" id="pv-dist-sun">1.5e8</span></label>
+          <input type="range" id="ps-dist-sun" class="param-range" min="3" max="9" step="0.01" value="8.175" aria-label="Sun distance (log₁₀ km)">
+        </div>
+        <div class="param-slider">
+          <label class="param-label" for="ps-dist-moon">☾Dist <span class="param-val" id="pv-dist-moon">384k</span></label>
+          <input type="range" id="ps-dist-moon" class="param-range" min="3" max="6" step="0.01" value="5.584" aria-label="Moon distance (log₁₀ km)">
+        </div>
+        <div class="param-slider">
+          <label class="param-label" for="ps-dome-h">DomeH <span class="param-val" id="pv-dome-h">9000</span></label>
+          <input type="range" id="ps-dome-h" class="param-range" min="2000" max="20015" step="100" value="9000" aria-label="Dome height (km)">
+        </div>
+        <div class="param-slider">
+          <label class="param-label" for="ps-dome-sz">DomeSz <span class="param-val" id="pv-dome-sz">1.0</span></label>
+          <input type="range" id="ps-dome-sz" class="param-range" min="1" max="5" step="0.1" value="1" aria-label="Dome size (× FE radius)">
+        </div>
+        <div class="param-slider">
+          <label class="param-label" for="ps-ray-p">RayP <span class="param-val" id="pv-ray-p">1.0</span></label>
+          <input type="range" id="ps-ray-p" class="param-range" min="0.5" max="2" step="0.1" value="1" aria-label="Ray parameter">
+        </div>
+      </div>
+
+      <!-- Luminaries: Sun / Moon / Stars body toggles + a single Orbits toggle that controls both tracks -->
+      <div class="luminary-section" role="group" aria-label="Luminaries">
+        <button class="layer-toggle luminary-btn" data-prop="ShowSun" aria-pressed="true" aria-label="Sun">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><g stroke="currentColor" stroke-width="1.75" stroke-linecap="round" fill="none"><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12"/></g></svg>
+          <span class="toggle-label">Sun</span>
+        </button>
+        <button class="layer-toggle luminary-btn" data-prop="ShowMoon" aria-pressed="true" aria-label="Moon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 7a5 5 0 1 1-7.5 6.5A5 5 0 0 1 15 7z"/></svg>
+          <span class="toggle-label">Moon</span>
+        </button>
+        <button class="layer-toggle luminary-btn" data-prop="ShowStars" aria-pressed="false" aria-label="Stars">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="7" r="1.5"/><circle cx="13" cy="4" r="1.5"/><circle cx="20" cy="9" r="1.5"/><circle cx="8" cy="16" r="1.5"/><circle cx="18" cy="17" r="1.5"/><circle cx="12" cy="20" r="1.2"/></svg>
+          <span class="toggle-label">Stars</span>
+        </button>
+        <button class="layer-toggle luminary-btn" data-prop-list="ShowSunTrack,ShowMoonTrack" aria-pressed="false" aria-label="Orbits (sun + moon tracks)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="9" ry="4" stroke-dasharray="2.5 2"/><ellipse cx="12" cy="12" rx="4" ry="9" stroke-dasharray="2.5 2"/></svg>
+          <span class="toggle-label">Orbits</span>
+        </button>
+      </div>
+
+    </footer>
+
+    <!-- Save / restore app state -->
+    <details class="save-restore">
+      <summary>Save / Restore State</summary>
+      <div class="save-restore-body">
+        <textarea id="SaveRestorePanel" name="SaveRestorePanel"
+          spellcheck="false" rows="8" cols="60"></textarea>
+        <p>
+          <button type="button" id="sr-get-state">Get App State</button>
+          <button type="button" id="sr-get-url">Get App URL</button>
+          <button type="button" id="sr-set-state">Set App State</button>
+          <button type="button" id="sr-clear">Clear</button>
+          <button type="button" id="btn-screenshot">Screenshot PNG</button>
+        </p>
+      </div>
+    </details>
+
+    <!-- Screen reader region: announces date/time when playback is paused -->
+    <div id="canvas-status" role="status" aria-live="polite" aria-atomic="true"
+      style="position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;"></div>
+    <!-- Gesture hint: fades out after 5 s -->
+    <div id="gesture-hint" role="note">
+      <span>Drag: rotate</span><span class="gh-fine"> &nbsp;·&nbsp; Ctrl-drag: observer position &nbsp;·&nbsp; Scroll: zoom</span>
+    </div>
+
+  </main>
+</body>
+</html>
