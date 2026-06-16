@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Calculate and visualize what we can see of a target of a certain size and distance from any observer altitude, taking refraction into account. Compares flat earth and globe earth.">
+  <title>Advanced Earth Curvature Calculator</title>
+
+  <!-- Wiki number-formatting locale (read by NumFormatter at load time). -->
+  <script>
+    var NUMBER_FORMATING = 'en';
+    var ROOT             = './';
+    var ASP_PAGE         = 'index.html';
+    var ASP_REF          = '';
+    var PAGE_NAME        = 'Advanced Earth Curvature Calculator';
+    var PAGE_URL         = '';
+    var MEDIA_FOLDER     = '';
+    var WIKIDOC_URL      = '';
+    var PAGE_MODE        = '';
+    var MATH_PROCESSOR   = 'None';
+    var ENABLE_EDIT      = false;
+    var HAS_FORMS        = false;
+    var IS_LOGED_IN      = false;
+    var IS_USER_LOGED_IN = false;
+    var WIKI_HiliWordList = [];
+  </script>
+
+  <!-- Stylesheets: vendor base first, then calculator overrides. -->
+  <link rel="stylesheet" href="vendor/styles.css">
+  <link rel="stylesheet" href="styles/calculator.css">
+
+  <!-- ===========================================================
+       Vendor libraries (custom code by walter.bislins.ch).
+       Order matters: helpers (wiki.js) → graphics → ui → data → animation.
+       =========================================================== -->
+  <script src="vendor/wiki.js"></script>
+  <script src="vendor/jsg.js"></script>
+  <script src="vendor/jsgx3d.js"></script>
+  <script src="vendor/NumFormatter.js"></script>
+  <script src="vendor/Slider.js"></script>
+  <script src="vendor/ControlPanel.js"></script>
+  <script src="vendor/Tabs.js"></script>
+  <script src="vendor/DataX.js"></script>
+  <script src="vendor/xtc.js"></script>
+  <script src="vendor/ModelAnimation.js"></script>
+
+  <!-- ===========================================================
+       App core: constants, data model, instantiation, units.
+       Loaded BEFORE the body's panel scripts because panels reference
+       CurveApp / UpdateAll via ControlPanels declarations.
+       =========================================================== -->
+  <script src="app/core/constants.js"></script>
+  <script src="app/core/metadata.js"></script>
+  <script src="app/core/curveApp.js"></script>
+  <script src="app/core/setup.js"></script>
+  <script src="app/core/units.js"></script>
+</head>
+
+<body>
+<!-- .Wiki: enables vendor `.Wiki div.Scroller` styles. .CalcApp: constrains
+     width and centers the app (replaces the original wiki content column). -->
+<div class="Wiki CalcApp">
+
+  <h1 class="CalcTitle">Advanced Earth Curvature Calculator</h1>
+
+  <!-- Anchor used by DataX.SetupUrlStateHandler to scroll back to the app after URL state restore. -->
+  <a id="App"></a>
+
+  <!-- ===========================================================
+       3D scene canvas. sceneRenderer.js calls NewGraphX3D(...) which
+       uses document.writeln to inject the <canvas> at this position.
+       =========================================================== -->
+  <script src="app/render/sceneRenderer.js"></script>
+
+  <!-- Object draw functions used by graph.Redraw → DrawModel. -->
+  <script src="app/render/objectRenderer.js"></script>
+
+  <!-- ===========================================================
+       Settings tabs (Basics / View / Target 1 / Target 2 /
+       Refraction / Units / Save-Restore + global Reset button).
+       =========================================================== -->
+  <ul id="CurveSettingsTabs" class="TabSelectors Top MarginTop">
+    <li id="BasicsTab"     class="TabEnabled TabSelected">Basics</li>
+    <li id="ViewsTab"      class="TabEnabled">View</li>
+    <li id="Obj1Tab"       class="TabEnabled">Target 1</li>
+    <li id="Obj2Tab"       class="TabEnabled">Target 2</li>
+    <li id="RefractionTab" class="TabEnabled">Refraction&#8658;</li>
+    <li id="StdRefrButton"   class="TabButton TabEnabled">Std</li>
+    <li id="ZeroRefrButton"  class="TabButton TabEnabled">0</li>
+    <li id="UnitsTab"       class="TabEnabled">Units</li>
+    <li id="SaveRestoreTab" class="TabEnabled">Save/Restore</li>
+    <li id="ResetButton"    class="TabButton TabEnabled">Reset All</li>
+  </ul>
+
+  <div id="CurveSettingsTabsBoxes" class="TabBoxes">
+
+    <!-- Tab 0: Basics (Observer height, Target distance/size, Refraction, Zoom, View angle) + global Options (Model, Camera Aim, Show Data) -->
+    <div>
+      <div class="Scroller Paragraph">
+        <div class="ScrollCanvas" style="min-width:600px">
+          <script src="app/panels/basics.js"></script>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 1: View (Pan, Tilt, Roll, scene size) -->
+    <div class="TabHide">
+      <div class="Scroller Paragraph">
+        <div class="ScrollCanvas" style="min-width:600px">
+          <script src="app/panels/view.js"></script>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Target 1 (sliders + options) -->
+    <div class="TabHide">
+      <div class="Scroller Paragraph">
+        <div class="ScrollCanvas" style="min-width:600px">
+          <script src="app/panels/obj1.js"></script>
+          <script src="app/panels/obj1Options.js"></script>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Target 2 (sliders + options) -->
+    <div class="TabHide">
+      <div class="Scroller Paragraph">
+        <div class="ScrollCanvas" style="min-width:600px">
+          <script src="app/panels/obj2.js"></script>
+          <script src="app/panels/obj2Options.js"></script>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Refraction (full panel + Std/Zero button handlers) -->
+    <div class="TabHide">
+      <div class="Scroller Paragraph">
+        <div class="ScrollCanvas" style="min-width:600px">
+          <script src="app/panels/refraction.js"></script>
+          <script src="app/panels/refractionHandlers.js"></script>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 5: Units (Metric / Imperial) -->
+    <div class="TabHide">
+      <div class="Scroller Paragraph">
+        <div class="ScrollCanvas" style="min-width:600px">
+          <script src="app/panels/units.js"></script>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 6: Save / Restore (URL state + handlers ResetApp/SetStdRefraction/Set0Refraction/HandleUrlCommands) -->
+    <div class="TabHide">
+      <div class="Scroller Paragraph">
+        <div class="ScrollCanvas" style="min-width:600px">
+          <script src="app/panels/saveRestore.js"></script>
+          <script src="app/panels/saveRestoreHandlers.js"></script>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===========================================================
+       Read-only data panels (always visible below the tabs):
+       Nearest Target Data and Horizon Data.
+       =========================================================== -->
+  <div class="Scroller Paragraph">
+    <div class="ScrollCanvas">
+      <script src="app/panels/targetData.js"></script>
+    </div>
+  </div>
+
+  <div class="Scroller Paragraph">
+    <div class="ScrollCanvas">
+      <script src="app/panels/horizonData.js"></script>
+    </div>
+  </div>
+
+  <!-- ===========================================================
+       Reference image tabs (Angles / NoRefraction / Refraction)
+       — static illustrations of the calculator's geometry.
+       =========================================================== -->
+  <div id="CurveCalcGraphsBoxes" class="TabBoxes">
+    <div class="TabHide">
+      <div class="bpic" style="width:100%;">
+        <div class="ofrbpic">
+          <div class="ifrbpic"><img src="assets/CurveCalcAngles.png" alt="" style="width:100%;"></div>
+          <div class="imgd" style="width:100%;">Curvature Calculator showing Angles</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="bpic" style="width:100%;">
+        <div class="ofrbpic">
+          <div class="ifrbpic"><img src="assets/CurveCalcNoRefraction2.png" alt="" style="width:100%;"></div>
+          <div class="imgd" style="width:100%;">Curvature Calculator showing No Refraction</div>
+        </div>
+      </div>
+    </div>
+    <div class="TabHide">
+      <div class="bpic" style="width:100%;">
+        <div class="ofrbpic">
+          <div class="ifrbpic"><img src="assets/CurveCalcRefraction2.png" alt="" style="width:100%;"></div>
+          <div class="imgd" style="width:100%;">Curvature Calculator showing Refraction</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul id="CurveCalcGraphs" class="TabSelectors Bottom">
+    <li class="TabEnabled">Angles</li>
+    <li class="TabDefault TabEnabled TabSelected">No Refraction</li>
+    <li class="TabEnabled">Refraction</li>
+  </ul>
+
+  <!-- ===========================================================
+       Final bootstrap: wire global tab buttons (Reset / Std refraction /
+       Zero refraction), restore state from URL fragment, first redraw.
+       =========================================================== -->
+  <script src="app/core/init.js"></script>
+
+</div><!-- /.CalcApp -->
+</body>
+</html>
