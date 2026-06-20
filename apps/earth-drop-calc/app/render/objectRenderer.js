@@ -2,6 +2,8 @@
 // objectRenderer.js - Draws target objects (M-rods/mountains/etc) and their
 //                     variants for both globe and flat earth models.
 // =============================================================================
+import { HUnit, HVal } from '../core/units.js';
+
 function DrawObjectsBehindHorizon( objIx, g ) {
   var m = CurveApp;
 

@@ -339,7 +339,7 @@ function computeViewCenterAngle(
   return 0; // eye level
 }
 
-Object.assign(globalThis, {
+export {
   compObjVect, compViewDist, compVectAng,
   computeRefractionCoeff, computeTempGradientFromK,
   computeRefractionFactor, computeRefractedRadius,
@@ -347,4 +347,4 @@ Object.assign(globalThis, {
   computeHorizonRefractionAngle,
   computeObjectGeometry,
   computeViewCenterAngle,
-});
+};

@@ -1,4 +1,17 @@
 // @ts-check
+import {
+  computeHorizonGeometry, computeHorizonRefractionAngle, computeLeftRightDrop,
+  computeObjectGeometry, computeRefractedRadius, computeRefractionCoeff,
+  computeRefractionFactor, computeTempGradientFromK,
+} from './physics.js';
+import {
+  sliderToHeight, heightToSlider, sliderToRefractionCoeff,
+  focalLengthSliderToFocalLength, focalLengthToViewAngle, viewAngleToFocalLength,
+  focalLengthToSlider, tiltToSlider, sliderToTilt, panToSlider, sliderToPan,
+  sliderToObjSurfDist, objSurfDistToSlider, sliderToObjSidePos, objSidePosToSlider,
+  sliderToObjSideVar, objSideVarToSlider, sliderToObjSize, objSizeToSlider,
+  sliderToObjDeltaDist, objDeltaDistToSlider,
+} from './sliderMapping.js';
 // =============================================================================
 // curveApp.js - CurveAppClass: the calculator's data model and math engine.
 //   - Stores inputs (height, distance, refraction, view params, objects)
@@ -872,6 +885,5 @@ CurveAppClass.prototype.UpdateObjectInput = function( objIx ) {
   this.SliderObjDeltaDistLogLast[objIx] = this.SliderObjDeltaDistLog[objIx];
 
 }
-
 
 Object.assign(globalThis, { CurveAppClass });

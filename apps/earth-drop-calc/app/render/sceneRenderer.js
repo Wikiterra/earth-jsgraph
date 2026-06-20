@@ -2,6 +2,8 @@
 // sceneRenderer.js - Creates the main 3D graph and draws the model scene
 //                    (earth/sky, horizon, refraction overlays, grid lines).
 // =============================================================================
+import { LVal, LUnit, HVal, HUnit, AVal, AUnit } from '../core/units.js';
+
 // createGraph3D: core seam over the wabis NewGraphX3D global (see index.html).
 var graph = createGraph3D( {
   Id: 'JsGraph1',

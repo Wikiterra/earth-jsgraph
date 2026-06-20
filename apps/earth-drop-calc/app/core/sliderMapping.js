@@ -162,7 +162,7 @@ function objDeltaDistToSlider(d) {
   return Math.log10(d / 10);
 }
 
-Object.assign(globalThis, {
+export {
   sliderToHeight, heightToSlider,
   sliderToRefractionCoeff,
   focalLengthSliderToFocalLength, focalLengthToViewAngle,
@@ -174,4 +174,4 @@ Object.assign(globalThis, {
   sliderToObjSideVar, objSideVarToSlider,
   sliderToObjSize, objSizeToSlider,
   sliderToObjDeltaDist, objDeltaDistToSlider,
-});
+};
