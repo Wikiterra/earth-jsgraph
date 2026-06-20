@@ -103,5 +103,5 @@ ControlPanels.NewPanel( {
   UnitsData: 'BigLengthUnits',
   ReadOnly: false
 
-} ).Render();
+} ).RenderInto('panel-targetdata');
 

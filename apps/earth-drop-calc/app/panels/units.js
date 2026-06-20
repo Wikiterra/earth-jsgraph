@@ -68,5 +68,5 @@ ControlPanels.NewPanel( {
     Inc: 10,
   }
 
-).Render();
+).RenderInto('panel-units');
 

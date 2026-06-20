@@ -78,6 +78,11 @@ ControlPanel.prototype.GetHtml = function () {
     html += '</tr></table>'; return html;
 }
 ControlPanel.prototype.Render = function () { document.writeln(this.GetHtml()); return this; }
+// ponytail: vendor patch — render into a target element instead of document.write,
+// so panels work under deferred ESM loading (document.write is a no-op post-parse).
+// Falls back to Render() if the target is missing. Init() still finds the panel by
+// xGet(this.Name), so location doesn't matter.
+ControlPanel.prototype.RenderInto = function (id) { var el = xGet(id); if (el) { el.insertAdjacentHTML('beforeend', this.GetHtml()); } else { this.Render(); } return this; }
 ControlPanel.prototype.Init = function (forceGetDefault) {
     var me = this; this.DomObj = xGet(this.GetHtmlID()); this.ForEachField(function CB_InitField(field) { field.Init(forceGetDefault); }); if (xDef(window.Tabs) && this.FieldUpdateLayoutFuncCounter > 0) {
         if (this.DomObj) {

@@ -67,5 +67,5 @@ ControlPanels.NewSliderPanel( {
   Max: 1,
   Inc: 0.1,
 
-} ).Render();
+} ).RenderInto('panel-view');
 

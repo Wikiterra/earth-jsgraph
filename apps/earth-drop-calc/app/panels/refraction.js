@@ -247,7 +247,7 @@ ControlPanels.NewPanel( {
       Value: 6
     }
   ]
-} ).Render();
+} ).RenderInto('panel-refraction');
 
 ControlPanels.NewPanel( {
   Name: 'RefractionBaro-Panel',
@@ -293,5 +293,5 @@ ControlPanels.NewPanel( {
   Units: 'mbar',
   Mult: 100,
 
-} ).Render();
+} ).RenderInto('panel-refraction');
 

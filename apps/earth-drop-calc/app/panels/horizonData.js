@@ -77,5 +77,5 @@ ControlPanels.NewPanel( {
   Label: 'Apparent Radius',
   UnitsData: 'LengthUnits',
 
-} ).Render();
+} ).RenderInto('panel-horizondata');
 

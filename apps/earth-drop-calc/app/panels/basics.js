@@ -76,7 +76,7 @@ ControlPanels.NewSliderPanel( {
   Max: 91.6,
   Inc: 0.1,
 
-} ).Render();
+} ).RenderInto('panel-basics');
 
 ControlPanels.NewPanel( {
   Name: 'OptionsPanel',
@@ -135,5 +135,5 @@ ControlPanels.NewPanel( {
     }
   ]
 
-} ).Render();
+} ).RenderInto('panel-basics');
 

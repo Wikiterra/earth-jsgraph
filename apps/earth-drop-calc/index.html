@@ -101,7 +101,7 @@
     <!-- Tab 0: Basics (Observer height, Target distance/size, Refraction, Zoom, View angle) + global Options (Model, Camera Aim, Show Data) -->
     <div>
       <div class="Scroller Paragraph">
-        <div class="ScrollCanvas" style="min-width:600px">
+        <div class="ScrollCanvas" style="min-width:600px" id="panel-basics">
           <script src="app/panels/basics.js"></script>
         </div>
       </div>
@@ -110,7 +110,7 @@
     <!-- Tab 1: View (Pan, Tilt, Roll, scene size) -->
     <div class="TabHide">
       <div class="Scroller Paragraph">
-        <div class="ScrollCanvas" style="min-width:600px">
+        <div class="ScrollCanvas" style="min-width:600px" id="panel-view">
           <script src="app/panels/view.js"></script>
         </div>
       </div>
@@ -119,7 +119,7 @@
     <!-- Tab 2: Target 1 (sliders + options) -->
     <div class="TabHide">
       <div class="Scroller Paragraph">
-        <div class="ScrollCanvas" style="min-width:600px">
+        <div class="ScrollCanvas" style="min-width:600px" id="panel-obj1">
           <script src="app/panels/obj1.js"></script>
           <script src="app/panels/obj1Options.js"></script>
         </div>
@@ -129,7 +129,7 @@
     <!-- Tab 3: Target 2 (sliders + options) -->
     <div class="TabHide">
       <div class="Scroller Paragraph">
-        <div class="ScrollCanvas" style="min-width:600px">
+        <div class="ScrollCanvas" style="min-width:600px" id="panel-obj2">
           <script src="app/panels/obj2.js"></script>
           <script src="app/panels/obj2Options.js"></script>
         </div>
@@ -139,7 +139,7 @@
     <!-- Tab 4: Refraction (full panel + Std/Zero button handlers) -->
     <div class="TabHide">
       <div class="Scroller Paragraph">
-        <div class="ScrollCanvas" style="min-width:600px">
+        <div class="ScrollCanvas" style="min-width:600px" id="panel-refraction">
           <script src="app/panels/refraction.js"></script>
           <script src="app/panels/refractionHandlers.js"></script>
         </div>
@@ -149,7 +149,7 @@
     <!-- Tab 5: Units (Metric / Imperial) -->
     <div class="TabHide">
       <div class="Scroller Paragraph">
-        <div class="ScrollCanvas" style="min-width:600px">
+        <div class="ScrollCanvas" style="min-width:600px" id="panel-units">
           <script src="app/panels/units.js"></script>
         </div>
       </div>
@@ -158,7 +158,7 @@
     <!-- Tab 6: Save / Restore (URL state + handlers ResetApp/SetStdRefraction/Set0Refraction/HandleUrlCommands) -->
     <div class="TabHide">
       <div class="Scroller Paragraph">
-        <div class="ScrollCanvas" style="min-width:600px">
+        <div class="ScrollCanvas" style="min-width:600px" id="panel-saverestore">
           <script src="app/panels/saveRestore.js"></script>
           <script src="app/panels/saveRestoreHandlers.js"></script>
         </div>
@@ -172,13 +172,13 @@
        Nearest Target Data and Horizon Data.
        =========================================================== -->
   <div class="Scroller Paragraph">
-    <div class="ScrollCanvas">
+    <div class="ScrollCanvas" id="panel-targetdata">
       <script src="app/panels/targetData.js"></script>
     </div>
   </div>
 
   <div class="Scroller Paragraph">
-    <div class="ScrollCanvas">
+    <div class="ScrollCanvas" id="panel-horizondata">
       <script src="app/panels/horizonData.js"></script>
     </div>
   </div>

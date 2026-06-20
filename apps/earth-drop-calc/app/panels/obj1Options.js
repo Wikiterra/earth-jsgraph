@@ -66,5 +66,5 @@ ControlPanels.NewPanel( {
     }
   ]
 
-} ).Render();
+} ).RenderInto('panel-obj1');
 

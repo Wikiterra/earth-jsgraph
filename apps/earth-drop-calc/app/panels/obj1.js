@@ -89,5 +89,5 @@ ControlPanels.NewSliderPanel( {
   Max: 1,
   Inc: 0.01,
 
-} ).Render();
+} ).RenderInto('panel-obj1');
 

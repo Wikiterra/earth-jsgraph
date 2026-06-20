@@ -26,5 +26,5 @@ ControlPanels.NewPanel( {
     }
   ]
 
-} ).Render();
+} ).RenderInto('panel-saverestore');
 
