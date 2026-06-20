@@ -14,7 +14,7 @@ var CurveAppMetaData = {
 
     { Name: 'ShowModel',         Type: 'int',  Default: 1 },
     { Name: 'DeviceRatio',       Type: 'num',  Default: DeviceRatio_Off },
-    { Name: 'ViewcenterHorizon', Type: 'int',  Default: 0 },
+    { Name: 'ViewcenterHorizon', Type: 'int',  Default: 3 },
 
     { Name: 'ObjType',           Type: 'arr', Size: 2, ArrayType: 'int', Default: [ 0, 0 ] },
     { Name: 'NObjects',          Type: 'arr', Size: 2, ArrayType: 'int', Default: [ 1, 0 ] },

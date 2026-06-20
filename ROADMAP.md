@@ -45,18 +45,13 @@ arquitectónico por fases en [../MIGRATION-PLAN.md](../MIGRATION-PLAN.md).
 (`<input type="range">` nativo). — `7342d0f`, `bc5bfc3`
 
 - Activar Pages (manual, 1 vez). Build, workflow y `origin` ya existen. Falta solo el toggle en GitHub: **Settings → Pages → Source: GitHub Actions** → push para disparar `deploy.yml`.
+- **Producto — eye-level / horizonte:** vista anclada al **eye-level** por defecto
+  (`ViewcenterHorizon=3`); FE tratada como **plano infinito** → su horizonte coincide
+  con el eye-level (`avc=0`); el horizonte del globo **baja** bajo el eye-level al subir
+  la altura. Eye-level dibujado en ambos modelos. Solo cambió la cámara — la física
+  (snapshots matemáticos) intacta; baselines de render regenerados.
 
 ## ⏳ Pendiente
-
-### 🟡 Producto — eye-level / horizonte (earth-drop-calc + FE)
-Specs de física del render. Validar con `pnpm characterize` (ya tiene escenario Globe+FE).
-- **Altura del observador:** al subir, hoy mueve **la línea de horizonte** hacia arriba;
-  debe mover **solo el eye-level**, no el horizonte.
-- **FE vs Globe:** en **FE** el eye-level coincide con la línea de horizonte. En **Globe**
-  no: al subir el observador, el horizonte —curva geométrica de la esfera— **baja**.
-- **Radio:** ambos modelos usan 6371 km; para simplificar, tratar **FE** como plano
-  infinito.
-- **Indicar el eye-level** explícitamente en ambos modelos.
 
 ### 🟡 Mantenimiento del vendor si se actualiza wabis (condicional)
 Al traer versión nueva de walter.bislins.ch: re-copiar fuentes →

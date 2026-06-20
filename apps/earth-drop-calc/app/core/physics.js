@@ -309,10 +309,11 @@ function computeObjectGeometry(
 
 /**
  * Compute azimuthal view center angle depending on aiming mode.
+ * FE is an infinite flat plane → its horizon is eye level (aim 0).
  * @param {number} viewcenterHorizon — 0=globe, 1=FE, 2=between, 3=eye level
  * @param {number} height              — observer height
  * @param {number} equatorRadiusFE     — FE equator radius
- * @param {number} horizDropAnglFromEyeLvl
+* @param {number} horizDropAnglFromEyeLvl
  * @param {boolean} isShowGlobe
  * @param {string} [aimModel]          - 'globe' | 'fe' (in split-screen mode)
  * @returns {number} vertical view center angle in radians
@@ -321,17 +322,19 @@ function computeViewCenterAngle(
   viewcenterHorizon, height, equatorRadiusFE,
   horizDropAnglFromEyeLvl, isShowGlobe, aimModel
 ) {
+  // FE is modelled as an infinite flat plane: its horizon coincides with eye
+  // level, so every FE aim term is 0 (height/equatorRadiusFE unused here now).
   if (viewcenterHorizon === 0) {
     var aimGlobe = (aimModel === 'globe') ? true
                  : (aimModel === 'fe')    ? false
                  : isShowGlobe;
-    return aimGlobe ? horizDropAnglFromEyeLvl : Math.atan(height / equatorRadiusFE);
+    return aimGlobe ? horizDropAnglFromEyeLvl : 0;
   }
   if (viewcenterHorizon === 1) {
-    return Math.atan(height / equatorRadiusFE);
+    return 0; // FE horizon = eye level
   }
   if (viewcenterHorizon === 2) {
-    return (Math.atan(height / equatorRadiusFE) + horizDropAnglFromEyeLvl) / 2;
+    return horizDropAnglFromEyeLvl / 2; // between globe horizon and eye level
   }
   return 0; // eye level
 }

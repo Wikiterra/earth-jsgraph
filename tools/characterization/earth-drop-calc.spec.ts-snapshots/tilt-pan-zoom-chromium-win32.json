@@ -8,15 +8,15 @@
   ],
   "CamSceneSize": 97.75604353,
   "CamUp": [
-    -0.08643389725,
-    -0.1497079015,
-    0.9849450369
+    -0.08682408883,
+    -0.1503837332,
+    0.984807753
   ],
   "CamViewAngl": 0.03490658504,
   "CamViewCenter": [
-    2486.084196,
-    4306.02414,
-    872.6657344
+    2485.73768,
+    4305.423956,
+    876.6052399
   ],
   "CurrentObjAngl": [
     0,
@@ -202,7 +202,7 @@
   "TemperatureLast_C": 15,
   "Temperature_C": 15,
   "Temperature_K": 288.15,
-  "TheodoliteTilt": 9.954600741,
+  "TheodoliteTilt": 10,
   "Tilt": 10,
   "TiltSlider": 0.4714045208,
   "UnitsType": 0,
@@ -210,7 +210,7 @@
   "ViewAngleField": 2,
   "ViewAngleSlider": 2,
   "ViewAngleSliderLast": 2,
-  "ViewcenterHorizon": 0,
+  "ViewcenterHorizon": 3,
   "pause": 0,
   "showGrid": 1
 }

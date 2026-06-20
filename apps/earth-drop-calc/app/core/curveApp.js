@@ -209,7 +209,7 @@ function CurveAppClass() {
   this.DeviceRatio = 3 / 2; // width / height of device screen
   this.SceneWidth = 0;
   this.SceneHeight = 0;
-  this.ViewcenterHorizon = 0;  // 0 -> globe, 1 -> flat earth, 2 -> between, 3 -> eye level
+  this.ViewcenterHorizon = 3;  // 0 -> globe, 1 -> flat earth, 2 -> between, 3 -> eye level (default: anchor on eye-level so the globe horizon visibly drops as observer height rises)
 
   // refraction
   this.BaroModel = null;
@@ -777,14 +777,15 @@ CurveAppClass.prototype.CompCameraParams = function( pan, tilt, roll, aimModel )
     if (aimGlobe) {
       avc = this.HorizDropAnglFromEyeLvl;
     } else {
-      avc = Math.atan( this.Height / this.EquatorRadiusFE );
+      // FE is an infinite flat plane: its horizon coincides with eye level (aim 0).
+      avc = 0;
     }
   } else if (this.ViewcenterHorizon == 1) {
-    // view center is flat earth equator
-    avc = Math.atan( this.Height / this.EquatorRadiusFE );
+    // view center is flat earth horizon (= eye level for an infinite plane)
+    avc = 0;
   } else if (this.ViewcenterHorizon == 2) {
-    // view center is between globe horizon and flat earth equator
-    avc = (Math.atan( this.Height / this.EquatorRadiusFE ) + this.HorizDropAnglFromEyeLvl) / 2;
+    // view center is between globe horizon and flat earth horizon (eye level)
+    avc = this.HorizDropAnglFromEyeLvl / 2;
   } else {
     // view center is eye level
     avc = 0;
