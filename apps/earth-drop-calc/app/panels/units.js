@@ -69,4 +69,3 @@ ControlPanels.NewPanel( {
   }
 
 ).RenderInto('panel-units');
-

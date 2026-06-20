@@ -314,5 +314,4 @@ function PointOnPlane( lat, long ) {
   return [ x, y, -CurveApp.Height ];
 }
 
-
 Object.assign(globalThis, { DrawObjectsBehindHorizon, DrawObjectsBeforeHorizon, SetTrans, DrawShapeVariants, DrawShape, PointOnEarth, PointOnPlane });

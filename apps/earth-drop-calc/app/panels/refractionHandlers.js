@@ -83,5 +83,4 @@ function UpdateLengthModel() {
 
 xOnLoad( UpdateLengthModel );
 
-
 Object.assign(globalThis, { CLengthModel, LengthModel, UpdateLengthModel });

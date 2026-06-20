@@ -716,8 +716,6 @@ function DrawModel( g ) {
 
     g.SelectTrans( oldTrans );
   }
-
 }
-
 
 Object.assign(globalThis, { graph, DrawModel });

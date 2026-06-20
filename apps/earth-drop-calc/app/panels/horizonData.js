@@ -78,4 +78,3 @@ ControlPanels.NewPanel( {
   UnitsData: 'LengthUnits',
 
 } ).RenderInto('panel-horizondata');
-

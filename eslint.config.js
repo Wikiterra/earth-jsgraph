@@ -12,8 +12,6 @@ export default tseslint.config(
       "**/*.d.ts", // ambient type declarations (e.g. wabis.d.ts) — not lint targets
       "packages/jsgraph-vendor/**",
       "apps/**/vendor/**",
-      "apps/fed-wabis-v2/assets/**",
-      "apps/fed-wabis-v2/js/**",
     ],
   },
   js.configs.recommended,
@@ -76,9 +74,62 @@ export default tseslint.config(
       // The point of linting app code is `no-undef` (the module-boundary net).
       // The rest of the wabis-legacy style is out of scope here, so silence it.
       "no-undef": "error",
+      // The point of linting app code is `no-undef` (the module-boundary net).
+      // The wabis-legacy style/quality rules are out of scope here.
       "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-unused-expressions": "off",
+      "@typescript-eslint/no-this-alias": "off",
       "no-redeclare": "off",
       "no-var": "off",
+      "no-empty": "off",
+      "no-constant-condition": "off",
+      "no-constant-binary-expression": "off",
+    },
+  },
+  {
+    // fed app code: same module-boundary contract. fed's model FeDomeApp is one
+    // cohesive object that app.js / app-math.js / app-draw.js extend via
+    // Object.assign(FeDomeApp, {...}) — a deliberate method-partial layout, kept
+    // as-is. Declared globals = browser + wabis vendor + shared helpers + the
+    // fed runtime singletons.
+    files: ["apps/fed-wabis-v2/assets/**/*.js", "apps/fed-wabis-v2/js/**/*.js"],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        // wabis vendor surface (graph engine, jsg geometry types, x* DOM helpers).
+        NewGraphX3D: "readonly", JsgMat3: "readonly", JsgVect3: "readonly",
+        JsgVect2: "readonly", JsgColor: "readonly", JsgPlane: "readonly",
+        JsgPolygon: "readonly", JsgPolygonList: "readonly",
+        NumFormatter: "readonly", DataX: "readonly", Animations: "readonly",
+        ModelAnimation: "readonly", NewModelAnimation: "readonly",
+        CreateDomObjects: "readonly", addWheelListener: "readonly", ThisPageUrl: "readonly",
+        xDef: "readonly", xDefBool: "readonly", xDefNum: "readonly", xDefObj: "readonly",
+        xDefStr: "readonly", xStr: "readonly", xNum: "readonly", xFunc: "readonly",
+        xArray: "readonly", xInnerHTML: "readonly", xAddClass: "readonly",
+        xRemoveClass: "readonly", xOnLoad: "readonly", xOnDomReady: "readonly",
+        // Shared helpers (jsgraph-vendor/src/core/helpers.js).
+        toRad: "readonly", toDeg: "readonly", ToRad: "readonly", ToDeg: "readonly",
+        sqr: "readonly", Limit1: "readonly", Limit01: "readonly", ToRange: "readonly",
+        // fed runtime singletons / cohesive model + handlers + standalone helpers.
+        FeDomeApp: "writable", EarthMap: "readonly", JsgMouseHandler: "readonly",
+        Demos: "readonly", AnimationSpeed: "writable", EarthMapData: "readonly",
+        ResetApp: "readonly", UpdateAll: "readonly", TFE: "readonly",
+      },
+    },
+    rules: {
+      "no-undef": "error",
+      // The point of linting app code is `no-undef` (the module-boundary net).
+      // The wabis-legacy style/quality rules are out of scope here.
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-unused-expressions": "off",
+      "@typescript-eslint/no-this-alias": "off",
+      "no-redeclare": "off",
+      "no-var": "off",
+      "no-empty": "off",
+      "no-constant-condition": "off",
+      "no-constant-binary-expression": "off",
     },
   },
 );

@@ -104,4 +104,3 @@ ControlPanels.NewPanel( {
   ReadOnly: false
 
 } ).RenderInto('panel-targetdata');
-

@@ -136,4 +136,3 @@ ControlPanels.NewPanel( {
   ]
 
 } ).RenderInto('panel-basics');
-

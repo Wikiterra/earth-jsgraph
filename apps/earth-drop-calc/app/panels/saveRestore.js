@@ -44,5 +44,4 @@ function HandleUrlCommands() {
 
 }
 
-
 Object.assign(globalThis, { ResetApp, SetStdRefraction, Set0Refraction, HandleUrlCommands });

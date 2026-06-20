@@ -33,13 +33,14 @@ import '../styles/calculator.css';
 import 'jsgraph-vendor/src/core/wabisGraph3D.js';
 
 // --- app core ---
+// physics.js, sliderMapping.js and units.js are not listed here: they `export`
+// their functions and are imported directly by their consumers (curveApp imports
+// physics + sliderMapping; the renderers import units), so the import graph loads
+// them. Only modules that nothing imports are rooted here.
 import '../app/core/constants.js';
 import '../app/core/metadata.js';
-import '../app/core/physics.js';       // pure geometry/refraction functions
-import '../app/core/sliderMapping.js';  // slider ↔ value mappers
 import '../app/core/curveApp.js';
 import '../app/core/setup.js';
-import '../app/core/units.js';
 
 // --- render ---
 import '../app/render/sceneRenderer.js';
