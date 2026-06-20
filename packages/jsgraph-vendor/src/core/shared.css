@@ -1,0 +1,144 @@
+/* =============================================================================
+ * shared.css — Shared styles across all apps (reset, app-shell, scroller).
+ * ============================================================================= */
+
+/* ---- Reset minimal ---- */
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
+
+/* ---- Scroller (for panel overflow) ---- */
+.Scroller { overflow-x: auto; }
+.ScrollCanvas { min-width: 600px; }
+
+/* ---- Wiki utility classes (needed by vendor scripts) ---- */
+.Wiki div.Paragraph { margin: 8px 0; }
+.clearfix { zoom: 1; }
+.clearfix::before, .clearfix::after { display: table; content: ""; }
+.clearfix::after { clear: both; }
+.noselect { user-select: none; }
+  gap: 2px;
+}
+ul.TabSelectors li {
+  padding: 4px 10px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  border-radius: 3px 3px 0 0;
+  font-size: 13px;
+  background: #eee;
+  color: #222;
+  user-select: none;
+}
+ul.TabSelectors li.TabSelected {
+  background: #ff8033;
+  color: #fff;
+  border-color: #ff8033;
+}
+ul.TabSelectors li.TabButton {
+  background: #e0e0e0;
+  font-weight: bold;
+}
+ul.TabSelectors li.TabButton.TabSelected {
+  background: #ff8033;
+  color: #fff;
+}
+.Top.MarginTop { margin-top: 8px; }
+.Bottom { margin-top: 0; }
+
+/* ---- Control Panel tables (ControlPanel.js) ---- */
+table.ControlPanel {
+  width: 100%;
+  font-size: 15px;
+  line-height: 18px;
+  border-collapse: collapse;
+}
+table.ControlPanel th {
+  background: #ddd;
+  padding: 2px 6px;
+  text-align: left;
+  font-weight: bold;
+  font-size: 14px;
+}
+table.ControlPanel td {
+  padding: 2px 4px;
+}
+table.ControlPanel td.Label {
+  white-space: nowrap;
+  text-align: right;
+  width: 1%;
+  padding-right: 8px;
+}
+table.ControlPanel td.Value {
+  white-space: nowrap;
+}
+
+/* Checkbox / Radio field grid */
+table.FieldGrid {
+  border-collapse: collapse;
+}
+table.FieldGrid td {
+  padding: 0 4px 0 0;
+  white-space: nowrap;
+}
+table.FieldGrid td.ReadOnly { opacity: 0.6; }
+table.FieldGrid td.Disabled { opacity: 0.4; }
+
+/* Input width variants */
+input.InputMiniWidth { width: 50px; }
+input.InputShortWidth { width: 65px; }
+input.InputMediumWidth { width: 80px; }
+input.InputSmallerWidth { width: 95px; }
+input.InputNormalWidth { width: 110px; }
+input.InputBigWidth { width: 125px; }
+input.InputLongWidth { width: 140px; }
+input.InputMaxWidth { width: 155px; }
+input.InputWidth35 { width: 35px; }
+input.InputWidth45 { width: 45px; }
+input.InputWidth55 { width: 55px; }
+input.InputWidth65 { width: 65px; }
+input.InputWidth75 { width: 75px; }
+input.InputWidth185 { width: 185px; }
+
+/* Slider minimum widths */
+.SliderMinWidth250 { min-width: 250px; }
+.SliderMinWidth300 { min-width: 300px; }
+
+/* ---- Slider widget (DgdSlider) ---- */
+div.Slider {
+  position: relative;
+  cursor: pointer;
+  background: #ddd;
+  height: 18px;
+  border-radius: 2px;
+}
+div.Slider div.Handle {
+  position: absolute;
+  background: #CC0000;
+  color: #fff;
+  cursor: pointer;
+  text-align: center;
+  min-width: 16px;
+  height: 18px;
+  line-height: 18px;
+  font-size: 11px;
+  border-radius: 2px;
+}
+div.Slider.Disabled { opacity: 0.4; }
+div.Slider.Disabled div.Handle { cursor: default; }
+div.Slider.ReadOnly { opacity: 0.5; }
+
+/* ---- Scroller / ScrollCanvas (for panel overflow) ---- */
+.Scroller { overflow-x: auto; }
+.ScrollCanvas { min-width: 600px; }
+
+/* ---- Reference images (bottom of calculator) ---- */
+.bpic { width: 100%; }
+.bpic img { width: 100%; }
+.bpic .imgd { width: 100%; font-size: 13px; color: #555; text-align: center; }
+
+/* ---- Wiki utility classes (needed by vendor scripts) ---- */
+.Wiki div.Paragraph { margin: 8px 0; }
+.clearfix { zoom: 1; }
+.clearfix::before, .clearfix::after { display: table; content: ""; }
+.clearfix::after { clear: both; }
+.noselect { user-select: none; }

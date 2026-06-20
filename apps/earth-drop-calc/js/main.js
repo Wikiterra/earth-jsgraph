@@ -22,6 +22,9 @@ import 'jsgraph-vendor/src/styles.css';
 // --- shared helpers (toRad, toDeg, sqr, Limit1, …) ---
 import 'jsgraph-vendor/src/core/helpers.js';
 
+// --- shared UI components (tabs, control panels, sliders, scrollers) ---
+import 'jsgraph-vendor/src/core/shared.css';
+
 // --- core seam (createGraph3D over NewGraphX3D) ---
 import 'jsgraph-vendor/src/core/wabisGraph3D.js';
 
