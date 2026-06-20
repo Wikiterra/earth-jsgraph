@@ -1,8 +1,12 @@
 /* =============================================================================
- * calculator.css — Layout and visual overrides specific to the curvature calculator.
+ * calculator.css — earth-drop-calc app styles (chrome + component overrides).
  *
- * Shared UI component styles (tabs, sliders, control panels) live here because
- * each app has different chrome — vendor/styles.css is wiki-only legacy.
+ * CSS layering (all imported in order by js/main.js — see that file):
+ *   1. jsgraph-vendor/src/styles.css      vendor base (generated panel DOM)
+ *   2. jsgraph-vendor/src/core/shared.css cross-app component tweaks
+ *   3. this file                          app chrome + calc-specific overrides
+ * This is the LAST layer, so its rules win. Keep app-only styling here; put
+ * anything shared with fed-wabis-v2 in shared.css instead.
  * ============================================================================= */
 
 /* ---- CalcApp container ---- */
@@ -132,7 +136,6 @@ table.ControlPanel .FieldCell, table.ControlPanel .FieldCaption { cursor: pointe
 table.ControlPanel .Disabled .FieldCaption { cursor: default; }
 table.ControlPanel img.HelpImg { margin-top: 6px; vertical-align: top; }
 table.ControlPanel div.HtmlField { margin: 0; padding: 4px 0 0; border: none; white-space: normal; }
-table.ControlPanel td.Label { width: 10%; }
 table.ControlPanel.Slider td.Label { width: 1em; }
 table.ControlPanel.Slider td.Value input[type="text"] { width: 50px; }
 table.ControlPanel.Slider.NCols2 td.Slider { width: 99%; min-width: 200px; }
@@ -222,42 +225,4 @@ div.Slider.ReadOnly { opacity: 0.5; pointer-events: none; }
 #Object-Options1 .Row3 { background: #fdd; }
 #Object-Options1 .Row3 .FieldGrid { background: #fdd; }
 #Object-Options1 .Row3 .FieldCell { border-color: #fdd; }
-
-/* =============================================================================
- * Standalone-app container (added in refactor).
- *   Replaces the original wiki page/content column. Constrains the calculator
- *   to a readable width so the 3D graph (height = 66.67% of its width) stays a
- *   sensible size and the sliders/panels remain visible alongside it.
- * ============================================================================= */
-.CalcApp {
-  max-width: 760px;
-  margin: 16px auto;
-  padding: 16px 20px 24px;
-  background: #fff;
-  border: 1px solid #c8c8c8;
-  border-radius: 5px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
-}
-
-.CalcApp h1.CalcTitle {
-  font-size: 175%;
-  font-weight: bold;
-  line-height: 1.2;
-  margin: 0 0 0.6em;
-  border-bottom: 2px solid #ff6000;
-  padding-bottom: 0.3em;
-}
-
-/* The horizontal scroller wrappers fill the container width. */
-.CalcApp .Scroller { width: 100%; }
-
-@media (max-width: 800px) {
-  .CalcApp {
-    margin: 0;
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-  }
-}
 

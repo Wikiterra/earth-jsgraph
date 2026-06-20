@@ -25,6 +25,9 @@ import 'jsgraph-vendor/src/core/helpers.js';
 // --- shared UI components (tabs, control panels, sliders, scrollers) ---
 import 'jsgraph-vendor/src/core/shared.css';
 
+// --- app styles: LAST CSS layer so calc overrides win (see calculator.css) ---
+import '../styles/calculator.css';
+
 // --- core seam (createGraph3D over NewGraphX3D) ---
 import 'jsgraph-vendor/src/core/wabisGraph3D.js';
 
