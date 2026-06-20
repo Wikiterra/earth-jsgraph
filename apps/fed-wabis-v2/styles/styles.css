@@ -46,9 +46,7 @@ body {
   position: relative;
 }
 
-/* =============================================================
-   Top bar
-   ============================================================= */
+/* Top bar: WikiTerra brand (left, injected) + playback (center) + demo tabs (right) + calendar */
 #top-bar {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -62,6 +60,20 @@ body {
   -webkit-backdrop-filter: blur(12px);
   z-index: 1000;
   box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  justify-content: center;  /* playback centered */
+}
+
+/* Playback cluster — centered in the bar */
+#top-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* Demo tabs — pushed to the right on desktop, hidden on mobile */
+#DomeDemoTabs {
+  margin-left: auto;
 }
 
 /* Demo tab container (#DomeDemoTabs) — class names retained from legacy Tabs styling */
@@ -107,16 +119,6 @@ body {
 
 /* Hidden buttons kept in DOM for click wiring (Reset / Play / etc.) — not shown to user */
 .tab-hidden { display: none !important; }
-
-/* Top-right control cluster: playback + time + timeline + calendar.
-   Allowed to grow so the timeline can stretch; demo tabs (left) compress and scroll. */
-#top-controls {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex: 1 1 auto;
-  min-width: 0;
-}
 
 .top-playback {
   display: flex;

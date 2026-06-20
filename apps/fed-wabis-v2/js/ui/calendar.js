@@ -122,14 +122,54 @@ export function init() {
     }, { passive: false });
   });
 
-  /* Arrow buttons (up/down) next to each spin field */
+  /* Arrow buttons (up/down) next to each spin field — auto-repeat with acceleration */
+  const repeatTimers = {};
+  const REPEAT_START = 400;   // ms before first repeat
+  const REPEAT_FAST  = 50;    // ms at max speed
+  const REPEAT_ACCEL = 0.85;  // multiplier per tick (gets faster)
+
+  function startRepeat(field, delta) {
+    stopRepeat(field);
+    let delay = REPEAT_START;
+    function tick() {
+      stepCalField(field, delta);
+      delay = Math.max(REPEAT_FAST, delay * REPEAT_ACCEL);
+      repeatTimers[field] = setTimeout(tick, delay);
+    }
+    repeatTimers[field] = setTimeout(tick, delay);
+  }
+
+  function stopRepeat(field) {
+    if (repeatTimers[field]) {
+      clearTimeout(repeatTimers[field]);
+      delete repeatTimers[field];
+    }
+  }
+
   for (const arrow of calDropdown.querySelectorAll('.cal-arrow')) {
     const field = arrow.dataset.field;
     if (!field) continue;
-    arrow.addEventListener('click', e => {
+    const delta = arrow.classList.contains('cal-up') ? +1 : -1;
+
+    arrow.addEventListener('mousedown', e => {
+      e.preventDefault();
       e.stopPropagation();
-      const delta = arrow.classList.contains('cal-up') ? +1 : -1;
       stepCalField(field, delta);
+      startRepeat(field, delta);
     });
+
+    arrow.addEventListener('mouseup', () => stopRepeat(field));
+    arrow.addEventListener('mouseleave', () => stopRepeat(field));
+
+    // touch support
+    arrow.addEventListener('touchstart', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      stepCalField(field, delta);
+      startRepeat(field, delta);
+    }, { passive: false });
+
+    arrow.addEventListener('touchend', () => stopRepeat(field));
+    arrow.addEventListener('touchcancel', () => stopRepeat(field));
   }
 }

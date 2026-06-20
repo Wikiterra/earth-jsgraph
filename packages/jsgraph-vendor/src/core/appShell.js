@@ -1,14 +1,9 @@
-// Shared app shell — a thin top nav so both apps share branding and an
-// app-switcher when served together (`pnpm dev` → workspace-root Vite). Each app's
-// ESM entry imports this once; it prepends a <header> to <body>.
-//
-// Links are relative to /apps/<app>/, so they resolve under the root dev server and
-// the unified build. (Under a per-app dev server there's no sibling app, so the
-// cross-link is inert — per-app dev is for focusing on one app.)
+// Shared app shell — injects WikiTerra branding + app-switcher links into the
+// existing #top-bar of each app. Runs as a side-effect import.
 import './appShell.css';
 
 const APPS = [
-  { slug: 'earth-drop-calc', label: 'Curvature Calc' },
+  { slug: 'earth-drop-calc', label: 'Curvature' },
   { slug: 'fed-wabis-v2', label: 'Dome Model' },
 ];
 
@@ -18,7 +13,10 @@ const links = APPS.map((a) => {
   return `<a href="../${a.slug}/"${active ? ' class="active" aria-current="page"' : ''}>${a.label}</a>`;
 }).join('');
 
-const header = document.createElement('header');
-header.className = 'app-shell-nav';
-header.innerHTML = `<a class="brand" href="../../">WikiTerra</a><nav>${links}</nav>`;
-document.body.prepend(header);
+const bar = document.getElementById('top-bar');
+if (bar) {
+  const wrap = document.createElement('span');
+  wrap.className = 'app-shell-group';
+  wrap.innerHTML = `<a class="app-shell-brand" href="../../">WikiTerra</a><nav class="app-shell-links">${links}</nav>`;
+  bar.insertBefore(wrap, bar.firstChild);
+}
