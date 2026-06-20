@@ -41,18 +41,24 @@ function init() {
   /* Screenshot export */
   const screenshotBtn = document.getElementById('btn-screenshot');
   if (screenshotBtn) {
-    screenshotBtn.addEventListener('click', () => {
-      try {
-        const canvas = FeDomeApp.GraphObject && FeDomeApp.GraphObject.Canvas;
-        if (!canvas) return;
-        const a = document.createElement('a');
-        let dateStr = '';
-        try { dateStr = '-' + FeDomeApp.DateTimeToString(FeDomeApp.DateTime).split('|')[0].trim().replace(/[^\w]/g, '-'); } catch (e) { }
-        a.download = 'fed' + dateStr + '.png';
-        a.href = canvas.toDataURL('image/png');
-        a.click();
-      } catch (e) { alert('Screenshot failed: ' + e.message); }
-    });
+    screenshotBtn.addEventListener('click', screenshotHandler);
+  }
+
+  /* Left sidebar: TFE, Reset, Screenshot */
+  document.getElementById('lsb-tfe')?.addEventListener('click', () => { if (window.TFE) TFE(); });
+  document.getElementById('ResetButton')?.addEventListener('click', () => { if (window.ResetApp) ResetApp(); });
+
+  function screenshotHandler() {
+    try {
+      const canvas = FeDomeApp.GraphObject && FeDomeApp.GraphObject.Canvas;
+      if (!canvas) return;
+      const a = document.createElement('a');
+      let dateStr = '';
+      try { dateStr = '-' + FeDomeApp.DateTimeToString(FeDomeApp.DateTime).split('|')[0].trim().replace(/[^\w]/g, '-'); } catch (e) { }
+      a.download = 'fed' + dateStr + '.png';
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    } catch (e) { alert('Screenshot failed: ' + e.message); }
   }
 
   /* Gesture hint fade-out */

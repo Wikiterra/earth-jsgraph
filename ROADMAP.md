@@ -69,9 +69,6 @@ arquitectónico por fases en [../MIGRATION-PLAN.md](../MIGRATION-PLAN.md).
 - **Código muerto eliminado:** `computeViewCenterAngle`, `compViewDist`, `BVal`/`BUnit`,
   imports redundantes en `main.js`. — `84feb19`, `146acc3`
 
-## ⏳ Pendiente
-
-
 ## 🚫 NO hacer (hasta que haya necesidad real)
 
 - **2º motor de render (three.js):** el render vectorial esquemático es ventaja, no deuda;

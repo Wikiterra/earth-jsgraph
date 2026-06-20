@@ -1,18 +1,216 @@
 /* =============================================================================
- * calculator.css — earth-drop-calc app styles (chrome + component overrides).
+ * calculator.css — earth-drop-calc app styles
  *
- * CSS layering (all imported in order by js/main.js — see that file):
- *   1. jsgraph-vendor/src/styles.css      vendor base (generated panel DOM)
- *   2. jsgraph-vendor/src/core/shared.css cross-app component tweaks
- *   3. this file                          app chrome + calc-specific overrides
- * This is the LAST layer, so its rules win. Keep app-only styling here; put
- * anything shared with fed-wabis-v2 in shared.css instead.
+ * Layout mirrors fed-wabis-v2: fixed top/bottom bars, canvas fills rest.
+ * Panel content renders inside a drawer overlay.
+ *
+ * Shared design tokens come from jsgraph-vendor/src/core/tokens.css (imported
+ * before this file via main.js → tokens.css).
  * ============================================================================= */
 
-/* ---- CalcApp container (mobile-first) ----
-   Base = phone: full-bleed single column, no card chrome, compact padding.
-   >=768px: centered 760px card with border/shadow.
-   >=1100px: two-column (graph+controls | data+reference). */
+/* ---- Shared layout (mirrors fed-wabis-v2/styles.css) ---- */
+#top-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--top-bar-h);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  background: var(--bar-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+
+#top-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+#bottom-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--bottom-bar-h);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px;
+  background: var(--bar-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.4);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+#bottom-bar::-webkit-scrollbar { display: none; }
+
+.layer-section {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.layer-section::-webkit-scrollbar { display: none; }
+
+.layer-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 7px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: rgba(255,255,255,0.35);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  min-width: var(--tap-min);
+}
+.layer-toggle:hover {
+  color: rgba(255,255,255,0.75);
+  background: rgba(255,255,255,0.08);
+}
+.layer-toggle[aria-pressed="true"] {
+  color: #fff;
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.toggle-label {
+  font-size: 10px;
+  line-height: 1;
+}
+
+.pb-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.07);
+  color: var(--bar-text);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.pb-btn:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.3);
+}
+
+/* ---- Override dark vars for light theme ---- */
+:root {
+  --color-primary: #2d3436;
+}
+:root {
+  --top-bar-h:        44px;
+  --bottom-bar-h:     56px;
+  --color-bg:      #eef0f2;
+  --bar-bg:        rgba(30, 40, 50, 0.95);
+  --bar-text:      rgba(255,255,255,0.9);
+}
+
+/* ---- Panel drawer (slides up from bottom) ---- */
+#panel-drawer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: var(--bottom-bar-h);
+  max-height: 55vh;
+  background: rgba(255,255,255,0.97);
+  border-top: 2px solid var(--color-accent);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+  z-index: 800;
+  overflow-y: auto;
+  transition: transform 0.2s ease, opacity 0.15s ease;
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+#panel-drawer.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#panel-drawer-content {
+  padding: 6px 12px 4px;
+  max-height: calc(55vh - 28px);
+  overflow-y: auto;
+}
+
+/* Drawer sections — collapsible accordion */
+.drawer-section {
+  margin-bottom: 4px;
+}
+
+.drawer-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  user-select: none;
+  transition: background 0.1s;
+}
+.drawer-section-title:hover { background: rgba(0,0,0,0.04); }
+.drawer-section-title::after {
+  content: '▼';
+  margin-left: auto;
+  font-size: 9px;
+  color: #999;
+  transition: transform 0.15s;
+}
+.drawer-section.open .drawer-section-title::after {
+  transform: rotate(180deg);
+}
+
+.drawer-section-body {
+  overflow: hidden;
+  transition: max-height 0.2s ease;
+  max-height: 0;
+}
+.drawer-section.open .drawer-section-body {
+  max-height: 2000px;
+}
+
+#panel-drawer-close {
+  display: block;
+  width: 100%;
+  padding: 3px;
+  border: none;
+  background: rgba(0,0,0,0.03);
+  color: #888;
+  font-size: 11px;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s;
+}
+#panel-drawer-close:hover { background: rgba(0,0,0,0.07); color: #333; }
+
+/* ---- Bottom bar model buttons ---- */
+#qs-globe[aria-pressed="true"],
+#qs-fe[aria-pressed="true"],
+#qs-both[aria-pressed="true"] {
+  color: #fff;
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+/* ---- Keep existing ControlPanel/Slider styles ---- */
 .CalcApp {
   margin: 0;
   padding: var(--space-3) var(--space-3) var(--space-6);
@@ -41,22 +239,66 @@
   .CalcApp h1.CalcTitle { font-size: 175%; margin-bottom: 0.6em; padding-bottom: 0.3em; }
 }
 
-/* ---- Two-column layout (desktop) ----
-   Mobile/tablet: one column, natural stacking order. >=1200px: graph + controls
-   on the left, read-only data + reference images on the right. (1200, not 1100:
-   the 4-col data tables need ~540px of column to show every value un-clipped.) */
-.calc-grid { display: grid; grid-template-columns: 1fr; gap: 0 28px; }
-@media (min-width: 1200px) {
-  .CalcApp { max-width: 1400px; }
-  .calc-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: start; }
-  /* Keep the graph + its controls in view while the data column scrolls. */
-  .calc-left { position: sticky; top: var(--space-4); }
-  /* In two-column mode the data tables share the row with the graph, so tighten
-     them further (95px inputs + slimmer cell padding) to fit the right column
-     without clipping. ID-scoped to win over the 110px single-column rule. */
-  .calc-right table.ControlPanel td { padding: 4px 5px; }
-  #TargetDataPanel td.Value input[type="text"],
-  #HorizonDataPanel td.Value input[type="text"] { width: 95px; }
+/* ---- Canvas full-screen like fed ---- */
+#JsGraph1 {
+  position: fixed !important;
+  top: var(--top-bar-h) !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: var(--bottom-bar-h) !important;
+  height: auto !important;
+  border: none;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  background: #000;
+  z-index: 1;
+}
+
+/* ---- Bottom bar group: quick section ---- */
+.quick-section {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  padding: 0 4px;
+  border-left: 1px solid rgba(255,255,255,0.12);
+}
+
+.quick-section .layer-toggle {
+  min-width: 32px;
+  padding: 4px 6px;
+  font-size: 10px;
+  line-height: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: rgba(255,255,255,0.35);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.quick-section .layer-toggle:hover {
+  color: rgba(255,255,255,0.75);
+  background: rgba(255,255,255,0.08);
+}
+.quick-section .layer-toggle[aria-pressed="true"] {
+  color: #fff;
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+}
+
+/* ---- Top bar title ---- */
+.app-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bar-text);
+  white-space: nowrap;
+  margin-right: 8px;
 }
 
 /* ---- Tab Selectors ---- */
@@ -65,40 +307,7 @@
 ul.TabSelectors li.TabHide { display: none; }
 ul.TabSelectors li.TabActive { border-color: #000 !important; }
 ul.TabSelectors li.TabButton { border-radius: 4px; }
-ul.TabSelectors {
-  list-style: none;
-  margin: 0;
-  padding: 3px 0;
-  font-weight: bold;
-  text-align: left;
-}
-ul.TabSelectors.Top { padding-bottom: 0; }
-ul.TabSelectors.Bottom { padding-top: 0; }
-ul.TabSelectors li {
-  background: none;
-  display: inline-block;       /* inline-block so padding makes a real tap target */
-  margin: 0 0.15em 0.25em;
-  padding: 0.45em 0.7em;        /* bigger touch area; wraps cleanly on phones */
-  line-height: 1.4;
-  border-left: 1px solid #ddd;
-  color: #ddd;
-  white-space: nowrap;
-  user-select: none;
-  cursor: default;
-}
-ul.TabSelectors.Top li { border-top: 4px solid #ddd; }
-ul.TabSelectors.Bottom li { border-bottom: 4px solid #ddd; }
-ul.TabSelectors li.TabEnabled { color: #666; cursor: pointer; }
-ul.TabSelectors li.TabEnabled:hover { border-color: #666; color: #000; }
-ul.TabSelectors li.TabSelected { border-color: var(--color-accent); }
-ul.TabSelectors li.TabButton { border-right: 1px solid #ddd; color: #ddd; }
-ul.TabSelectors li.TabButton.TabEnabled { border-color: var(--color-accent); color: #666; }
-ul.TabSelectors li.TabButton.TabEnabled:hover { color: #000; }
-ul.TabSelectors.Top li.TabButton { border-bottom: 1px solid #ddd; }
-ul.TabSelectors.Bottom li.TabButton { border-top: 1px solid #ddd; }
-#JsGraph1 { margin-top: 0.25em; }
-#ResetButton { margin-left: 1.2em; }
-#UnitsTab { margin-left: 1.2em; }
+ul.TabSelectors.HiddenTabs { display: none; }
 
 /* ---- Control panels ---- */
 table.ControlPanel {
@@ -173,8 +382,6 @@ table.ControlPanel.InputWidth185 td.Value input[type="text"] { width: 185px !imp
 table.ControlPanel.SliderMinWidth250 td.Slider { min-width: 250px !important; }
 table.ControlPanel.SliderMinWidth300 td.Slider { min-width: 300px !important; }
 
-/* Phone: drop the slider min-widths so each row fits a ~360px screen instead of
-   forcing horizontal scroll. The slider still takes the remaining row width. */
 @media (max-width: 767px) {
   table.ControlPanel.Slider.NCols2 td.Slider,
   table.ControlPanel.Slider.NCols4 td.Slider,
@@ -182,8 +389,7 @@ table.ControlPanel.SliderMinWidth300 td.Slider { min-width: 300px !important; }
   table.ControlPanel.SliderMinWidth300 td.Slider { min-width: 90px !important; }
 }
 
-/* ---- Slider widget (native <input type="range">) ----
-   28px track for a comfortable touch target (thumb matches). */
+/* ---- Slider widget ---- */
 div.Slider {
   position: relative;
   height: 28px;
@@ -198,6 +404,74 @@ div.Slider input[type="range"] {
   position: absolute;
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+}
+div.Slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 50px;
+  height: 28px;
+  background: #CC0000;
+  color: #FFF;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+div.Slider input[type="range"]::-moz-range-thumb {
+  width: 50px;
+  height: 28px;
+  background: #CC0000;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+div.Slider input[type="range"]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+div.Slider.Disabled { opacity: 0.4; pointer-events: none; }
+div.Slider.ReadOnly { opacity: 0.5; pointer-events: none; }
+
+/* ---- Reference images ---- */
+.bpic { width: 100%; }
+.bpic img { width: 100%; }
+.bpic .imgd { width: 100%; font-size: 13px; color: #555; text-align: center; }
+
+/* ---- Read-only data compact ---- */
+#TargetDataPanel td.Value input[type="text"],
+#HorizonDataPanel td.Value input[type="text"] { width: 110px; }
+
+/* ---- ID-specific overrides ---- */
+#UnitsPanel { border: 2px solid #fa6; }
+#OptionsPanel { margin-top: 0; }
+#BasicsPanel { margin-bottom: 0; }
+#TargetDataPanel th { background: #dfd; }
+#HorizonDataPanel th { background: #ddf; }
+#BasicsPanel-Height, #BasicsPanel-ObjDist, #BasicsPanel-TargetSize { background: #ff8; }
+#Object-Sliders0-NObjects, #Object-Sliders0-ObjDist, #Object-Sliders0-ObjSize { background: #ff8; }
+#Object-Sliders1-NObjects, #Object-Sliders1-ObjDist, #Object-Sliders1-ObjSize { background: #ff8; }
+#Refraction-Panel-refractionCoeff { background: #ff8; }
+#Object-Sliders0 .Row6 { background: #dfd; }
+#Object-Sliders0 .Row7 { background: #fdd; }
+#Object-Options0 .Row2 { background: #dfd; }
+#Object-Options0 .Row2 .FieldGrid { background: #dfd; }
+#Object-Options0 .Row2 .FieldCell { border-color: #dfd; }
+#Object-Options0 .Row3 { background: #fdd; }
+#Object-Options0 .Row3 .FieldGrid { background: #fdd; }
+#Object-Options0 .Row3 .FieldCell { border-color: #fdd; }
+#Object-Sliders1 .Row6 { background: #dfd; }
+#Object-Sliders1 .Row7 { background: #fdd; }
+#Object-Options1 .Row2 { background: #dfd; }
+#Object-Options1 .Row2 .FieldGrid { background: #dfd; }
+#Object-Options1 .Row2 .FieldCell { border-color: #dfd; }
+#Object-Options1 .Row3 { background: #fdd; }
+#Object-Options1 .Row3 .FieldGrid { background: #fdd; }
+#Object-Options1 .Row3 .FieldCell { border-color: #fdd; }
   margin: 0;
   padding: 0;
   background: transparent;

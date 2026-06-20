@@ -11,7 +11,6 @@
     href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%231a5276' stroke='%23ccc' stroke-width='2'/%3E%3Cpath d='M50 5 A45 45 0 0 1 95 50' fill='none' stroke='%23fff' stroke-width='1.5' opacity='0.3'/%3E%3C/svg%3E">
   <title>Advanced Earth Curvature Calculator</title>
 
-  <!-- Wiki number-formatting locale (read by NumFormatter at load time). -->
   <script>
     var NUMBER_FORMATING = 'en';
     var ROOT = './';
@@ -30,44 +29,130 @@
     var WIKI_HiliWordList = [];
   </script>
 
-  <!-- All CSS (vendor base + shared + app) is imported in order by js/main.js. -->
-
-  <!-- Single ES module entry: loads the wabis vendor + core seam + all app code in
-       order (see js/main.js). Deferred, so it runs after the DOM is parsed: panels
-       render into their #panel-* containers and the canvas into #jsg-canvas-mount. -->
   <script type="module" src="js/main.js"></script>
 </head>
 
 <body>
-  <!-- .Wiki: enables vendor `.Wiki div.Scroller` styles. .CalcApp: constrains
-     width and centers the app (replaces the original wiki content column). -->
-  <div class="Wiki CalcApp">
+  <main id="app" class="Wiki">
 
-    <h1 class="CalcTitle">Advanced Earth Curvature Calculator</h1>
+    <!-- Top bar -->
+    <header id="top-bar">
+      <span class="app-title">Earth Curvature Calculator</span>
+      <div id="top-controls">
+        <button class="pb-btn" id="pb-reset" aria-label="Reset" title="Reset all">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        </button>
+        <button class="pb-btn" id="btn-screenshot" aria-label="Screenshot" title="Save screenshot">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </button>
+      </div>
+    </header>
 
-    <!-- Anchor used by DataX.SetupUrlStateHandler to scroll back to the app after URL state restore. -->
-    <a id="App"></a>
-
-    <!-- Wide-screen layout: on >=1100px this becomes two columns (graph + controls
-         on the left, read-only data + reference images on the right); stacks on
-         narrow screens. See calculator.css (.calc-grid). -->
-    <div class="calc-grid">
-    <div class="calc-left">
-
-    <!-- 3D scene canvas mount: js/main.js → sceneRenderer.js → createGraph3D() →
-       CreateDomObjects replaces this div with the <canvas>. -->
+    <!-- Canvas mount -->
     <div id="jsg-canvas-mount"></div>
 
-    <!-- ===========================================================
-       Settings tabs (Basics / View / Target 1 / Target 2 /
-       Refraction / Units / Save-Restore + global Reset button).
-       =========================================================== -->
-    <ul id="CurveSettingsTabs" class="TabSelectors Top MarginTop">
+    <!-- Panel drawer (slides up from bottom bar) — sections toggle open/close on click -->
+    <div id="panel-drawer">
+      <div id="panel-drawer-content">
+        <!-- Section 1: Measures (all sliders + targets + view) -->
+        <div class="drawer-section" data-section="measures">
+          <div class="drawer-section-title">📐 Measures</div>
+          <div class="drawer-section-body">
+            <div class="Scroller Paragraph">
+              <div class="ScrollCanvas" id="panel-basics"></div>
+            </div>
+            <div class="Scroller Paragraph">
+              <div class="ScrollCanvas" id="panel-view"></div>
+            </div>
+            <div class="Scroller Paragraph">
+              <div class="ScrollCanvas" id="panel-obj1"></div>
+            </div>
+            <div class="Scroller Paragraph">
+              <div class="ScrollCanvas" id="panel-obj2"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Optics (refraction + atmosphere/barometer) -->
+        <div class="drawer-section" data-section="optics">
+          <div class="drawer-section-title">🔬 Optics</div>
+          <div class="drawer-section-body">
+            <div class="Scroller Paragraph">
+              <div class="ScrollCanvas" id="panel-refraction"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Distance Data (target + horizon read-only) -->
+        <div class="drawer-section" data-section="data">
+          <div class="drawer-section-title">📊 Distance Data</div>
+          <div class="drawer-section-body">
+            <div class="Scroller Paragraph">
+              <div class="ScrollCanvas" id="panel-targetdata"></div>
+            </div>
+            <div class="Scroller Paragraph">
+              <div class="ScrollCanvas" id="panel-horizondata"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button id="panel-drawer-close" aria-label="Close panel drawer">▼</button>
+    </div>
+
+    <!-- Bottom bar: only 3 section toggles + Model selector + Units -->
+    <footer id="bottom-bar">
+      <div class="layer-section" role="group" aria-label="Panel sections">
+        <button class="layer-toggle" data-section="measures" aria-pressed="false" aria-label="Measures">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="4" x2="20" y2="20"/><polyline points="4 20 4 4 20 4"/></svg>
+          <span class="toggle-label">Measures</span>
+        </button>
+        <button class="layer-toggle" data-section="optics" aria-pressed="false" aria-label="Optics">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M3 20a9 9 0 0 1 18 0M12 20v-8M7.5 20 11 13M16.5 20 13 13"/></svg>
+          <span class="toggle-label">Optics</span>
+        </button>
+        <button class="layer-toggle" data-section="data" aria-pressed="false" aria-label="Distance Data">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span class="toggle-label">Data</span>
+        </button>
+      </div>
+
+      <!-- Model selector (Globe / FE / Both) -->
+      <div class="quick-section" role="group" aria-label="Model">
+        <button class="layer-toggle" data-prop="ShowModel" data-val="1" aria-pressed="true" id="qs-globe">Globe</button>
+        <button class="layer-toggle" data-prop="ShowModel" data-val="2" aria-pressed="false" id="qs-fe">FE</button>
+        <button class="layer-toggle" data-prop="ShowModel" data-val="3" aria-pressed="false" id="qs-both">Both</button>
+      </div>
+
+      <!-- Units -->
+      <div class="quick-section" role="group" aria-label="Units">
+        <button class="layer-toggle" id="qs-units" aria-pressed="false" aria-label="Units">Units</button>
+      </div>
+    </footer>
+
+    <!-- Reference images (accessible via panel or key) -->
+    <div id="CurveCalcGraphsBoxes" class="TabBoxes">
+      <div class="TabHide">
+        <div class="bpic"><div class="ofrbpic"><div class="ifrbpic"><img src="assets/CurveCalcAngles.png" alt=""></div><div class="imgd">Curvature Calculator showing Angles</div></div></div>
+      </div>
+      <div>
+        <div class="bpic"><div class="ofrbpic"><div class="ifrbpic"><img src="assets/CurveCalcNoRefraction2.png" alt=""></div><div class="imgd">Curvature Calculator showing No Refraction</div></div></div>
+      </div>
+      <div class="TabHide">
+        <div class="bpic"><div class="ofrbpic"><div class="ifrbpic"><img src="assets/CurveCalcRefraction2.png" alt=""></div><div class="imgd">Curvature Calculator showing Refraction</div></div></div>
+      </div>
+    </div>
+
+    <!-- Screen reader region -->
+    <div id="canvas-status" role="status" aria-live="polite" aria-atomic="true"
+      style="position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;"></div>
+
+    <!-- Hidden tab bar kept for Tabs.js compatibility -->
+    <ul id="CurveSettingsTabs" class="TabSelectors HiddenTabs" hidden>
       <li id="BasicsTab" class="TabEnabled TabSelected">Basics</li>
       <li id="ViewsTab" class="TabEnabled">View</li>
       <li id="Obj1Tab" class="TabEnabled">Target 1</li>
       <li id="Obj2Tab" class="TabEnabled">Target 2</li>
-      <li id="RefractionTab" class="TabEnabled">Refraction&#8658;</li>
+      <li id="RefractionTab" class="TabEnabled">Refraction</li>
       <li id="StdRefrButton" class="TabButton TabEnabled">Std</li>
       <li id="ZeroRefrButton" class="TabButton TabEnabled">0</li>
       <li id="UnitsTab" class="TabEnabled">Units</li>
@@ -75,124 +160,9 @@
       <li id="ResetButton" class="TabButton TabEnabled">Reset All</li>
     </ul>
 
-    <div id="CurveSettingsTabsBoxes" class="TabBoxes">
+    <!-- Anchor for DataX -->
+    <a id="App"></a>
 
-      <!-- Tab 0: Basics (Observer height, Target distance/size, Refraction, Zoom, View angle) + global Options (Model, Camera Aim, Show Data) -->
-      <div>
-        <div class="Scroller Paragraph">
-          <div class="ScrollCanvas" id="panel-basics">
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab 1: View (Pan, Tilt, Roll, scene size) -->
-      <div class="TabHide">
-        <div class="Scroller Paragraph">
-          <div class="ScrollCanvas" id="panel-view">
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab 2: Target 1 (sliders + options) -->
-      <div class="TabHide">
-        <div class="Scroller Paragraph">
-          <div class="ScrollCanvas" id="panel-obj1">
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab 3: Target 2 (sliders + options) -->
-      <div class="TabHide">
-        <div class="Scroller Paragraph">
-          <div class="ScrollCanvas" id="panel-obj2">
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab 4: Refraction (full panel + Std/Zero button handlers) -->
-      <div class="TabHide">
-        <div class="Scroller Paragraph">
-          <div class="ScrollCanvas" id="panel-refraction">
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab 5: Units (Metric / Imperial) -->
-      <div class="TabHide">
-        <div class="Scroller Paragraph">
-          <div class="ScrollCanvas" id="panel-units">
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab 6: Save / Restore (URL state + handlers ResetApp/SetStdRefraction/Set0Refraction/HandleUrlCommands) -->
-      <div class="TabHide">
-        <div class="Scroller Paragraph">
-          <div class="ScrollCanvas" id="panel-saverestore">
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    </div><!-- /calc-left -->
-    <div class="calc-right">
-
-    <!-- ===========================================================
-       Read-only data panels (always visible below the tabs):
-       Nearest Target Data and Horizon Data.
-       =========================================================== -->
-    <div class="Scroller Paragraph">
-      <div class="ScrollCanvas" id="panel-targetdata">
-      </div>
-    </div>
-
-    <div class="Scroller Paragraph">
-      <div class="ScrollCanvas" id="panel-horizondata">
-      </div>
-    </div>
-
-    <!-- ===========================================================
-       Reference image tabs (Angles / NoRefraction / Refraction)
-       — static illustrations of the calculator's geometry.
-       =========================================================== -->
-    <div id="CurveCalcGraphsBoxes" class="TabBoxes">
-      <div class="TabHide">
-        <div class="bpic">
-          <div class="ofrbpic">
-            <div class="ifrbpic"><img src="assets/CurveCalcAngles.png" alt=""></div>
-            <div class="imgd">Curvature Calculator showing Angles</div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="bpic">
-          <div class="ofrbpic">
-            <div class="ifrbpic"><img src="assets/CurveCalcNoRefraction2.png" alt=""></div>
-            <div class="imgd">Curvature Calculator showing No Refraction</div>
-          </div>
-        </div>
-      </div>
-      <div class="TabHide">
-        <div class="bpic">
-          <div class="ofrbpic">
-            <div class="ifrbpic"><img src="assets/CurveCalcRefraction2.png" alt=""></div>
-            <div class="imgd">Curvature Calculator showing Refraction</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <ul id="CurveCalcGraphs" class="TabSelectors Bottom">
-      <li class="TabEnabled">Angles</li>
-      <li class="TabDefault TabEnabled TabSelected">No Refraction</li>
-      <li class="TabEnabled">Refraction</li>
-    </ul>
-
-    </div><!-- /calc-right -->
-    </div><!-- /calc-grid -->
-
-  </div>
+  </main>
 </body>
-
 </html>

@@ -25,11 +25,12 @@
         <li class="TabButton TabEnabled" id="StarsButton"    role="tab" aria-selected="false" aria-controls="FeGraph-Canvas">Stars</li>
         <!-- Hidden buttons: demos-manager.js wires these via wireButton(); kept in DOM for click delegation -->
         <li class="TabButton tab-hidden" id="TFEButton">TFE</li>
-        <li class="TabButton tab-hidden" id="ResetButton">Reset</li>
+        <li class="TabButton TabEnabled" id="ResetButton" style="display:none">Reset</li>
         <li class="TabButton tab-hidden" id="BackButton">&lt;&lt;</li>
         <li class="TabButton tab-hidden" id="PlayButton">Play</li>
         <li class="TabButton tab-hidden" id="ForwButton">&gt;&gt;</li>
         <li class="TabButton tab-hidden" id="CountButton">x</li>
+        <li class="TabButton TabEnabled" id="lsb-tfe" role="tab" aria-selected="false" style="border-left:2px solid var(--color-accent);color:var(--color-accent)">☀ Eclipse</li>
       </ul>
 
       <!-- Right cluster: playback + time + day + calendar -->
@@ -263,7 +264,6 @@
           <button type="button" id="sr-get-url">Get App URL</button>
           <button type="button" id="sr-set-state">Set App State</button>
           <button type="button" id="sr-clear">Clear</button>
-          <button type="button" id="btn-screenshot">Screenshot PNG</button>
         </p>
       </div>
     </details>
