@@ -8,6 +8,34 @@ de este repo y explica **por qué**, **esfuerzo** aproximado y **riesgo**.
 
 ---
 
+## ✅ Hecho — convergencia al monorepo `jsgraph-workspace` (jun 2026)
+
+earth-drop-calc dejó de ser standalone: vive en el monorepo junto a fed-wabis-v2,
+compartiendo un único vendor wabis (`packages/jsgraph-vendor/src`) y tooling. Completado
+respecto a este plan:
+
+- **Fase 1 (tooling): hecha.** ESLint + Prettier + Vite + Playwright a nivel workspace
+  (`vendor/` y código legacy ignorados).
+- **Fase 2 (red de seguridad): hecha como caracterización.** No es cobertura 80 % de
+  ramas, pero congela el comportamiento: snapshots numéricos de `CurveAppClass.Update`
+  (incl. los fixes de cámara) + **screenshots del canvas** (Globe por defecto y Globe+FE).
+  `pnpm characterize`.
+- **Fase 3 (ESM, sin `document.writeln`): hecha.** Paneles via `RenderInto(container)`;
+  entry único `js/main.js` (`type=module`); Vite empaqueta. Los globals **siguen
+  existiendo** pero expuestos vía `globalThis` (no se eliminaron — el objetivo era quitar
+  `document.writeln` y el parse-time, logrado).
+- **Bugs latentes (ver Deuda técnica): los 3 arreglados** (`retult`, `IsNaN`, `!tem`).
+- **Dedup:** paneles Target 1/2 → factory (−281 L); bloques repetidos de `DrawModel`
+  (refinamiento de grid por altura, lat/long globe/flat) → loops/helper.
+- **UI compartida:** barra de navegación común con fed (app-switcher).
+
+> **Cambio de principio:** la app **ya NO se abre con doble clic / `file://`** — los
+> *bare specifiers* ESM solo los resuelve Vite. Requiere `pnpm --filter earth-drop-calc
+> dev` (o `pnpm dev` raíz), igual que fed. Decisión deliberada para poder empaquetar y
+> unificar (ver Principio 3, ahora obsoleto).
+
+---
+
 ## Principios guía
 
 1. **Cero dependencias en runtime.** El corazón de la app (proyección 3D, física de
@@ -26,16 +54,16 @@ de este repo y explica **por qué**, **esfuerzo** aproximado y **riesgo**.
 
 ## Estado actual (baseline)
 
-| Área | Estado | Observación |
-|---|---|---|
-| Arquitectura | `core` / `render` / `panels` / `vendor` | Limpia a nivel de archivos |
-| Namespace | **Global** | `CurveApp`, `graph`, `UpdateAll`, `Jsg*`, `x*`… todo en `window` |
-| Carga de paneles | `document.writeln` vía `<script src>` | Frágil, depende del orden de parseo |
-| Encoding | ISO-8859-1 / windows-1252 | `°`, `²`, `µ` como bytes únicos |
-| Tests | **0** | El motor (`CurveAppClass.Update`) es puro y muy testeable |
-| Tipos | Ninguno | `CurveAppClass` tiene ~100 propiedades sin documentar |
-| Tooling | Ninguno | Sin lint/format/CI |
-| Vendor libs | One-liners densos | `jsg.js`, `jsgx3d.js`, `ControlPanel.js`… ilegibles |
+| Área             | Estado                                  | Observación                                                      |
+|------------------|-----------------------------------------|------------------------------------------------------------------|
+| Arquitectura     | `core` / `render` / `panels` / `vendor` | Limpia a nivel de archivos                                       |
+| Namespace        | **Global**                              | `CurveApp`, `graph`, `UpdateAll`, `Jsg*`, `x*`… todo en `window` |
+| Carga de paneles | `document.writeln` vía `<script src>`   | Frágil, depende del orden de parseo                              |
+| Encoding         | ISO-8859-1 / windows-1252               | `°`, `²`, `µ` como bytes únicos                                  |
+| Tests            | **0**                                   | El motor (`CurveAppClass.Update`) es puro y muy testeable        |
+| Tipos            | Ninguno                                 | `CurveAppClass` tiene ~100 propiedades sin documentar            |
+| Tooling          | Ninguno                                 | Sin lint/format/CI                                               |
+| Vendor libs      | One-liners densos                       | `jsg.js`, `jsgx3d.js`, `ControlPanel.js`… ilegibles              |
 
 ---
 
@@ -43,18 +71,19 @@ de este repo y explica **por qué**, **esfuerzo** aproximado y **riesgo**.
 
 Hacer antes que las fases grandes. Ninguno añade dependencias de runtime.
 
-- [ ] **Migrar a UTF-8.** Reconvertir `index.html` + `.js` + `.css` a UTF-8 y cambiar
+- [x] **Migrar a UTF-8.** Reconvertir `index.html` + `.js` + `.css` a UTF-8 y cambiar
       `charset` a `utf-8`. Hoy `°/²/µ` dependen de windows-1252; cualquier editor que
       guarde en UTF-8 los corrompe. Riesgo bajo, alto valor de mantenibilidad.
-- [ ] **`.editorconfig` + `prettier` (dev-only).** Formato consistente. No tocar
+      → Ya en UTF-8 desde la migración a ESM (jul 2026).
+- [x] **`.editorconfig` + `prettier` (dev-only).** Formato consistente. No tocar
       `vendor/` (añadir a `.prettierignore`).
-- [ ] **Arreglar bugs latentes ya detectados** (ver *Deuda técnica*): `retult` en
+- [x] **Arreglar bugs latentes ya detectados** (ver *Deuda técnica*): `retult` en
       `jsg.js`, `if (!tem)` y `IsNaN` en `ControlPanel.js`.
-- [ ] **`<meta name="theme-color">` + favicon + `<html lang>`** correctos.
+- [x] **`<meta name="theme-color">` + favicon + `<html lang>`** correctos.
 - [ ] **README de “cómo correr”** en root (un servidor estático: `npx serve src`,
       `python -m http.server`, etc.) — `document.writeln` no funciona en `file://`
       en todos los navegadores.
-- [ ] **Extraer “números mágicos”** del motor a constantes nombradas en
+- [x] **Extraer “números mágicos”** del motor a constantes nombradas en
       `app/core/constants.js`: `503`, `0.0343` (fórmula de refracción), `43.2`
       (diagonal de sensor 35 mm), radios por defecto. Documentar su origen físico.
 
@@ -159,17 +188,17 @@ Hacer antes que las fases grandes. Ninguno añade dependencias de runtime.
 
 > Regla: solo **dev dependencies**. Nada que llegue al bundle del usuario.
 
-| Librería | Para qué | A favor | En contra | Recomendación |
-|---|---|---|---|---|
-| Prettier | Formato | Estándar, cero config | — | **Adoptar** (dev) |
-| ESLint | Lint | Atrapa bugs (`IsNaN`, globals) | Config inicial | **Adoptar** (dev) |
-| Vitest / `node:test` | Tests | Rápido, sin browser para lógica pura | — | **Adoptar** (dev) |
-| TypeScript | Tipos | Seguridad en `CurveAppClass` | Requiere build | **Evaluar** tras Fase 3 |
-| Vite | Build/dev server | HMR, bundling, ESM | Rompe “abrir sin build” | **Evaluar** tras Fase 3 |
-| Playwright | Tests E2E del canvas | Verifica render real | Pesado | **Opcional**, Fase 7+ |
-| three.js / regl | Render 3D | Maduro, WebGL | **Cambia el modelo de proyección y la física**; dependencia grande | **No** (viola Principio 1) |
-| Slider/Tabs UI libs | Widgets | Menos código propio | Dependencia + estilo ajeno | **No** — preferir **nativo** (`<input range>`, `<details>`) |
-| KaTeX | Ecuaciones docs | Ligero vs MathJax | Build step | **Opcional** (pre-render) |
+| Librería             | Para qué             | A favor                              | En contra                                                          | Recomendación                                               |
+|----------------------|----------------------|--------------------------------------|--------------------------------------------------------------------|-------------------------------------------------------------|
+| Prettier             | Formato              | Estándar, cero config                | —                                                                  | **Adoptar** (dev)                                           |
+| ESLint               | Lint                 | Atrapa bugs (`IsNaN`, globals)       | Config inicial                                                     | **Adoptar** (dev)                                           |
+| Vitest / `node:test` | Tests                | Rápido, sin browser para lógica pura | —                                                                  | **Adoptar** (dev)                                           |
+| TypeScript           | Tipos                | Seguridad en `CurveAppClass`         | Requiere build                                                     | **Evaluar** tras Fase 3                                     |
+| Vite                 | Build/dev server     | HMR, bundling, ESM                   | Rompe “abrir sin build”                                            | **Evaluar** tras Fase 3                                     |
+| Playwright           | Tests E2E del canvas | Verifica render real                 | Pesado                                                             | **Opcional**, Fase 7+                                       |
+| three.js / regl      | Render 3D            | Maduro, WebGL                        | **Cambia el modelo de proyección y la física**; dependencia grande | **No** (viola Principio 1)                                  |
+| Slider/Tabs UI libs  | Widgets              | Menos código propio                  | Dependencia + estilo ajeno                                         | **No** — preferir **nativo** (`<input range>`, `<details>`) |
+| KaTeX                | Ecuaciones docs      | Ligero vs MathJax                    | Build step                                                         | **Opcional** (pre-render)                                   |
 
 ---
 

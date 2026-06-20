@@ -250,8 +250,8 @@ CurveAppClass.prototype.Update = function() {
   this.showData = this.ShowDataObject || this.ShowDataRefraction || this.ShowDataHorizon;
 
   // input validation
-  if ( this.RadiusEarth  < 100000 ) this.RadiusEarth  = 100000;
-  if ( this.EquatorRadiusFE < 100000 ) this.EquatorRadiusFE = 100000;
+  if ( this.RadiusEarth  < EARTH_RADIUS_MIN ) this.RadiusEarth  = EARTH_RADIUS_MIN;
+  if ( this.EquatorRadiusFE < EARTH_RADIUS_MIN ) this.EquatorRadiusFE = EARTH_RADIUS_MIN;
   if (this.NGridLines > 200) this.NGridLines = 200;
   if (this.NGridLines < 0) this.NGridLines = 0;
   this.ShowModel = Math.floor(this.ShowModel);
@@ -266,8 +266,8 @@ CurveAppClass.prototype.Update = function() {
   if ( this.HeightSliderLast != this.HeightSlider ) {
     this.Height = Math.pow( 10, -1 + 6 * this.HeightSlider );
   }
-  if ( this.Height < 0.001 ) this.Height = 0.001;
-  if ( this.Height > 1000000000 ) this.Height = 1000000000;
+  if ( this.Height < HEIGHT_MIN ) this.Height = HEIGHT_MIN;
+  if ( this.Height > HEIGHT_MAX ) this.Height = HEIGHT_MAX;
   this.HeightSlider = ( Math.log10( this.Height ) + 1 ) / 6;
   this.HeightSliderLast = this.HeightSlider;
   if (this.BaroModel) {
@@ -361,7 +361,7 @@ CurveAppClass.prototype.Update = function() {
   }
 
   // handle changes of refraction input fields and sliders
-  this.Temperature_K = this.Temperature_C + 273.15;
+  this.Temperature_K = this.Temperature_C + KELVIN_OFFSET;
   if (this.RefractionSlider != this.RefractionSliderLast) {
     // slider changed
     if (Math.abs(this.RefractionSlider) < 0.01) this.RefractionSlider = 0; // snap to 0
@@ -370,8 +370,8 @@ CurveAppClass.prototype.Update = function() {
     // k changed
   } else if (this.TemperatureGradient != this.TemperatureGradientLast) {
     // dT/dh changed
-    if (this.Temperature_K < 3) this.Temperature_K = 3;
-    this.RefractionCoeff = 503 * (this.Pressure_mbar / (this.Temperature_K*this.Temperature_K)) * (0.0343 + this.TemperatureGradient);
+    if (this.Temperature_K < TEMP_K_MIN) this.Temperature_K = TEMP_K_MIN;
+    this.RefractionCoeff = REFR_COEFF_CONST * (this.Pressure_mbar / (this.Temperature_K*this.Temperature_K)) * (STD_TEMP_GRADIENT + this.TemperatureGradient);
   } else if (this.RefractionFactor != this.RefractionFactorLast) {
     // a changed
     if (this.RefractionFactor < this.RefractionFactMin) this.RefractionFactor = this.RefractionFactMin;
@@ -388,15 +388,15 @@ CurveAppClass.prototype.Update = function() {
   // limit some inputs
   if (this.RefractionCoeff < k_min) this.RefractionCoeff = k_min;
   if (this.RefractionCoeff > k_max) this.RefractionCoeff = k_max;
-  if (this.Temperature_K < 3) this.Temperature_K = 3;
-  if (this.Temperature_K > 10000) this.Temperature_K = 10000;
-  this.Temperature_C = this.Temperature_K - 273.15;
-  if (this.Pressure_mbar < 0.001) this.Pressure_mbar = 0.001;
-  if (this.Pressure_mbar > 10000) this.Pressure_mbar = 10000;
+  if (this.Temperature_K < TEMP_K_MIN) this.Temperature_K = TEMP_K_MIN;
+  if (this.Temperature_K > TEMP_K_MAX) this.Temperature_K = TEMP_K_MAX;
+  this.Temperature_C = this.Temperature_K - KELVIN_OFFSET;
+  if (this.Pressure_mbar < PRESSURE_MIN_MBAR) this.Pressure_mbar = PRESSURE_MIN_MBAR;
+  if (this.Pressure_mbar > PRESSURE_MAX_MBAR) this.Pressure_mbar = PRESSURE_MAX_MBAR;
   if (Math.abs(this.RefractionCoeff) < 0.000002) this.RefractionCoeff = 0;
 
   // compute refraction values
-  this.TemperatureGradient = (this.RefractionCoeff * this.Temperature_K * this.Temperature_K) / (503 * this.Pressure_mbar) - 0.0343;
+  this.TemperatureGradient = (this.RefractionCoeff * this.Temperature_K * this.Temperature_K) / (REFR_COEFF_CONST * this.Pressure_mbar) - STD_TEMP_GRADIENT;
   if (Math.abs(this.TemperatureGradient) < 0.000001) this.TemperatureGradient = 0;
   this.RefractionFactor = 1 / (1 - this.RefractionCoeff);
   this.RefractedRadiusEarth = this.RadiusEarth * this.RefractionFactor;
@@ -413,23 +413,23 @@ CurveAppClass.prototype.Update = function() {
 
   // handle ViewAngle and FocalLength changes
   if ( this.FocalLengthSlider != this.FocalLengthSliderLast ) {
-    var f = (10000-21) * Math.pow(this.FocalLengthSlider,2) + 21;  // f = 21..10000
-    this.ViewAngle = toDeg( 2 * Math.atan( 43.2 / 2 / f ) );
+    var f = (FOCAL_LENGTH_MAX - FOCAL_LENGTH_MIN) * Math.pow(this.FocalLengthSlider, 2) + FOCAL_LENGTH_MIN;
+    this.ViewAngle = toDeg( 2 * Math.atan( SENSOR_DIAGONAL_35MM / 2 / f ) );
   } else if ( this.FocalLengthField != this.FocalLength ) {
-    this.ViewAngle = toDeg( 2 * Math.atan( 43.2 / 2 / this.FocalLengthField ) );
+    this.ViewAngle = toDeg( 2 * Math.atan( SENSOR_DIAGONAL_35MM / 2 / this.FocalLengthField ) );
   } else if ( this.ViewAngleSlider != this.ViewAngleSliderLast ) {
     this.ViewAngle = this.ViewAngleSlider;
   } else if ( this.ViewAngleField != this.ViewAngle ) {
     this.ViewAngle = this.ViewAngleField;
   }
-  if ( this.ViewAngle < 0.1 ) this.ViewAngle = 0.1;
-  if ( this.ViewAngle > 160 ) this.ViewAngle = 160;
+  if ( this.ViewAngle < VIEW_ANGLE_MIN ) this.ViewAngle = VIEW_ANGLE_MIN;
+  if ( this.ViewAngle > VIEW_ANGLE_MAX ) this.ViewAngle = VIEW_ANGLE_MAX;
   this.CamViewAngl = toRad( this.ViewAngle );
-  this.FocalLength = 43.2 / ( 2 * Math.tan( this.CamViewAngl / 2 ) );
+  this.FocalLength = SENSOR_DIAGONAL_35MM / ( 2 * Math.tan( this.CamViewAngl / 2 ) );
   this.FocalLengthField = this.FocalLength;
-  var f = this.FocalLength - 21;
+  var f = this.FocalLength - FOCAL_LENGTH_MIN;
   if (f < 0) f = 0;
-  this.FocalLengthSlider = Math.pow(f/(10000-21),1/2);
+  this.FocalLengthSlider = Math.pow(f / (FOCAL_LENGTH_MAX - FOCAL_LENGTH_MIN), 1/2);
   this.FocalLengthSliderLast = this.FocalLengthSlider;
   this.ViewAngleField = this.ViewAngle;
   this.ViewAngleSlider = this.ViewAngle;
@@ -454,26 +454,26 @@ CurveAppClass.prototype.Update = function() {
 
   // Tilt and Pan slider synchronization
   if (this.Tilt != this.LastTilt) {
-    if (this.Tilt < -85) this.Tilt = -85;
-    if (this.Tilt >  45) this.Tilt =  45;
+    if (this.Tilt < TILT_MIN) this.Tilt = TILT_MIN;
+    if (this.Tilt >  TILT_MAX) this.Tilt =  TILT_MAX;
     if (this.Tilt > 0) {
-      this.TiltSlider = Math.sqrt( this.Tilt / 45 );
+      this.TiltSlider = Math.sqrt( this.Tilt / TILT_MAX );
     } else {
-      this.TiltSlider = - Math.sqrt( -this.Tilt / 85 );
+      this.TiltSlider = - Math.sqrt( -this.Tilt / -TILT_MIN );
     }
   } else if (this.TiltSlider != this.LastTiltSlider) {
     if (this.TiltSlider > 0) {
-      this.Tilt = Math.pow( this.TiltSlider, 2 ) * 45;
+      this.Tilt = Math.pow( this.TiltSlider, 2 ) * TILT_MAX;
     } else {
-      this.Tilt = - Math.pow( this.TiltSlider, 2 ) * 85;
+      this.Tilt = - Math.pow( this.TiltSlider, 2 ) * -TILT_MIN;
     }
   }
   this.LastTilt = this.Tilt;
   this.LastTiltSlider = this.TiltSlider;
 
   if (this.Pan != this.LastPan) {
-    if (this.Pan < -180) this.Pan = -180;
-    if (this.Pan >  180) this.Pan =  180;
+    if (this.Pan < PAN_MIN) this.Pan = PAN_MIN;
+    if (this.Pan >  PAN_MAX) this.Pan =  PAN_MAX;
     if (this.Pan > 0) {
       this.PanSlider = Math.sqrt( this.Pan / 90 );
     } else {
@@ -779,8 +779,8 @@ CurveAppClass.prototype.UpdateObjectInput = function( objIx ) {
   if (this.SliderObjSizeLog[objIx] != this.SliderObjSizeLogLast[objIx]) {
     this.ObjSize[objIx] = Math.pow( 10, this.SliderObjSizeLog[objIx] );
   }
-  if (this.ObjSize[objIx] < 0.001) this.ObjSize[objIx] = 0.001;
-  if (this.ObjSize[objIx] > 1e9) this.ObjSize[objIx] = 1e9;
+  if (this.ObjSize[objIx] < OBJ_SIZE_MIN) this.ObjSize[objIx] = OBJ_SIZE_MIN;
+  if (this.ObjSize[objIx] > OBJ_SIZE_MAX) this.ObjSize[objIx] = OBJ_SIZE_MAX;
   this.SliderObjSizeLog[objIx] = Math.log10( this.ObjSize[objIx] );
   this.SliderObjSizeLogLast[objIx] = this.SliderObjSizeLog[objIx];
 
@@ -788,7 +788,7 @@ CurveAppClass.prototype.UpdateObjectInput = function( objIx ) {
     this.ObjDeltaDist[objIx] = 10 * Math.pow( 10, this.SliderObjDeltaDistLog[objIx] );
   }
   var deltaDistLimit = this.RefractedRadiusEarth * PI90;
-  if (this.ObjDeltaDist[objIx] < 0.001) this.ObjDeltaDist[objIx] = 0.001;
+  if (this.ObjDeltaDist[objIx] < OBJ_DELTA_DIST_MIN) this.ObjDeltaDist[objIx] = OBJ_DELTA_DIST_MIN;
   if (this.ObjDeltaDist[objIx] > deltaDistLimit) this.ObjDeltaDist[objIx] = deltaDistLimit;
   this.SliderObjDeltaDistLog[objIx] = Math.log10( this.ObjDeltaDist[objIx] / 10 );
   this.SliderObjDeltaDistLogLast[objIx] = this.SliderObjDeltaDistLog[objIx];

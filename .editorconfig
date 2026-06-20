@@ -1,0 +1,34 @@
+# EditorConfig — consistent coding styles across editors and IDEs
+# https://editorconfig.org
+
+root = true
+
+[*]
+indent_style = tab
+indent_size = 2
+tab_width = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.md]
+trim_trailing_whitespace = false
+
+# Vendor and legacy app code — keep as-is
+[packages/jsgraph-vendor/src/**]
+indent_style = tab
+indent_size = 4
+
+[apps/earth-drop-calc/app/**]
+indent_style = tab
+
+[apps/earth-drop-calc/assets/**]
+indent_style = tab
+
+[apps/fed-wabis-v2/**]
+indent_style = tab
+
+[.editorconfig]
+charset = utf-8
+insert_final_newline = true
