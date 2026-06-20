@@ -13,11 +13,13 @@
 // =============================================================================
 /* global NumFormatter */
 
+/** @typedef {{ obj: any, prop: string, refStr: string }} Ref */
+/** @typedef {Record<string, any>} Cfg  Loose field/panel config (as authored in app/panels). */
+/** @typedef {{ el: any, init: () => void, update: () => void, name?: string, slider?: boolean, header?: boolean }} FieldObj */
+
 // ---------------------------------------------------------------------------
 // String-ref model binding (mirrors CpField.MakeRef / ValueFromModel / ValueToModel)
 // ---------------------------------------------------------------------------
-
-/** @typedef {{ obj: any, prop: string, refStr: string }} Ref */
 
 /**
  * Resolve a "Model.prop" / "prop" / "arr[0]" string against globalThis.
@@ -38,7 +40,7 @@ function makeRef(refStr, modelRefName) {
   return { obj, prop: parts[parts.length - 1], refStr };
 }
 
-/** Read a model value. @param {Ref|null} r */
+/** Read a model value. @param {Ref|null} r @returns {any} */
 function readRef(r) {
   if (!r) return '';
   return r.obj[r.prop];
@@ -67,6 +69,8 @@ function writeRef(r, val, onChange, field, force) {
  * Resolve a UnitsData ref (e.g. 'HeightUnits') to the active {mult, unit} for
  * the current selection (UnitsType). Shape: {Selection:'.UnitsType', Units:[],
  * Mults:[], Formats?:[], Digits?:[]}.
+ * @param {string} unitsRef
+ * @param {string} modelRefName
  * @returns {{ mult: number, unit: string, format: ?string, digits: ?number }}
  */
 function resolveUnits(unitsRef, modelRefName) {
@@ -88,7 +92,10 @@ function resolveUnits(unitsRef, modelRefName) {
   };
 }
 
-/** Format a number for display, reusing the vendor NumFormatter. */
+/**
+ * Format a number for display, reusing the vendor NumFormatter.
+ * @param {number} num @param {?string} [format] @param {?number} [digits] @returns {string}
+ */
 function fmtNum(num, format, digits) {
   if (typeof num !== 'number' || !isFinite(num)) return String(num);
   if (!format) return String(num);
@@ -97,7 +104,7 @@ function fmtNum(num, format, digits) {
   });
 }
 
-/** Parse a user-typed string back to a number (tolerant of spaces/commas). */
+/** Parse a user-typed string back to a number (tolerant of spaces/commas). @param {string} str @returns {number} */
 function parseNum(str) {
   if (typeof NumFormatter.StringToNum === 'function') return NumFormatter.StringToNum(str);
   return parseFloat(String(str).replace(/[\s,]/g, ''));
@@ -107,6 +114,7 @@ function parseNum(str) {
 // DOM helpers
 // ---------------------------------------------------------------------------
 
+/** @param {string} tag @param {string} [cls] @param {Record<string, any>} [attrs] @returns {any} */
 function el(tag, cls, attrs) {
   const e = document.createElement(tag);
   if (cls) e.className = cls;
@@ -115,10 +123,15 @@ function el(tag, cls, attrs) {
 }
 
 // ---------------------------------------------------------------------------
-// Field types — each returns { el, init(), update() }
+// Field types — each returns a FieldObj
 // ---------------------------------------------------------------------------
 
-/** Text / read-only value field. */
+/**
+ * Text / read-only value field.
+ * @param {Panel} panel @param {Cfg} cfg
+ * @param {{ sliderValue?: boolean, sliderOnly?: boolean, noLabel?: boolean }} [opts]
+ * @returns {FieldObj}
+ */
 function TextField(panel, cfg, opts) {
   opts = opts || {};
   // Like the vendor, an absent ValueRef defaults to the field Name.
@@ -177,7 +190,7 @@ function TextField(panel, cfg, opts) {
   function init() {
     if (readOnly) return;
     input.addEventListener('change', store);
-    input.addEventListener('keydown', (ev) => {
+    input.addEventListener('keydown', (/** @type {KeyboardEvent} */ ev) => {
       if (ev.key === 'Enter') { store(); input.select(); ev.preventDefault(); }
       else if (ev.key === 'ArrowUp' || ev.key === 'ArrowDown') {
         const u = curUnits();
@@ -196,7 +209,10 @@ function TextField(panel, cfg, opts) {
   return { el: field, init, update, name: cfg.Name };
 }
 
-/** Native range slider, bound to SliderValueRef (a pre-mapped [Min,Max] value). */
+/**
+ * Native range slider, bound to SliderValueRef (a pre-mapped [Min,Max] value).
+ * @param {Panel} panel @param {Cfg} cfg @param {{ sliderOnly?: boolean }} [opts] @returns {FieldObj}
+ */
 function SliderField(panel, cfg, opts) {
   opts = opts || {};
   const ref = makeRef(cfg.SliderValueRef || cfg.ValueRef || cfg.Name, panel.modelRef);
@@ -232,7 +248,10 @@ function SliderField(panel, cfg, opts) {
   return { el: field, init, update, name: cfg.Name + '-Slider', slider: true };
 }
 
-/** Radio group (single ValueRef, typed Items). */
+/**
+ * Radio group (single ValueRef, typed Items).
+ * @param {Panel} panel @param {Cfg} cfg @returns {FieldObj}
+ */
 function RadioField(panel, cfg) {
   const ref = makeRef(cfg.ValueRef || cfg.Name, panel.modelRef);
   const type = cfg.ValueType || 'int';
@@ -244,8 +263,9 @@ function RadioField(panel, cfg) {
     lg.innerHTML = legendText;
     fs.appendChild(lg);
   }
+  /** @type {{ inp: any, value: any }[]} */
   const inputs = [];
-  (cfg.Items || []).forEach((it, i) => {
+  /** @type {any[]} */ (cfg.Items || []).forEach((it, i) => {
     if (!it || it.Text === '-') return;
     const iid = groupName + '-' + i;
     const lbl = el('label', 'cp-field__choice');
@@ -255,6 +275,7 @@ function RadioField(panel, cfg) {
     lbl.appendChild(inp); lbl.appendChild(cap); fs.appendChild(lbl);
     inputs.push({ inp, value: it.Value });
   });
+  /** @param {any} v */
   function parse(v) {
     if (type === 'int') { const n = parseInt(v, 10); return isNaN(n) ? 0 : n; }
     if (type === 'num') { const n = parseFloat(v); return isNaN(n) ? 0 : n; }
@@ -275,7 +296,10 @@ function RadioField(panel, cfg) {
   return { el: fs, init, update, name: cfg.Name };
 }
 
-/** Checkbox group (each Item binds its own boolean ValueRef). */
+/**
+ * Checkbox group (each Item binds its own boolean ValueRef).
+ * @param {Panel} panel @param {Cfg} cfg @returns {FieldObj}
+ */
 function CheckboxField(panel, cfg) {
   const fs = el('fieldset', 'cp-field cp-field--checkbox', { role: 'group' });
   const legendText = cfg.Label != null ? cfg.Label : cfg.Name;
@@ -284,8 +308,9 @@ function CheckboxField(panel, cfg) {
     lg.innerHTML = legendText;
     fs.appendChild(lg);
   }
+  /** @type {{ inp: any, ref: Ref|null }[]} */
   const items = [];
-  (cfg.Items || []).forEach((it, i) => {
+  /** @type {any[]} */ (cfg.Items || []).forEach((it, i) => {
     if (!it || it.Text === '-') return;
     const iid = panel.fieldId(it.Name || cfg.Name + '-' + i);
     const ref = makeRef(it.ValueRef || it.Name, panel.modelRef);
@@ -312,6 +337,7 @@ function CheckboxField(panel, cfg) {
 let panelCounter = 0;
 
 class Panel {
+  /** @param {Cfg} [cfg] */
   constructor(cfg) {
     cfg = cfg || {};
     this.name = cfg.Name || ('ControlPanel' + ++panelCounter);
@@ -323,13 +349,17 @@ class Panel {
     this.readOnly = !!cfg.ReadOnly;
     this.valuePos = cfg.ValuePos || 'left';
     this.isSliderPanel = !!cfg.isSliderPanel;
+    /** @type {FieldObj[]} */
     this.fields = [];
+    /** @type {any} */
     this.dom = null;
     ControlPanels._register(this);
   }
 
+  /** @param {string} name */
   fieldId(name) { return this.name + '-' + name; }
 
+  /** @param {Cfg} cfg */
   AddHeader(cfg) {
     const h = el('div', 'cp-panel__header');
     h.innerHTML = (cfg && cfg.Text) || '';
@@ -337,8 +367,10 @@ class Panel {
     return this;
   }
 
+  /** @param {Cfg} cfg */
   AddTextField(cfg) { this.fields.push(TextField(this, cfg, {})); return this; }
 
+  /** @param {Cfg} cfg */
   AddValueSliderField(cfg) {
     // value text input + native range, both bound through the model.
     this.fields.push(TextField(this, cfg, { sliderValue: true }));
@@ -346,10 +378,14 @@ class Panel {
     return this;
   }
 
+  /** @param {Cfg} cfg */
   AddSliderField(cfg) { this.fields.push(SliderField(this, cfg, {})); return this; }
+  /** @param {Cfg} cfg */
   AddRadiobuttonField(cfg) { this.fields.push(RadioField(this, cfg)); return this; }
+  /** @param {Cfg} cfg */
   AddCheckboxField(cfg) { this.fields.push(CheckboxField(this, cfg)); return this; }
 
+  /** @param {string} targetId */
   RenderInto(targetId) {
     const target = document.getElementById(targetId);
     // Missing target (e.g. units/save-restore targets dropped in the redesign):
@@ -375,11 +411,16 @@ class Panel {
 // ---------------------------------------------------------------------------
 
 const ControlPanels = {
+  /** @type {Panel[]} */
   _panels: [],
+  /** @type {Record<string, Panel>} */
   _byName: {},
+  /** @param {Panel} p */
   _register(p) { this._panels.push(p); this._byName[p.name] = p; },
 
+  /** @param {Cfg} [cfg] */
   NewPanel(cfg) { return new Panel(cfg); },
+  /** @param {Cfg} [cfg] */
   NewSliderPanel(cfg) {
     cfg = cfg || {};
     const p = new Panel(Object.assign({}, cfg, {
@@ -390,7 +431,10 @@ const ControlPanels = {
     return p;
   },
 
-  /** Refresh panels from the model. `refs` = name | "a,b" | array | undefined (all). */
+  /**
+   * Refresh panels from the model. `refs` = name | "a,b" | array | undefined (all).
+   * @param {string | any[]} [refs]
+   */
   Update(refs) {
     let list = this._panels;
     if (typeof refs === 'string') {
@@ -402,6 +446,7 @@ const ControlPanels = {
     for (const p of list) p.Update();
   },
 
+  /** @param {string} name */
   Get(name) { return this._byName[name] || null; },
 };
 
