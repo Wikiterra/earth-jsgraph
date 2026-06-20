@@ -17,6 +17,7 @@ import 'jsgraph-vendor/src/Tabs.js';
 import 'jsgraph-vendor/src/DataX.js';
 import 'jsgraph-vendor/src/xtc.js';
 import 'jsgraph-vendor/src/ModelAnimation.js';
+import 'jsgraph-vendor/src/core/tokens.css'; // shared design tokens (load first)
 import 'jsgraph-vendor/src/styles.css';
 
 // --- shared helpers (toRad, toDeg, sqr, Limit1, …) ---

@@ -27,7 +27,7 @@
   font-weight: bold;
   line-height: 1.2;
   margin: 0 0 0.6em;
-  border-bottom: 2px solid #ff6000;
+  border-bottom: 2px solid var(--color-accent-strong);
   padding-bottom: 0.3em;
 }
 .CalcApp .Scroller { width: 100%; }
@@ -81,9 +81,9 @@ ul.TabSelectors.Top li { border-top: 4px solid #ddd; }
 ul.TabSelectors.Bottom li { border-bottom: 4px solid #ddd; }
 ul.TabSelectors li.TabEnabled { color: #666; cursor: pointer; }
 ul.TabSelectors li.TabEnabled:hover { border-color: #666; color: #000; }
-ul.TabSelectors li.TabSelected { border-color: #ff8033; }
+ul.TabSelectors li.TabSelected { border-color: var(--color-accent); }
 ul.TabSelectors li.TabButton { border-right: 1px solid #ddd; color: #ddd; }
-ul.TabSelectors li.TabButton.TabEnabled { border-color: #ff8033; color: #666; }
+ul.TabSelectors li.TabButton.TabEnabled { border-color: var(--color-accent); color: #666; }
 ul.TabSelectors li.TabButton.TabEnabled:hover { color: #000; }
 ul.TabSelectors.Top li.TabButton { border-bottom: 1px solid #ddd; }
 ul.TabSelectors.Bottom li.TabButton { border-top: 1px solid #ddd; }

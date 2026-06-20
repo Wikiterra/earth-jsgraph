@@ -23,6 +23,23 @@ apps/
 > Hubo dos packages (`jsgraph-vendor` + `jsgraph-core`); el "core" quedó tan fino
 > (un adapter) que se fusionó en uno solo. El seam vive en `jsgraph-vendor/src/core/`.
 
+## CSS (arquitectura por capas)
+
+Una sola cascada, de lo compartido a lo específico. Cada app la carga en este orden:
+
+| Capa           | Archivo                                         | Dueño      | Qué                                                                                                                   |
+|----------------|-------------------------------------------------|------------|-----------------------------------------------------------------------------------------------------------------------|
+| 1. Tokens      | `jsgraph-vendor/src/core/tokens.css`            | compartido | **Única fuente** de colores de marca, neutros, radios y sombras (`--color-*`, `--nav-*`, `--radius-*`, `--shadow-*`). |
+| 2. Base vendor | `jsgraph-vendor/src/styles.css`                 | vendor     | Estilos del framework wabis (DOM generado: paneles, tabs). Solo lo usa edc. No tocar salvo parche.                    |
+| 3. Componentes | `jsgraph-vendor/src/core/{shared,appShell}.css` | compartido | Tweaks de componentes comunes a ambas apps + barra de navegación.                                                     |
+| 4. App         | `apps/<app>/styles/*.css`                       | por app    | Chrome y overrides propios. **Última capa, gana.**                                                                    |
+
+- edc carga 1–4 vía `js/main.js` (imports ESM, en orden). fed carga tokens vía `@import`
+  al inicio de su `styles/styles.css` y los componentes vía `main-v2.js`.
+- Ambas apps usan `styles/` (no `css/`). Los colores de marca (`#ff8033`…) viven **solo**
+  en `tokens.css`; el resto referencia `var(--…)`. Colores semánticos de una sola app
+  (resaltados de campos, cabeceras de panel) se quedan locales en su `*.css`.
+
 ## Principio de dependencias (DIP)
 
 `apps → core seam (createGraph3D) → wabis`

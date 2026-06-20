@@ -30,9 +30,9 @@ ul.TabSelectors li {
   color: #222;
   user-select: none;
 }
-ul.TabSelectors li.TabSelected { background: #ff8033; color: #fff; border-color: #ff8033; }
+ul.TabSelectors li.TabSelected { background: var(--color-accent); color: #fff; border-color: var(--color-accent); }
 ul.TabSelectors li.TabButton { background: #e0e0e0; font-weight: bold; }
-ul.TabSelectors li.TabButton.TabSelected { background: #ff8033; color: #fff; }
+ul.TabSelectors li.TabButton.TabSelected { background: var(--color-accent); color: #fff; }
 .Top.MarginTop { margin-top: 8px; }
 .Bottom { margin-top: 0; }
 

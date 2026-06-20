@@ -1,28 +1,19 @@
+/* Shared brand colours, neutrals, radii and shadows (--color-*, --radius-*,
+   --shadow-*) — single source for both apps. Must be first (@import rule). */
+@import "jsgraph-vendor/src/core/tokens.css";
+
 /* =============================================================
-   Custom properties
+   Custom properties (fed-specific; shared tokens come from tokens.css)
    ============================================================= */
 :root {
   --top-bar-h:    52px;
   --bottom-bar-h: 72px;
 
-  --color-accent:   #ff8033;
-  --color-primary:  #2d3436;
-  --color-surface:  #fff;
-  --color-bg:       #1a1a24;
-  --color-border:   #e0e0e0;
-  --color-text:     #222;
-  --color-muted:    #666;
+  --color-primary: #2d3436;
+  --color-bg:      #1a1a24;
 
   --bar-bg:   rgba(16, 16, 24, 0.96);
   --bar-text: rgba(255, 255, 255, 0.9);
-
-  --radius-sm: 5px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-
-  --shadow-sm: 0 2px 6px rgba(0,0,0,0.12);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.18);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.28);
 }
 
 /* =============================================================
