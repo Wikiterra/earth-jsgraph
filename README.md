@@ -34,24 +34,23 @@ reescribir solo ese adapter, sin tocar las apps.
 ## Comandos
 
 ```bash
-pnpm install   # instala dependencias del workspace
-pnpm dev       # Vite raíz: sirve AMBAS apps. Abrir:
-               #   /apps/fed-wabis-v2/index.html
-               #   /apps/earth-drop-calc/index.html
+pnpm install                       # instala dependencias del workspace
+pnpm --filter earth-drop-calc dev  # arranca una app (Vite per-app)
+pnpm --filter fed-wabis-v2 dev     # la otra
+pnpm dev                           # o el Vite raíz: sirve AMBAS (sub-paths /apps/…)
 pnpm build     # build estático unificado de las dos apps → dist/ (GitHub Pages)
 pnpm preview   # sirve dist/ localmente (como lo verá Pages)
-pnpm characterize  # red de seguridad: snapshots del motor matemático (Playwright)
+pnpm characterize  # red de seguridad: snapshots matemáticos + screenshots de canvas
 pnpm typecheck     # type-check del seam TS (src/core)
 pnpm lint          # ESLint (ignora vendor y código legacy)
 ```
 
-Las dos apps comparten un **único** vendor wabis (`packages/jsgraph-vendor/src`).
-`earth-drop-calc` lo carga con `<script>` clásico vía `../../packages/…`, por eso se
-sirve desde el Vite **raíz** (`pnpm dev`), no per-app — un root per-app daría 404 en
-`../../packages`. Detalle de la convergencia en [MIGRATION-PLAN.md](../MIGRATION-PLAN.md) §8.
+Las dos apps comparten un **único** vendor wabis (`packages/jsgraph-vendor/src`) y
+cada una lo carga con un único entry ESM (`js/main*.js`) por *bare specifiers*, así que
+Vite las empaqueta igual y `pnpm --filter <app> dev` funciona en ambas.
 
 > **No** abrir `index.html` con VSCode Live Preview ni un servidor estático de
-> archivos: `fed-wabis-v2` usa *bare specifiers* (`import 'jsgraph-vendor/src/wiki.js'`)
-> que sólo resuelve Vite/pnpm (`bare specifier ... was not remapped to anything`).
+> archivos: los *bare specifiers* (`import 'jsgraph-vendor/src/wiki.js'`) sólo los
+> resuelve Vite/pnpm (`bare specifier ... was not remapped to anything`).
 
 Ver [MIGRATION-PLAN.md](../MIGRATION-PLAN.md) para el plan por fases.

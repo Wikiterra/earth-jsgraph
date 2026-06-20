@@ -34,7 +34,17 @@ El vendor dejó de ser intacto: tiene el codemod + 1 parche manual.
   `CreateDomObjects` en `jsg.js` (marcado `// ponytail:`), `pnpm characterize`.
 - Detalle de los 5 escollos en MIGRATION-PLAN §8.
 
-## 3. 🔴 earth-drop a un entrypoint ESM → elimina el parche del build (PROYECTO)
+## 3. ✅ HECHO — earth-drop a entrypoint ESM (eliminó el parche del build)
+
+Hecho en 3 commits (Stage 1 `cbc4a17`, Stage 2 `7bf6f62`): paneles via `RenderInto`
+(no `document.write`), `js/main.js` único entry ESM, app globalizada, `copy-edc-static`
+y `../../packages` fuera, `pnpm --filter earth-drop-calc dev` restaurado. Hicieron falta
+**2 parches al vendor** (wabis asume scripts clásicos globales; ESM es strict + module-scoped):
+`ControlPanel.AppendixHtml` (`this`→`globalThis`) y `wiki.js` (sincronizar
+`globalThis.xOnLoadFinished`, si no el canvas sale en blanco). Validado: 8/8 specs con el
+screenshot de edc **idéntico** al baseline pre-migración.
+
+<details><summary>Plan original (para referencia)</summary>
 
 Es el mayor **simplificador** disponible.
 
@@ -54,6 +64,8 @@ Es el mayor **simplificador** disponible.
   (branch `#jsg-canvas-mount` que ya tiene `CreateDomObjects`); los paneles son el grueso.
   → **Es un proyecto 🔴, no un quick win.** Hacerlo solo si se decide modernizar edc, y
   con #1 (red de render) ya en verde.
+
+</details>
 
 ## 4. 🟡 Extender la costura `createGraph3D` — solo cuando haga falta
 

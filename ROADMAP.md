@@ -16,7 +16,10 @@ Tablero de estado a alto nivel. Detalle: fases en
   ya no nombra el motor. — `ec7c38f`
 - Limpieza de andamiaje sin uso en core/vendor. — `29ec674`
 - **Un solo package:** `jsgraph-core` (demasiado fino) fusionado en `jsgraph-vendor`;
-  el seam vive en `jsgraph-vendor/src/core/`.
+  el seam vive en `jsgraph-vendor/src/core/`. — `cc96236`
+- **earth-drop a ESM** (como fed): entry único `js/main.js`, Vite lo empaqueta, fuera
+  `copy-edc-static` y `../../packages`, `pnpm --filter earth-drop-calc dev` restaurado.
+  2 parches al vendor (strict `this`, `xOnLoadFinished`). — `cbc4a17`, `7bf6f62`
 - **Build unificado** de las dos apps → `dist/` + workflow GitHub Pages. — `48c6e66`
 - **Red de seguridad:** snapshots de matemática (Fase 2) + **screenshots de render**
   (canvas por app, deterministas). — `5d8c176`
@@ -28,22 +31,11 @@ El build y el workflow ya existen; falta conectar el repo:
 `git remote add origin <url>` → push → **Settings → Pages → Source: GitHub Actions**.
 Hasta esto, la web no se publica.
 
-### 2. 🔴 earth-drop-calc → entrypoint ESM (PROYECTO, no quick win)
-**Re-dimensionado:** no es solo el canvas. Los ~21 `<script>` de app en el `<body>` y
-los paneles (`ControlPanel.Render → document.writeln`) se inyectan en **parse-time**,
-posicionados por dónde está cada script. Migrar a ESM (deferred) exige rearquitecturar
-toda la construcción del DOM (de `document.write` a montaje programático en divs target).
-- **Gana:** Vite empaqueta edc como fed → se borra el plugin `copy-edc-static`, se va el
-  `../../packages`, vuelve `pnpm --filter earth-drop-calc dev`, y habilita la Fase 3
-  completa (depender de `core` por import, no por global).
-- **Coste/riesgo:** medio-alto, ~21 ficheros + ruta de render de ControlPanel.
-- **Mitigado por:** la red de render (#screenshots) ya cubre regresiones de dibujo.
-- Hacer solo si se decide modernizar edc; no es obligatorio para que funcione hoy.
+### 2. 🟡 Fase 4 — extraer la lógica común real entre edc y fed a `core`/`apps/shared`
+Solo lo que de verdad se solape (no forzar). Ahora ambas apps cargan igual (ESM), así
+que comparar/extraer es más directo.
 
-### 3. 🟡 Fase 4 — extraer la lógica común real entre edc y fed a `core`/`apps/shared`
-Solo lo que de verdad se solape (no forzar). Requiere #2 hecho para edc.
-
-### 4. 🟡 Fase 5 — modernizar UI / evaluar three.js — **solo si hay necesidad**
+### 3. 🟡 Fase 5 — modernizar UI / evaluar three.js — **solo si hay necesidad**
 Hoy el render vectorial esquemático es una ventaja, no deuda. Si llega un 2º motor real,
 la costura `createGraph3D` ya está: se extiende método a método en `wabisGraph3D.js`.
 
