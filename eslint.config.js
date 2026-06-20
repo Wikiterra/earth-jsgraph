@@ -79,10 +79,6 @@ export default tseslint.config(
       "no-unused-vars": "off",
       "no-redeclare": "off",
       "no-var": "off",
-      // Pre-existing latent bug in objectRenderer.js (duplicate `sizeType == 1`
-      // branch makes the "alt" size mode dead). Fixing it changes render output,
-      // so it's left for a separate behavior change, not this refactor.
-      "no-dupe-else-if": "off",
     },
   },
 );

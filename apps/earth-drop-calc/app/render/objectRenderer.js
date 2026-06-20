@@ -102,7 +102,8 @@ function SetTrans( objIx, g, m, lng, lat, size, alt, bOnGlobe ) {
 
 function DrawShapeVariants( objIx, g, m, bOnGlobe ) {
 
-  // size: 0 -> lin, 1 -> alt, 2 -> rand, 3 -> cos, 4 -> sin
+  // size: 1 -> lin, 2 -> rand, 3 -> cos, 4 -> sin (matches the ObjSizeType UI;
+  // the old "alt"/0 modes were never exposed as options)
 
   var size = 1;
   var sizeType = m.ObjSizeType[objIx];
@@ -116,10 +117,6 @@ function DrawShapeVariants( objIx, g, m, bOnGlobe ) {
     if (m.MaxNObjectsToDraw[objIx] > 1) {
       size = 1 + m.ObjSizeVar[objIx] * (2 / (m.MaxNObjectsToDraw[objIx] - 1) * (m.MaxNObjectsToDraw[objIx]-1 - m.NObjectsDrawn[objIx]) - 1);
     }
-
-  } else if (sizeType == 1) {
-    // alt
-    size = 1 + m.ObjSizeVar[objIx] * Math.cos( Math.PI * m.NObjectsDrawn[objIx] );
 
   } else if (sizeType == 2) {
     // rand
