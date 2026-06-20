@@ -406,14 +406,11 @@ body {
   line-height: 0;
 }
 
-/* jsg sets position, top, left, width, height on the canvas via inline styles.
-   jsg defaults the canvas to width × 56% (aspect-locked), which can't fill a tall
-   phone viewport. Force the canvas + clipping box to fill #FeGraph; jsg's
-   AutoScalePix + the ResizeObserver (ui.js → CheckResizeRegularly) then re-render
-   the pixel buffer at the real box size (no stretching). */
+/* jsg creates the canvas at width × 56% (aspect). Let jsg control the canvas
+   size — the container fills the viewport, and a ResizeObserver (ui.js) triggers
+   a redraw when the container changes size. No forced height on the canvas. */
 .JsGraph-Canvas { display: block; }
-#FeGraph .JsGraph-ClippingBox,
-#FeGraph .JsGraph-Canvas {
+#FeGraph .JsGraph-ClippingBox {
   width: 100% !important;
   height: 100% !important;
   inset: 0 !important;
@@ -561,6 +558,27 @@ body {
 .pb-btn.pb-reset:hover {
   color: var(--bar-text);
 }
+
+/* =============================================================
+   Bottom bar — fixed at viewport bottom
+   ============================================================= */
+#bottom-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--bottom-bar-h);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px;
+  background: var(--bar-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.4);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+#bottom-bar::-webkit-scrollbar { display: none; }
 
 /* Layer toggles */
 .layer-section {

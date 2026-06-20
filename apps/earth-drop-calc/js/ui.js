@@ -98,6 +98,32 @@ export function init() {
       Tabs.Select('CurveSettingsTabs', 5);
     }
   });
+
+  /* ── ResizeObserver: trigger jsg redraw when container changes size ─── */
+  if (window.ResizeObserver && window.graph) {
+    try {
+      const container = window.graph.ContainerDiv;
+      if (container) {
+        new ResizeObserver(() => {
+          if (window.graph && window.graph.CheckResizeRegularly) {
+            window.graph.CheckResizeRegularly();
+          }
+        }).observe(container);
+      }
+    } catch (e) { /* ignore */ }
+  }
+
+  /* ── Screenshot export ─── */
+  document.getElementById('btn-screenshot')?.addEventListener('click', () => {
+    try {
+      const canvas = window.graph && window.graph.Canvas;
+      if (!canvas) return;
+      const a = document.createElement('a');
+      a.download = 'earth-drop-calc.png';
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    } catch (e) { /* ignore */ }
+  });
 }
 
 if (document.readyState === 'loading') {
