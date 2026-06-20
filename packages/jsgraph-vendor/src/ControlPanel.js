@@ -279,7 +279,7 @@ CpCheckboxField.prototype.ForEachItem = function (func) { xArrForEach(this.Items
 CpCheckboxField.prototype.GetItem = function (aName) { var item = xArrFind(this.Items, function CB_Compare_Name(item) { return item.Name == aName; }); return item ? item : null; }
 CpCheckboxField.prototype.HasName = function (aName) { return (this.Name == aName || this.GetItem(aName) != null); }
 CpCheckboxField.prototype.GetValueRef = function (aItemName) {
-    var valueRef = this.ValueRef; if (xStr(aItemName)) { var item = this.GetItem(aItemName); if (!tem) valueRef = item.ValueRef; }
+    var valueRef = this.ValueRef; if (xStr(aItemName)) { var item = this.GetItem(aItemName); if (item) valueRef = item.ValueRef; } /* ponytail: was `if (!tem)` — undeclared var (throws under ESM strict) + inverted logic */
     return valueRef ? valueRef.ValueRef : '';
 }
 CpCheckboxField.prototype.GetHtmlID = function (itemName) { if (!xStr(itemName)) return this.HtmlID; var item = this.GetItem(itemName); return item ? item.HtmlID : ''; }
@@ -346,7 +346,7 @@ CpRadiobuttonField.prototype.ParseDataType = function (aValue, aDataType) {
     return v;
 }
 CpRadiobuttonField.prototype.ToValueStr = function (aValue, aDataType) {
-    var v = aValue; if (xStr(v)) { if (aDataType == 'int') { v = this.ParseDataType(aValue, aDataType).toString(); } else if (aDataType == 'num') { v = parseFloat(aValue); v = (IsNaN(v)) ? '0.0' : aValue; } else if (aDataType == 'bool') { v = (aValue != '' && aValue != '0' && aValue != 'false'); v = (v) ? 'true' : 'false'; } } else { if (aDataType == 'int') { v = xNum(aValue) ? v.toFixed(0) : '0'; } else if (aDataType == 'num') { v = xNum(aValue) ? v.toString() : '0.0'; } else if (aDataType == 'bool') { v = aValue ? 'true' : 'false'; } else { v = aValue.toString(); } }
+    var v = aValue; if (xStr(v)) { if (aDataType == 'int') { v = this.ParseDataType(aValue, aDataType).toString(); } else if (aDataType == 'num') { v = parseFloat(aValue); v = (isNaN(v)) ? '0.0' : aValue; /* ponytail: was IsNaN (undefined) → throws when reached */ } else if (aDataType == 'bool') { v = (aValue != '' && aValue != '0' && aValue != 'false'); v = (v) ? 'true' : 'false'; } } else { if (aDataType == 'int') { v = xNum(aValue) ? v.toFixed(0) : '0'; } else if (aDataType == 'num') { v = xNum(aValue) ? v.toString() : '0.0'; } else if (aDataType == 'bool') { v = aValue ? 'true' : 'false'; } else { v = aValue.toString(); } }
     return v;
 }
 CpRadiobuttonField.prototype.GetEnabledFromModel = function () {

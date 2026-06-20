@@ -1505,7 +1505,7 @@ JsGraph.prototype.ParseHWInt = function (h, w) {
     result = h;
   }
   result = Math.round(result);
-  if (result <= 0) retult = 1;
+  if (result <= 0) result = 1; // ponytail: was `retult` (typo) — an implicit global write that throws under ESM strict
   return result;
 };
 JsGraph.prototype.AddCssClass = function (css, addCss) {
