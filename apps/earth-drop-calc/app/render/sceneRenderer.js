@@ -99,36 +99,16 @@ function DrawModel( g ) {
       for ( var cr = crDelta; cr < crMax; cr += crDelta ) {
         g.ArcOnPlane( 0, 0, cr, 0, aMax, 1 );
       }
-      if (m.Height < 700000) {
-        crMax = crDelta;
-        crDelta /= 10;
-        crMax -= crDelta / 2;
-        for ( var cr = crDelta; cr < crMax; cr += crDelta ) {
-          g.ArcOnPlane( 0, 0, cr, 0, aMax, 1 );
-        }
-      }
-      if (m.Height < 30000) {
-        crMax = crDelta;
-        crDelta /= 10;
-        crMax -= crDelta / 2;
-        for ( var cr = crDelta; cr < crMax; cr += crDelta ) {
-          g.ArcOnPlane( 0, 0, cr, 0, aMax, 1 );
-        }
-      }
-      if (m.Height < 3000) {
-        crMax = crDelta;
-        crDelta /= 10;
-        crMax -= crDelta / 2;
-        for ( var cr = crDelta; cr < crMax; cr += crDelta ) {
-          g.ArcOnPlane( 0, 0, cr, 0, aMax, 1 );
-        }
-      }
-      if (m.Height < 300) {
-        crMax = crDelta;
-        crDelta /= 10;
-        crMax -= crDelta / 2;
-        for ( var cr = crDelta; cr < crMax; cr += crDelta ) {
-          g.ArcOnPlane( 0, 0, cr, 0, aMax, 1 );
+      // Progressive refinement: add a finer decade of circle grid lines each time the
+      // observer height drops below the next threshold (cumulative — crDelta shrinks).
+      for ( var thresh of [ 700000, 30000, 3000, 300 ] ) {
+        if (m.Height < thresh) {
+          crMax = crDelta;
+          crDelta /= 10;
+          crMax -= crDelta / 2;
+          for ( var cr = crDelta; cr < crMax; cr += crDelta ) {
+            g.ArcOnPlane( 0, 0, cr, 0, aMax, 1 );
+          }
         }
       }
 
@@ -191,9 +171,9 @@ function DrawModel( g ) {
     g.SetAlpha( alpha );
     g.SetLineAttr( m.GlobeGridCol, 1 );
 
-    // show globe grid
-    if ( m.showGrid & 1 ) {
-
+    // Lat/long grid lines — identical construction for the globe (PointOnEarth) and
+    // the flat-model overlay (PointOnPlane); only the point projection differs.
+    function drawLatLongGrid( pointFn ) {
       // latitude lines
       var latMax = m.HorizDropAnglFromEyeLvl;
       var latStart = -( Math.floor( latMax / m.GridDeltaAngl ) * m.GridDeltaAngl );
@@ -203,12 +183,11 @@ function DrawModel( g ) {
         var longStart = -( Math.floor( longMax / m.GridDeltaAngl ) * m.GridDeltaAngl );
         g.NewPoly3D();
         for ( var long = longStart; long < longMax; long += m.GridDeltaAngl ) {
-          g.AddPointToPoly3D( PointOnEarth( lat, long ) );
+          g.AddPointToPoly3D( pointFn( lat, long ) );
         }
-        g.AddPointToPoly3D( PointOnEarth( lat, longMax ) );
+        g.AddPointToPoly3D( pointFn( lat, longMax ) );
         g.DrawPoly3D( 1 );
       }
-
       // longitude lines
       var longMax = m.HorizDropAnglFromEyeLvl;
       var longStart = -( Math.floor( longMax / m.GridDeltaAngl ) * m.GridDeltaAngl );
@@ -217,53 +196,22 @@ function DrawModel( g ) {
         var latMax = Math.acos( m.EarthCentrToHorizDisc / rLong );
         var latStart = -( Math.floor( latMax / m.GridDeltaAngl ) * m.GridDeltaAngl );
         g.NewPoly3D();
-        g.AddPointToPoly3D( PointOnEarth( -latMax, long ) );
+        g.AddPointToPoly3D( pointFn( -latMax, long ) );
         for ( var lat = latStart; lat < latMax; lat += m.GridDeltaAngl ) {
-          g.AddPointToPoly3D( PointOnEarth( lat, long ) );
+          g.AddPointToPoly3D( pointFn( lat, long ) );
         }
-        g.AddPointToPoly3D( PointOnEarth( latMax, long ) );
+        g.AddPointToPoly3D( pointFn( latMax, long ) );
         g.DrawPoly3D( 1 );
       }
+    }
 
-    } // end show globe grid
+    // show globe grid
+    if ( m.showGrid & 1 ) drawLatLongGrid( PointOnEarth );
 
     g.SetLineAttr( m.GlobeFGridCol, 1 );
 
-    // show flat grid
-    if ( m.showGrid & 2 ) {
-
-      // latitude lines on flat model
-      var latMax = m.HorizDropAnglFromEyeLvl;
-      var latStart = -( Math.floor( latMax / m.GridDeltaAngl ) * m.GridDeltaAngl );
-      for ( var lat = latStart; lat < latMax; lat += m.GridDeltaAngl ) {
-        var dLatPlaneDisk = m.EarthCentrToHorizDisc / Math.cos( lat );
-        var longMax = Math.acos( dLatPlaneDisk / m.RefractedRadiusEarth );
-        var longStart = -( Math.floor( longMax / m.GridDeltaAngl ) * m.GridDeltaAngl );
-        g.NewPoly3D();
-        for ( var long = longStart; long < longMax; long += m.GridDeltaAngl ) {
-          g.AddPointToPoly3D( PointOnPlane( lat, long ) );
-        }
-        g.AddPointToPoly3D( PointOnPlane( lat, longMax ) );
-        g.DrawPoly3D( 1 );
-      }
-
-      // longitude lines on flat model
-      var longMax = m.HorizDropAnglFromEyeLvl;
-      var longStart = -( Math.floor( longMax / m.GridDeltaAngl ) * m.GridDeltaAngl );
-      for ( var long = longStart; long < longMax; long += m.GridDeltaAngl ) {
-        var rLong = m.RefractedRadiusEarth * Math.cos( long );
-        var latMax = Math.acos( m.EarthCentrToHorizDisc / rLong );
-        var latStart = -( Math.floor( latMax / m.GridDeltaAngl ) * m.GridDeltaAngl );
-        g.NewPoly3D();
-        g.AddPointToPoly3D( PointOnPlane( -latMax, long ) );
-        for ( var lat = latStart; lat < latMax; lat += m.GridDeltaAngl ) {
-          g.AddPointToPoly3D( PointOnPlane( lat, long ) );
-        }
-        g.AddPointToPoly3D( PointOnPlane( latMax, long ) );
-        g.DrawPoly3D( 1 );
-      }
-
-    } // end flat grid
+    // show flat grid (overlay on the globe view)
+    if ( m.showGrid & 2 ) drawLatLongGrid( PointOnPlane );
 
     if ( m.showGrid & 2 ) {
 
