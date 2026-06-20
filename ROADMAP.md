@@ -1,56 +1,75 @@
 # ROADMAP — jsgraph-workspace
 
-Tablero de estado a alto nivel. Detalle: fases en
-[../MIGRATION-PLAN.md](../MIGRATION-PLAN.md), mejoras concretas en
-[NEXT-STEPS.md](NEXT-STEPS.md).
+Roadmap único del monorepo: estado, pendiente y principios de las dos apps
+(earth-drop-calc, fed-wabis-v2) sobre el vendor wabis compartido. Plan
+arquitectónico por fases en [../MIGRATION-PLAN.md](../MIGRATION-PLAN.md).
 
-> Red de seguridad antes de tocar nada: `pnpm characterize` (8 tests — 6 matemática
-> + 2 render). Verde = no rompiste ni el cálculo ni el dibujo.
+> Red de seguridad antes de tocar nada: `pnpm characterize` (9 tests — matemática +
+> screenshots de canvas). Verde = no rompiste ni el cálculo ni el dibujo.
+
+## Principios
+
+- **0 dependencias en runtime.** El motor (proyección 3D, refracción, geometría del
+  horizonte) es código propio. Las deps son solo de desarrollo (Vite/ESLint/Playwright),
+  nunca llegan al navegador. Nada de three.js/React "porque sí".
+- **Refactor que preserva comportamiento.** No tocar `vendor/` ni `core/` sin la red de
+  seguridad cubriéndolo. No romper compatibilidad de URLs de estado (`DataX`).
+- **Nativo antes que librería; sin abstracción sin un 2º caso de uso real.**
+- **Por capas, no big-bang.** Cada cambio deja ambas apps funcionando y shippables.
 
 ## ✅ Hecho
 
-- Monorepo pnpm + Vite; ambas apps (earth-drop-calc, fed-wabis-v2) arrancan bajo Vite.
-- **Vendor wabis único** para las dos apps (`packages/jsgraph-vendor/src`); copia local
-  de earth-drop eliminada. Adaptado a carga dual classic/ESM. — `c1d0c28`
-- **Costura Fase 3 (mínima):** `createGraph3D` (seam) sobre `NewGraphX3D`; earth-drop
-  ya no nombra el motor. — `ec7c38f`
-- Limpieza de andamiaje sin uso en core/vendor. — `29ec674`
-- **Un solo package:** `jsgraph-core` (demasiado fino) fusionado en `jsgraph-vendor`;
-  el seam vive en `jsgraph-vendor/src/core/`. — `cc96236`
-- **earth-drop a ESM** (como fed): entry único `js/main.js`, Vite lo empaqueta, fuera
-  `copy-edc-static` y `../../packages`, `pnpm --filter earth-drop-calc dev` restaurado.
-  2 parches al vendor (strict `this`, `xOnLoadFinished`). — `cbc4a17`, `7bf6f62`
-- **Build unificado** de las dos apps → `dist/` + workflow GitHub Pages. — `48c6e66`
-- **Red de seguridad:** snapshots de matemática (Fase 2) + **screenshots de render**
-  (canvas por app, deterministas). — `5d8c176`
-- **Quick wins:** `.editorconfig`, meta tags, favicon, readme deploy note. — `c6af28c`
-- **Constantes físicas:** extraídos números mágicos a `constants.js`. — `c6af28c`
-- **Fase 4 (capas):** `physics.js` + `sliderMapping.js`. — `e31f199`
-- **Lógica común:** `helpers.js` (toRad, sqr, Limit1, etc.) en vendor/core. — `c3555a2`
-- **Fase 5 (tipado):** JSDoc + `@ts-check` + `wabis.d.ts`. 0 errores TS. — `c3555a2`
-- **xtc.js modernizado:** IE legacy eliminado. — `7342d0f`
-- **Tabs.js modernizado:** ARIA-based (~180 líneas). — `7342d0f`
-- **CSS reorg:** `shared.css` creado, inline styles eliminados del HTML. — `e60620d`
-- **Slider.js nativo:** DgdSlider → `<input type="range">`. — `bc5bfc3`
+**Monorepo / infra**
+- pnpm + Vite; ambas apps arrancan bajo Vite; build unificado → `dist/` + workflow
+  GitHub Pages; `origin` → `Wikiterra/earth-jsgraph`. — `48c6e66`
+- **Vendor wabis único** (`packages/jsgraph-vendor/src`); `jsgraph-core` fusionado dentro;
+  el seam `createGraph3D` (sobre `NewGraphX3D`) vive en `src/core/`. — `c1d0c28`, `ec7c38f`
+- **Red de seguridad:** snapshots matemáticos + screenshots de canvas por app +
+  escenario Globe+FE de edc. — `5d8c176`, `5bdc6f4`
+- Tooling: ESLint + Prettier + Playwright + `@ts-check`; `.editorconfig`, meta/favicon.
 
-## ⏳ Pendiente importante (por prioridad)
+**earth-drop-calc**
+- A ESM: entry único `js/main.js`, paneles vía `RenderInto` (fuera `document.writeln` y
+  parse-time), Vite empaqueta, `pnpm --filter earth-drop-calc dev` restaurado. — `cbc4a17`
+- UTF-8; constantes físicas a `constants.js`; capas `physics.js` + `sliderMapping.js`;
+  helpers comunes; JSDoc + `wabis.d.ts` (0 errores TS); 3 bugs latentes arreglados;
+  paneles Target 1/2 → factory; barra de navegación común con fed.
 
-### 1. 🟢 Activar el deploy de Pages (acción manual, 1 vez)
-El build y el workflow ya existen; falta conectar el repo:
-`git remote add origin <url>` → push → **Settings → Pages → Source: GitHub Actions**.
-Hasta esto, la web no se publica.
+**fed-wabis-v2** (Fases 1–14, detalle en git history)
+- Limpieza HTML/CMS, layout full-screen, calendario, CSS mobile-first, accesibilidad
+  ARIA, conversión a ESM (`main-v2.js`), descomposición de `app.js` (3232 → 453 L) y
+  `wiki.js` (920 → 424 L), `Tabs.js` eliminado, timeline scrubber, play/pause, barras
+  reorganizadas (Layers/Params/Rays/Luminaries).
 
-### 2. ✅ Fase 4 — lógica común extraída
-Creado `packages/jsgraph-vendor/src/core/helpers.js` con funciones compartidas
-(`toRad`/`ToRad`, `toDeg`/`ToDeg`, `sqr`, `Limit1`, `Limit01`, `ToRange`).
-Ambas apps importan desde el mismo helper. — commit
+**Vendor modernizado:** `xtc.js` (IE legacy fuera), `Tabs.js` (ARIA), `Slider.js`
+(`<input type="range">` nativo). — `7342d0f`, `bc5bfc3`
 
-### 3. 🟡 Fase 5 — modernizar UI / evaluar three.js — **solo si hay necesidad**
-Hoy el render vectorial esquemático es una ventaja, no deuda. Si llega un 2º motor real,
-la costura `createGraph3D` ya está: se extiende método a método en `wabisGraph3D.js`.
+- Activar Pages (manual, 1 vez). Build, workflow y `origin` ya existen. Falta solo el toggle en GitHub: **Settings → Pages → Source: GitHub Actions** → push para disparar `deploy.yml`.
 
-## 🔧 Mantenimiento (condicional)
+## ⏳ Pendiente
 
-- **wabis se actualiza:** re-copiar fuentes, correr `tools/esm-globalize.mjs`, reponer el
-  parche de `CreateDomObjects` en `jsg.js` (`// ponytail:`), `pnpm characterize`.
-  Detalle en MIGRATION-PLAN §8.
+### 🟡 Producto — eye-level / horizonte (earth-drop-calc + FE)
+Specs de física del render. Validar con `pnpm characterize` (ya tiene escenario Globe+FE).
+- **Altura del observador:** al subir, hoy mueve **la línea de horizonte** hacia arriba;
+  debe mover **solo el eye-level**, no el horizonte.
+- **FE vs Globe:** en **FE** el eye-level coincide con la línea de horizonte. En **Globe**
+  no: al subir el observador, el horizonte —curva geométrica de la esfera— **baja**.
+- **Radio:** ambos modelos usan 6371 km; para simplificar, tratar **FE** como plano
+  infinito.
+- **Indicar el eye-level** explícitamente en ambos modelos.
+
+### 🟡 Mantenimiento del vendor si se actualiza wabis (condicional)
+Al traer versión nueva de walter.bislins.ch: re-copiar fuentes →
+`node tools/esm-globalize.mjs <archivos>` → reponer parches (`CreateDomObjects` en
+`jsg.js`, `ControlPanel.AppendixHtml`, `wiki.js`, marcados `// ponytail:`) →
+`pnpm characterize`. Escollos en MIGRATION-PLAN §8.
+
+## 🚫 NO hacer (hasta que haya necesidad real)
+
+- **2º motor de render (three.js):** el render vectorial esquemático es ventaja, no deuda;
+  violaría "0 deps runtime". La costura `createGraph3D` ya está si algún día hace falta.
+- **`ControlPanel.js`** (~400 L one-liner denso): único vendor sin modernizar; tocar solo
+  si un bug/feature lo exige.
+- **Dividir más `app.js`** de fed (~450 L cohesivas) — churn sin ganancia.
+- **`xEvent` → `addEventListener` nativo** / **pinch-zoom de 2 dedos** en fed: cirugía
+  sin demanda actual.
