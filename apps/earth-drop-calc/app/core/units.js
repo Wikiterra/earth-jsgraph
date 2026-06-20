@@ -18,14 +18,6 @@ function HUnit() {
   return ' ' + CurveApp.HeightUnits.Units[CurveApp.UnitsType];
 }
 
-function BVal( x ) {
-  return x / CurveApp.BigLengthUnits.Mults[CurveApp.UnitsType];
-}
-
-function BUnit() {
-  return ' ' + CurveApp.BigLengthUnits.Units[CurveApp.UnitsType];
-}
-
 function AVal( x ) {
   return x / CurveApp.GradientUnits.Mults[CurveApp.UnitsType];
 }
@@ -34,4 +26,4 @@ function AUnit() {
   return CurveApp.GradientUnits.Units[CurveApp.UnitsType];
 }
 
-export { LVal, LUnit, HVal, HUnit, BVal, BUnit, AVal, AUnit };
+export { LVal, LUnit, HVal, HUnit, AVal, AUnit };
