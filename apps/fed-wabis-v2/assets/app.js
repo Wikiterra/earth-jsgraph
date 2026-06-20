@@ -8,19 +8,7 @@ EarthMap.SetContinentColor(null, '#c6dfaf', '#8cbe5d');
 EarthMap.SetLandColor('Antarctica', '#eee', '#ccc');
 EarthMap.FEMode = 2; // use PolygonOnPlane to draw map
 
-// some useful functions
-function ToRad(x) { return x * Math.PI / 180; }
-function ToDeg(x) { return x * 180 / Math.PI; }
-function sqr(x) { return x * x; }
-function Limit1(x) { return x < -1 ? -1 : x > 1 ? 1 : x; }
-function Limit01(x) { return x < 0 ? 0 : x > 1 ? 1 : x }
-
-function ToRange(x, max) {
-  // maps x to a range of 0 inclusive to max exclusive
-  var v = Math.abs(x) % max;
-  if (x < 0) v = max - v;
-  return v;
-}
+// (ToRad, ToDeg, sqr, Limit1, Limit01, ToRange are now in jsgraph-vendor/src/core/helpers.js)
 
 // The metadata are used to serialize and parse the state of the App.
 // The metadata properties represent all properties of the App, that can be changed by Demos.
@@ -446,10 +434,4 @@ function HandleUrlCommands() {
 Object.assign(globalThis, {
   ThisPageUrl, ThisPageShortUrl, FeDomeAppMetaData, FeDomeApp,
   UpdateAllRunning, UpdateAll, ResetApp, TFE, HandleUrlCommands,
-  ToRad, ToDeg, sqr, Limit1, Limit01, ToRange,
 });
-export {
-  ThisPageUrl, ThisPageShortUrl, FeDomeAppMetaData, FeDomeApp,
-  UpdateAllRunning, UpdateAll, ResetApp, TFE, HandleUrlCommands,
-  ToRad, ToDeg, sqr, Limit1, Limit01, ToRange,
-};

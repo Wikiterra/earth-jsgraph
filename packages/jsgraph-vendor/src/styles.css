@@ -180,7 +180,7 @@ audio,
 canvas,
 video {
   display: inline-block;
-  *display: inline;
+  display: inline;
   zoom: 1
 }
 
@@ -399,8 +399,8 @@ textarea {
   color: gray;
   font-weight: 400;
   width: 85%;
-  *height: 16px;
-  *line-height: 1.2;
+  height: 16px;
+  line-height: 1.2;
   overflow: hidden
 }
 
@@ -4932,7 +4932,7 @@ div.SearchAndReplaceForm .Options table.Flags td {
   margin-left: 2px;
   margin-right: 2px;
   display: inline-block;
-  *display: inline;
+  display: inline;
   zoom: 1;
   padding: 6px 12px;
   text-align: center;
@@ -4950,7 +4950,7 @@ div.SearchAndReplaceForm .Options table.Flags td {
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#0088ff', endColorstr='#006dcc', GradientType=0);
   border: 1px solid #66b8ff;
-  *border: 0;
+  border: 0;
   border-bottom-color: #004480;
   border-right-color: #004480
 }
@@ -4988,7 +4988,7 @@ div.SearchAndReplaceForm .Options table.Flags td {
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#c3c3c3', endColorstr='#aaaaaa', GradientType=0);
   border: 1px solid #f6f6f6;
-  *border: 0;
+  border: 0;
   border-bottom-color: #848484;
   border-right-color: #848484;
   margin-bottom: 5px !important;
@@ -5034,7 +5034,7 @@ div.SearchAndReplaceForm .Options table.Flags td {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#001b33', endColorstr='#006dcc', GradientType=0);
   outline: 0;
   border: 1px solid #001b33;
-  *border: 0;
+  border: 0;
   border-bottom-color: #1a94ff;
   border-right-color: #1a94ff
 }
@@ -5050,7 +5050,7 @@ div.SearchAndReplaceForm .Options table.Flags td {
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#dd0000', endColorstr='#aa0000', GradientType=0);
   border: 1px solid #f44;
-  *border: 0;
+  border: 0;
   border-bottom-color: #5e0000;
   border-right-color: #5e0000
 }
@@ -5082,7 +5082,7 @@ div.SearchAndReplaceForm .Options table.Flags td {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#110000', endColorstr='#aa0000', GradientType=0);
   outline: 0;
   border: 1px solid #100;
-  *border: 0;
+  border: 0;
   border-bottom-color: #f60000;
   border-right-color: #f60000
 }
@@ -5110,7 +5110,7 @@ div.SearchAndReplaceForm .Options table.Flags td {
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00b500', endColorstr='#008200', GradientType=0);
   border: 1px solid #1cff1c;
-  *border: 0;
+  border: 0;
   border-bottom-color: #003500;
   border-right-color: #003500
 }
@@ -5142,7 +5142,7 @@ div.SearchAndReplaceForm .Options table.Flags td {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#008200', GradientType=0);
   outline: 0;
   border: 1px solid #000;
-  *border: 0;
+  border: 0;
   border-bottom-color: #00cf00;
   border-right-color: #00cf00
 }
@@ -5170,7 +5170,7 @@ div.SearchAndReplaceForm .Options table.Flags td {
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1a1a1a', endColorstr='#000000', GradientType=0);
   border: 1px solid #4d4d4d;
-  *border: 0;
+  border: 0;
   border-bottom-color: #000;
   border-right-color: #000
 }
@@ -5202,7 +5202,7 @@ div.SearchAndReplaceForm .Options table.Flags td {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#000000', GradientType=0);
   outline: 0;
   border: 1px solid #000;
-  *border: 0;
+  border: 0;
   border-bottom-color: #262626;
   border-right-color: #262626
 }

@@ -7,6 +7,10 @@
 
 import 'jsgraph-vendor/src/wiki.js';
 import 'jsgraph-vendor/src/xtc.js';
+
+// --- shared helpers (toRad/ToRad, toDeg/ToDeg, sqr, Limit1, Limit01, ToRange) ---
+import 'jsgraph-vendor/src/core/helpers.js';
+
 import 'jsgraph-vendor/src/jsg.js';
 import 'jsgraph-vendor/src/jsgx3d.js';
 import '../assets/jsgMouseHandler.js';

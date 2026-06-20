@@ -19,6 +19,9 @@ import 'jsgraph-vendor/src/xtc.js';
 import 'jsgraph-vendor/src/ModelAnimation.js';
 import 'jsgraph-vendor/src/styles.css';
 
+// --- shared helpers (toRad, toDeg, sqr, Limit1, …) ---
+import 'jsgraph-vendor/src/core/helpers.js';
+
 // --- core seam (createGraph3D over NewGraphX3D) ---
 import 'jsgraph-vendor/src/core/wabisGraph3D.js';
 

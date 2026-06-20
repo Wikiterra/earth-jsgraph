@@ -1,3 +1,4 @@
+// @ts-check
 // =============================================================================
 // physics.js — Pure geometry / refraction / visibility functions (no `this`).
 //   Extracted from CurveAppClass.Update() to isolate the math for testing and
@@ -49,9 +50,7 @@ function compViewDist(v) {
  */
 function compVectAng(v1, v2) {
   var sp = JsgVect3.ScalarProd(JsgVect3.Norm(v1), JsgVect3.Norm(v2));
-  if (sp > 1) sp = 1;
-  if (sp < -1) sp = -1;
-  return Math.acos(sp);
+  return Math.acos(Limit1(sp));
 }
 
 // ---------------------------------------------------------------------------

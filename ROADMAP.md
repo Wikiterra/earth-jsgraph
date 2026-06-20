@@ -31,9 +31,10 @@ El build y el workflow ya existen; falta conectar el repo:
 `git remote add origin <url>` → push → **Settings → Pages → Source: GitHub Actions**.
 Hasta esto, la web no se publica.
 
-### 2. 🟡 Fase 4 — extraer la lógica común real entre edc y fed a `core`/`apps/shared`
-Solo lo que de verdad se solape (no forzar). Ahora ambas apps cargan igual (ESM), así
-que comparar/extraer es más directo.
+### 2. ✅ Fase 4 — lógica común extraída
+Creado `packages/jsgraph-vendor/src/core/helpers.js` con funciones compartidas
+(`toRad`/`ToRad`, `toDeg`/`ToDeg`, `sqr`, `Limit1`, `Limit01`, `ToRange`).
+Ambas apps importan desde el mismo helper. — commit
 
 ### 3. 🟡 Fase 5 — modernizar UI / evaluar three.js — **solo si hay necesidad**
 Hoy el render vectorial esquemático es una ventaja, no deuda. Si llega un 2º motor real,

@@ -52,5 +52,9 @@ Vite las empaqueta igual y `pnpm --filter <app> dev` funciona en ambas.
 > **No** abrir `index.html` con VSCode Live Preview ni un servidor estático de
 > archivos: los *bare specifiers* (`import 'jsgraph-vendor/src/wiki.js'`) sólo los
 > resuelve Vite/pnpm (`bare specifier ... was not remapped to anything`).
+> 
+> Para desarrollo local necesitas **Vite** (`pnpm dev` o `pnpm --filter <app> dev`).
+> Las apps NO funcionan con doble clic (`file://`) ni servidores estáticos simples
+> por los bare specifiers ESM.
 
 Ver [MIGRATION-PLAN.md](../MIGRATION-PLAN.md) para el plan por fases.

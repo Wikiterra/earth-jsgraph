@@ -80,9 +80,8 @@ Hacer antes que las fases grandes. Ninguno añade dependencias de runtime.
 - [x] **Arreglar bugs latentes ya detectados** (ver *Deuda técnica*): `retult` en
       `jsg.js`, `if (!tem)` y `IsNaN` en `ControlPanel.js`.
 - [x] **`<meta name="theme-color">` + favicon + `<html lang>`** correctos.
-- [ ] **README de “cómo correr”** en root (un servidor estático: `npx serve src`,
-      `python -m http.server`, etc.) — `document.writeln` no funciona en `file://`
-      en todos los navegadores.
+- [x] **README de “cómo correr”** en raíz — nota añadida al README del workspace
+      explicando que las apps requieren Vite (no `file://` ni servidores estáticos).
 - [x] **Extraer “números mágicos”** del motor a constantes nombradas en
       `app/core/constants.js`: `503`, `0.0343` (fórmula de refracción), `43.2`
       (diagonal de sensor 35 mm), radios por defecto. Documentar su origen físico.

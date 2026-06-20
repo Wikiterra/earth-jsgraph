@@ -1,9 +1,165 @@
+// @ts-check
 // =============================================================================
 // curveApp.js - CurveAppClass: the calculator's data model and math engine.
 //   - Stores inputs (height, distance, refraction, view params, objects)
 //   - Computes horizon, refraction, target visibility, camera params, scene geometry
 // =============================================================================
 
+/**
+ * @typedef {Object} CurveAppInstance
+ * @property {number} UnitsType
+ * @property {{Selection:string, Units:string[], Mults:number[]}} LengthUnits
+ * @property {{Selection:string, Units:string[], Mults:number[]}} BigLengthUnits
+ * @property {{Selection:string, Units:string[], Mults:number[]}} HeightUnits
+ * @property {{Selection:string, Units:string[], Mults:number[]}} GradientUnits
+ * @property {string} DemoText
+ * @property {string} Description
+ * @property {boolean} AllStatesChanged
+ * @property {string} OverlayImage
+ * @property {number} OverlayImageAlpha
+ * @property {number} AlphaOpaque
+ * @property {number} pause
+ * @property {number} RadiusEarth
+ * @property {number} EquatorRadiusFE
+ * @property {number} NGridLines
+ * @property {number} GridSpacing
+ * @property {number} ShowModel    — 1=globe, 2=flat, 3=both mirrored, 4=both side by side
+ * @property {number} showGrid     — 0=none, 1=on, 3=projection
+ * @property {boolean} showData
+ * @property {boolean} ShowDataObject
+ * @property {boolean} ShowDataRefraction
+ * @property {boolean} ShowDataHorizon
+ * @property {boolean} ShowLftRghtDrop
+ * @property {boolean} showTangent
+ * @property {boolean} showEyeLevel
+ * @property {boolean} ShowTheodolite
+ * @property {number} DeviceRatio   — width/height
+ * @property {number} SceneWidth
+ * @property {number} SceneHeight
+ * @property {number} ViewcenterHorizon  — 0=globe, 1=FE, 2=between, 3=eye level
+ * @property {any} BaroModel
+ * @property {number} RefractionSync  — 0=off, 1=T,P, 2=std, 3=k=0.13, 4=k=0.17, 5=a=7/6, 6=a=7/2
+ * @property {number} RefractionFactMax
+ * @property {number} RefractionFactMin
+ * @property {number} Pressure_mbar
+ * @property {number} PressureLast_mbar
+ * @property {number} Temperature_K
+ * @property {number} Temperature_C
+ * @property {number} TemperatureLast_C
+ * @property {number} TemperatureGradient  — dT/dh K/m
+ * @property {number} TemperatureGradientLast
+ * @property {number} RefractionCoeff
+ * @property {number} RefractionCoeffLast
+ * @property {number} RefractionFactor
+ * @property {number} RefractionFactorLast
+ * @property {number} RefractedRadiusEarth
+ * @property {number} RefractedRadiusEarthLast
+ * @property {number} RefractionSlider
+ * @property {number} RefractionSliderLast
+ * @property {number} HeightSlider
+ * @property {number} HeightSliderLast
+ * @property {number} Height
+ * @property {number} ViewAngle       — FOV in degrees
+ * @property {number} ViewAngleField
+ * @property {number} ViewAngleSlider
+ * @property {number} ViewAngleSliderLast
+ * @property {number} Roll
+ * @property {number} Tilt
+ * @property {number} LastTilt
+ * @property {number} TiltSlider
+ * @property {number} LastTiltSlider
+ * @property {number} Pan
+ * @property {number} LastPan
+ * @property {number} PanSlider
+ * @property {number} LastPanSlider
+ * @property {number} PanRad
+ * @property {number} FocalLength
+ * @property {number} FocalLengthField
+ * @property {number} FocalLengthSlider
+ * @property {number} FocalLengthSliderLast
+ * @property {number} HorizDistOnEyeLvl
+ * @property {number} HorizSurfDist
+ * @property {number} HorizDropFromEyeLvl
+ * @property {number} HorizDropAnglFromEyeLvl
+ * @property {number} EarthCentrToHorizDisc
+ * @property {number} HorizDropFromObsSurf
+ * @property {number} ObjDropFromObsSurf
+ * @property {number} ObjDropAnglFromObsSurf
+ * @property {number} Bulge
+ * @property {number} HorizDistLineOfSight
+ * @property {number} GridDeltaAngl
+ * @property {number[]} PosEarthCenter
+ * @property {number} HorizLftRgtWidth
+ * @property {number} HorizLftRgtDist
+ * @property {number} HorizLftRgtDropAngl
+ * @property {number} HorizLftRgtDrop
+ * @property {number} CamViewAngl
+ * @property {number[]} CamPos
+ * @property {number[]} CamUp
+ * @property {number[]} CamViewCenter
+ * @property {number} CamSceneSize
+ * @property {number} TheodoliteTilt
+ * @property {number} Flerspective
+ * @property {number} RefDistance
+ * @property {number} NearObjIx
+ * @property {number[]} ObjType
+ * @property {number[]} ObjSideType
+ * @property {number[]} ObjSizeType
+ * @property {number[]} ObjSurfDist
+ * @property {number[]} SliderObjSurfDistLog
+ * @property {number[]} SliderObjSurfDistLogLast
+ * @property {number[]} ObjSidePos
+ * @property {number[]} SliderObjSidePosLog
+ * @property {number[]} SliderObjSidePosLogLast
+ * @property {number[]} ObjSize
+ * @property {number[]} SliderObjSizeLog
+ * @property {number[]} SliderObjSizeLogLast
+ * @property {number[]} ObjDeltaDist
+ * @property {number[]} SliderObjDeltaDistLog
+ * @property {number[]} SliderObjDeltaDistLogLast
+ * @property {number[]} ObjSideVar
+ * @property {number[]} SliderObjSideVarLog
+ * @property {number[]} SliderObjSideVarLogLast
+ * @property {number[]} ObjSizeVar
+ * @property {number[]} NObjects
+ * @property {number[]} ObjDeltaAngl
+ * @property {number[]} ObjFirstAngl
+ * @property {number[]} ObjLastAngl
+ * @property {number[]} NObjectsDrawn
+ * @property {number[]} MaxNObjectsToDraw
+ * @property {number[]} CurrentObjAngl
+ * @property {boolean[]} IsHiddenObj
+ * @property {boolean[]} LastPosValid
+ * @property {number} HorizRefrAngl
+ * @property {number} ObjRefrAngl
+ * @property {number} ObjLiftAbs
+ * @property {number} ObjLiftRelToHoriz
+ * @property {number} HorizonLift
+ * @property {number} ObjNearSize
+ * @property {number} ObjNearTilt
+ * @property {number} ObjSizeAngl
+ * @property {number} ObjHiddenAngl
+ * @property {number} ObjVisibleAngl
+ * @property {number} ObjRealSurfDist
+ * @property {number} ObjSurfDistAngl
+ * @property {number} ObjHidden
+ * @property {number} ObjVisi
+ * @property {number} ObjTopAnglFromEyeLvl
+ * @property {number} ObjTopAnglFromEyeLvlFE
+ * @property {string} EyeLvlCol
+ * @property {string} FEEqCol
+ * @property {string} FEGridCol
+ * @property {string} GlobeGridCol
+ * @property {string} GlobeFGridCol
+ * @property {string} TangentCol
+ * @property {string} FrameCol
+ */
+
+/**
+ * CurveAppClass — data model + math engine for the curvature calculator.
+ * @constructor
+ * @returns {CurveAppInstance}
+ */
 function CurveAppClass() {
 
   // choosen units tables
@@ -198,32 +354,64 @@ function CurveAppClass() {
   this.Update();
 }
 
+/**
+ * Check whether globe model should be drawn.
+ * @returns {boolean}
+ */
 CurveAppClass.prototype.IsShowGlobe = function() {
   return (this.ShowModel & 1) || this.ShowModel == 4;
 }
 
+/**
+ * Check whether flat earth model should be drawn.
+ * @returns {boolean}
+ */
 CurveAppClass.prototype.IsShowFlatEarth = function() {
   return (this.ShowModel & 2) || this.ShowModel == 4;
 }
 
+/**
+ * Check whether both models should be drawn (split-screen).
+ * @returns {boolean}
+ */
 CurveAppClass.prototype.IsShowBothModels = function() {
   return this.ShowModel >= 3;
 }
 
+/**
+ * Check whether both models are in mirror mode.
+ * @returns {boolean}
+ */
 CurveAppClass.prototype.IsShowBothModelsMirror = function() {
   return this.ShowModel == 3;
 }
 
+/**
+ * Returns true if objIx is the nearest object to the observer.
+ * @param {number} objIx
+ * @returns {boolean}
+ */
 CurveAppClass.prototype.IsNearestObject = function( objIx ) {
   // returns true if the current object drawn is the nearest object to the observer
   return this.NObjectsDrawn[objIx] == this.NObjects[objIx]-1;
 }
 
+/**
+ * Returns true if objIx is the furthest object from the observer.
+ * @param {number} objIx
+ * @returns {boolean}
+ */
 CurveAppClass.prototype.IsFurthestObject = function( objIx ) {
   // returns true if the current object drawn is the furthest object to the observer
   return this.NObjectsDrawn[objIx] == 0;
 }
 
+/**
+ * Get effective object size including size variation.
+ * For M-Rods (type 0), ObjSizeVar controls the size directly.
+ * @param {number} objIx
+ * @returns {number}
+ */
 CurveAppClass.prototype.GetObjectSizeVar = function( objIx ) {
   // some object sizes like M-Rod are dependent on ObjSizeVar
   var sizeVar = 1;
@@ -240,6 +428,12 @@ CurveAppClass.prototype.GetObjectSizeVar = function( objIx ) {
   return sizeVar;
 }
 
+/**
+ * Returns true if the object at objIx has variable-sized instances.
+ * M-Rods are never variable — all the same size.
+ * @param {number} objIx
+ * @returns {boolean}
+ */
 CurveAppClass.prototype.IsVariableSizeObject = function( objIx ) {
   // M-Rod is never variable, all the same size, but ObjSizeVar defines its size too, see GetObjectSizeVar()
   return this.ObjType[objIx] != 0 && Math.abs(this.ObjSizeVar[objIx]) > 0.01;
@@ -561,6 +755,14 @@ CurveAppClass.prototype.Update = function() {
 
 }
 
+/**
+ * Compute camera position, up vector, and view center from pan/tilt/roll
+ * and the current horizon geometry. Supports split-screen aiming ('globe' | 'fe').
+ * @param {number} pan       — pan angle in radians
+ * @param {number} tilt      — tilt angle in degrees
+ * @param {number} roll      — roll angle in degrees
+ * @param {string} [aimModel] — 'globe' | 'fe' (for split-screen mode)
+ */
 CurveAppClass.prototype.CompCameraParams = function( pan, tilt, roll, aimModel ) {
   var dvc, avc;
   dvc = Math.sqrt( this.HorizDistOnEyeLvl * this.HorizDistOnEyeLvl + this.HorizDropFromEyeLvl * this.HorizDropFromEyeLvl );
@@ -608,6 +810,11 @@ CurveAppClass.prototype.CompCameraParams = function( pan, tilt, roll, aimModel )
   this.CamPos = [ 0, 0, 0 ];
 }
 
+/**
+ * Synchronize slider ↔ value for one object's settings (distance, side pos,
+ * size, delta dist, side variation).
+ * @param {number} objIx — object index (0 or 1)
+ */
 CurveAppClass.prototype.UpdateObjectInput = function( objIx ) {
 
   // object settings
