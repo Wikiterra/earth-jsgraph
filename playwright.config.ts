@@ -19,9 +19,7 @@ export default defineConfig({
   projects: [{ name: "chromium", use: { browserName: "chromium" } }],
   webServer: [
     {
-      // root Vite (serves the whole workspace) so earth-drop-calc can load the
-      // shared vendor at ../../packages/jsgraph-vendor via <script src>.
-      command: `pnpm exec vite --port ${EDC_PORT} --strictPort`,
+      command: `pnpm --filter earth-drop-calc exec vite --port ${EDC_PORT} --strictPort`,
       port: EDC_PORT,
       reuseExistingServer: true,
       timeout: 60_000,

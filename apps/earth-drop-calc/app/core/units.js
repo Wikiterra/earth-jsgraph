@@ -33,3 +33,5 @@ function AVal( x ) {
 function AUnit() {
   return CurveApp.GradientUnits.Units[CurveApp.UnitsType];
 }
+
+Object.assign(globalThis, { LVal, LUnit, HVal, HUnit, BVal, BUnit, AVal, AUnit });

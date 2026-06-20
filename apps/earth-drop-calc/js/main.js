@@ -1,0 +1,52 @@
+// ES module entry for earth-drop-calc (mirrors fed-wabis-v2/js/main-v2.js).
+// Replaces ~21 classic <script> tags. Each file runs for its side effects and
+// publishes its globals via Object.assign(globalThis, …) (vendor + app alike),
+// so the legacy global-based code keeps working under module scope.
+//
+// Load order is the original page order. Bare specifiers resolve to the workspace
+// package (Vite/pnpm), so there is no ../../packages path and Vite bundles it all.
+
+// --- wabis framework (vendor) ---
+import 'jsgraph-vendor/src/wiki.js';
+import 'jsgraph-vendor/src/jsg.js';
+import 'jsgraph-vendor/src/jsgx3d.js';
+import 'jsgraph-vendor/src/NumFormatter.js';
+import 'jsgraph-vendor/src/Slider.js';
+import 'jsgraph-vendor/src/ControlPanel.js';
+import 'jsgraph-vendor/src/Tabs.js';
+import 'jsgraph-vendor/src/DataX.js';
+import 'jsgraph-vendor/src/xtc.js';
+import 'jsgraph-vendor/src/ModelAnimation.js';
+import 'jsgraph-vendor/src/styles.css';
+
+// --- core seam (createGraph3D over NewGraphX3D) ---
+import 'jsgraph-vendor/src/core/wabisGraph3D.js';
+
+// --- app core ---
+import '../app/core/constants.js';
+import '../app/core/metadata.js';
+import '../app/core/curveApp.js';
+import '../app/core/setup.js';
+import '../app/core/units.js';
+
+// --- render ---
+import '../app/render/sceneRenderer.js';
+import '../app/render/objectRenderer.js';
+
+// --- panels (render into their #panel-* containers via ControlPanel.RenderInto) ---
+import '../app/panels/basics.js';
+import '../app/panels/view.js';
+import '../app/panels/obj1.js';
+import '../app/panels/obj1Options.js';
+import '../app/panels/obj2.js';
+import '../app/panels/obj2Options.js';
+import '../app/panels/refraction.js';
+import '../app/panels/refractionHandlers.js';
+import '../app/panels/units.js';
+import '../app/panels/saveRestore.js';
+import '../app/panels/saveRestoreHandlers.js';
+import '../app/panels/targetData.js';
+import '../app/panels/horizonData.js';
+
+// --- DOM-ready bootstrap (wires tabs, restores URL state, first UpdateAll) ---
+import '../app/core/init.js';

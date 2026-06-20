@@ -769,3 +769,5 @@ function DrawModel( g ) {
 
 }
 
+
+Object.assign(globalThis, { graph, DrawModel });

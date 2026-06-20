@@ -8,6 +8,9 @@
     "build": "vite build",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "jsgraph-vendor": "workspace:*"
+  },
   "devDependencies": {
     "vite": "^7.1.2"
   }

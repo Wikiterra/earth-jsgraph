@@ -53,3 +53,5 @@ var CurveAppMetaData = {
     { Name: 'ShowLftRghtDrop',   Type: 'bool', Default: false },
   ],
 };
+
+Object.assign(globalThis, { CurveAppMetaData });

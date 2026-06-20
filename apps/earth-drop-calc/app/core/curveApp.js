@@ -795,3 +795,5 @@ CurveAppClass.prototype.UpdateObjectInput = function( objIx ) {
 
 }
 
+
+Object.assign(globalThis, { CurveAppClass });

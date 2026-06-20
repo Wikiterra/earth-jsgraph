@@ -254,7 +254,7 @@ var xOnLoadFinished = false; var xEventManager = {
         xArrRemoveAll(this.MyDomReadyHandlers, function CB_Compare_Funcs(item) { return item.Func == aFunc; });
     }, AddPageLoadHandler: function (aFunc) {
         if (!this.MyPageLoadHandler) {
-            this.MyPageLoadHandler = function xOnEventManager_PageLoad() { xEventManager.PageLoadFired = true; xEventManager.DomReadyHandlers.Call(); xEventManager.PageLoadHandlers.Call(); xOnLoadFinished = true; }
+            this.MyPageLoadHandler = function xOnEventManager_PageLoad() { xEventManager.PageLoadFired = true; xEventManager.DomReadyHandlers.Call(); xEventManager.PageLoadHandlers.Call(); xOnLoadFinished = true; globalThis.xOnLoadFinished = true; /* ponytail: under ESM the module-local var and the globalThis copy are separate bindings; jsg.js Draw() reads globalThis, so keep it in sync (classic load had one shared binding). */ }
             window.addEventListener('load', this.MyPageLoadHandler);
         }
         if (this.PageLoadFired) { setTimeout(function CB_OnTimeout_PageLoadFired() { try { aFunc(); } catch (e) { } }, 1); } else { this.PageLoadHandlers.Add(aFunc); }

@@ -30,3 +30,5 @@ function UpdateAllChanged() {
   CurveApp.AllStatesChanged = true;
   UpdateAll();
 }
+
+Object.assign(globalThis, { CurveApp, UpdateAllRunning, UpdateAll, UpdateAllChanged });

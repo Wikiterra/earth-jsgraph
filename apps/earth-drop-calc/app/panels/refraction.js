@@ -295,3 +295,5 @@ ControlPanels.NewPanel( {
 
 } ).RenderInto('panel-refraction');
 
+
+Object.assign(globalThis, { BaroConst, ConvertUnit, BaroModel });

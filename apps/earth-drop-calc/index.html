@@ -25,39 +25,13 @@
     var WIKI_HiliWordList = [];
   </script>
 
-  <!-- Stylesheets: vendor base first, then calculator overrides. -->
-  <link rel="stylesheet" href="../../packages/jsgraph-vendor/src/styles.css">
+  <!-- Calculator styles (the vendor base styles.css is imported by js/main.js). -->
   <link rel="stylesheet" href="styles/calculator.css">
 
-  <!-- ===========================================================
-       Vendor libraries (custom code by walter.bislins.ch).
-       Order matters: helpers (wiki.js) → graphics → ui → data → animation.
-       =========================================================== -->
-  <script src="../../packages/jsgraph-vendor/src/wiki.js"></script>
-  <script src="../../packages/jsgraph-vendor/src/jsg.js"></script>
-  <script src="../../packages/jsgraph-vendor/src/jsgx3d.js"></script>
-  <script src="../../packages/jsgraph-vendor/src/NumFormatter.js"></script>
-  <script src="../../packages/jsgraph-vendor/src/Slider.js"></script>
-  <script src="../../packages/jsgraph-vendor/src/ControlPanel.js"></script>
-  <script src="../../packages/jsgraph-vendor/src/Tabs.js"></script>
-  <script src="../../packages/jsgraph-vendor/src/DataX.js"></script>
-  <script src="../../packages/jsgraph-vendor/src/xtc.js"></script>
-  <script src="../../packages/jsgraph-vendor/src/ModelAnimation.js"></script>
-
-  <!-- core seam: createGraph3D() wraps the wabis NewGraphX3D global, so the app names
-       our factory, not the engine (DIP — Phase 3). Lives in the single shared package. -->
-  <script src="../../packages/jsgraph-vendor/src/core/wabisGraph3D.js"></script>
-
-  <!-- ===========================================================
-       App core: constants, data model, instantiation, units.
-       Loaded BEFORE the body's panel scripts because panels reference
-       CurveApp / UpdateAll via ControlPanels declarations.
-       =========================================================== -->
-  <script src="app/core/constants.js"></script>
-  <script src="app/core/metadata.js"></script>
-  <script src="app/core/curveApp.js"></script>
-  <script src="app/core/setup.js"></script>
-  <script src="app/core/units.js"></script>
+  <!-- Single ES module entry: loads the wabis vendor + core seam + all app code in
+       order (see js/main.js). Deferred, so it runs after the DOM is parsed: panels
+       render into their #panel-* containers and the canvas into #jsg-canvas-mount. -->
+  <script type="module" src="js/main.js"></script>
 </head>
 
 <body>
@@ -70,14 +44,9 @@
   <!-- Anchor used by DataX.SetupUrlStateHandler to scroll back to the app after URL state restore. -->
   <a id="App"></a>
 
-  <!-- ===========================================================
-       3D scene canvas. sceneRenderer.js calls NewGraphX3D(...) which
-       uses document.writeln to inject the <canvas> at this position.
-       =========================================================== -->
-  <script src="app/render/sceneRenderer.js"></script>
-
-  <!-- Object draw functions used by graph.Redraw → DrawModel. -->
-  <script src="app/render/objectRenderer.js"></script>
+  <!-- 3D scene canvas mount: js/main.js → sceneRenderer.js → createGraph3D() →
+       CreateDomObjects replaces this div with the <canvas>. -->
+  <div id="jsg-canvas-mount"></div>
 
   <!-- ===========================================================
        Settings tabs (Basics / View / Target 1 / Target 2 /
@@ -102,7 +71,6 @@
     <div>
       <div class="Scroller Paragraph">
         <div class="ScrollCanvas" style="min-width:600px" id="panel-basics">
-          <script src="app/panels/basics.js"></script>
         </div>
       </div>
     </div>
@@ -111,7 +79,6 @@
     <div class="TabHide">
       <div class="Scroller Paragraph">
         <div class="ScrollCanvas" style="min-width:600px" id="panel-view">
-          <script src="app/panels/view.js"></script>
         </div>
       </div>
     </div>
@@ -120,8 +87,6 @@
     <div class="TabHide">
       <div class="Scroller Paragraph">
         <div class="ScrollCanvas" style="min-width:600px" id="panel-obj1">
-          <script src="app/panels/obj1.js"></script>
-          <script src="app/panels/obj1Options.js"></script>
         </div>
       </div>
     </div>
@@ -130,8 +95,6 @@
     <div class="TabHide">
       <div class="Scroller Paragraph">
         <div class="ScrollCanvas" style="min-width:600px" id="panel-obj2">
-          <script src="app/panels/obj2.js"></script>
-          <script src="app/panels/obj2Options.js"></script>
         </div>
       </div>
     </div>
@@ -140,8 +103,6 @@
     <div class="TabHide">
       <div class="Scroller Paragraph">
         <div class="ScrollCanvas" style="min-width:600px" id="panel-refraction">
-          <script src="app/panels/refraction.js"></script>
-          <script src="app/panels/refractionHandlers.js"></script>
         </div>
       </div>
     </div>
@@ -150,7 +111,6 @@
     <div class="TabHide">
       <div class="Scroller Paragraph">
         <div class="ScrollCanvas" style="min-width:600px" id="panel-units">
-          <script src="app/panels/units.js"></script>
         </div>
       </div>
     </div>
@@ -159,8 +119,6 @@
     <div class="TabHide">
       <div class="Scroller Paragraph">
         <div class="ScrollCanvas" style="min-width:600px" id="panel-saverestore">
-          <script src="app/panels/saveRestore.js"></script>
-          <script src="app/panels/saveRestoreHandlers.js"></script>
         </div>
       </div>
     </div>
@@ -173,13 +131,11 @@
        =========================================================== -->
   <div class="Scroller Paragraph">
     <div class="ScrollCanvas" id="panel-targetdata">
-      <script src="app/panels/targetData.js"></script>
     </div>
   </div>
 
   <div class="Scroller Paragraph">
     <div class="ScrollCanvas" id="panel-horizondata">
-      <script src="app/panels/horizonData.js"></script>
     </div>
   </div>
 
@@ -224,7 +180,6 @@
        Final bootstrap: wire global tab buttons (Reset / Std refraction /
        Zero refraction), restore state from URL fragment, first redraw.
        =========================================================== -->
-  <script src="app/core/init.js"></script>
 
 </div><!-- /.CalcApp -->
 </body>
