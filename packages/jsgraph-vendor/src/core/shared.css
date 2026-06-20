@@ -16,8 +16,7 @@ body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
 .clearfix::before, .clearfix::after { display: table; content: ""; }
 .clearfix::after { clear: both; }
 .noselect { user-select: none; }
-  gap: 2px;
-}
+
 ul.TabSelectors li {
   padding: 4px 10px;
   cursor: pointer;
