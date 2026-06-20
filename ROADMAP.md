@@ -53,7 +53,13 @@ arquitectónico por fases en [../MIGRATION-PLAN.md](../MIGRATION-PLAN.md).
 
 ## ⏳ Pendiente
 
-### 🟡 Mantenimiento del vendor si se actualiza wabis (condicional)
+Sin tareas accionables abiertas. Lo único que falta es un click manual fuera del repo:
+**Settings → Pages → Source: GitHub Actions** (ya anotado en Hecho) y `git push` para
+publicar.
+
+## 🔧 Mantenimiento (condicional — se dispara solo si pasa)
+
+### Si se actualiza wabis upstream
 Al traer versión nueva de walter.bislins.ch: re-copiar fuentes →
 `node tools/esm-globalize.mjs <archivos>` → reponer parches (`CreateDomObjects` en
 `jsg.js`, `ControlPanel.AppendixHtml`, `wiki.js`, marcados `// ponytail:`) →
