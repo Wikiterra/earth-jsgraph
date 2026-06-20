@@ -1,57 +1,78 @@
 /* =============================================================================
- * tokens.css — Shared design tokens for the whole workspace (single source).
+ * tokens.css — Shared design tokens (single source of truth).
  *
- * The one place brand colours, neutrals, radii and shadows are defined. Both
- * apps load this FIRST (edc via js/main.js; fed via @import at the top of its
- * styles.css), then shared.css / appShell.css / the app stylesheets reference
- * the variables instead of repeating hex values.
- *
- * App-specific tokens (fed's bar heights, edc's panel highlight colours) stay
- * in the app stylesheet — only genuinely cross-cutting values live here.
+ * Loaded FIRST by both apps. Uses cascade layers so all app tokens stay in
+ * app stylesheets. Supports prefers-color-scheme (dark/light) and
+ * prefers-reduced-motion.
  * ============================================================================= */
-:root {
-  /* Brand accent — tabs, selected states, title underline */
-  --color-accent:        #ff8033;
-  --color-accent-strong: #ff6000;
 
-  /* Cross-app top navigation bar (app-shell) */
-  --nav-bg:     #1f2937;
-  --nav-accent: #f59e0b;
-  --nav-link:   #cbd5e1;
+@layer tokens {
+  :root {
+    /* Brand accent — tabs, selected states, title underline */
+    --color-accent:        #ff8033;
+    --color-accent-strong: #ff6000;
 
-  /* Neutrals */
-  --color-surface: #fff;
-  --color-border:  #e0e0e0;
-  --color-text:    #222;
-  --color-muted:   #666;
+    /* Cross-app top navigation bar (app-shell) */
+    --nav-bg:     #1f2937;
+    --nav-accent: #f59e0b;
+    --nav-link:   #cbd5e1;
 
-  /* Radii */
-  --radius-sm: 5px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+    /* Neutrals */
+    --color-surface: #fff;
+    --color-border:  #e0e0e0;
+    --color-text:    #222;
+    --color-muted:   #666;
 
-  /* Shadows */
-  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.12);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.18);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.28);
+    /* Radii */
+    --radius-sm: 5px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
 
-  /* Spacing scale */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
+    /* Shadows */
+    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.12);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.18);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.28);
 
-  /* Minimum comfortable touch target (WCAG ~44px) */
-  --tap-min: 44px;
+    /* Spacing scale */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+
+    /* Fluid type scale (clamp) */
+    --fs-xs:  clamp(0.625rem, 0.5cqi + 0.5rem, 0.75rem);
+    --fs-sm:  clamp(0.75rem, 0.6cqi + 0.6rem, 0.875rem);
+    --fs-base: clamp(0.875rem, 0.8cqi + 0.7rem, 1rem);
+    --fs-md:  clamp(1rem, 1cqi + 0.8rem, 1.125rem);
+    --fs-lg:  clamp(1.125rem, 1.5cqi + 0.8rem, 1.375rem);
+
+    /* Minimum comfortable touch target (WCAG ~44px) */
+    --tap-min: 44px;
+
+    /* Motion */
+    --motion-duration: 0.15s;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-surface: #1a1a24;
+      --color-text:    #e8e8e8;
+      --color-muted:   #999;
+      --color-border:  #333;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :root { --motion-duration: 0.01ms; }
+  }
 }
 
-/* -----------------------------------------------------------------------------
- * Breakpoints — mobile-first. CSS media queries can't read custom properties,
- * so these are the agreed values both apps use (don't invent new ones):
- *   phone    = base styles (no query)
- *   <480px   = fine phone tweaks
- *   >=768px  = tablet
- *   >=1100px = desktop / two-column
- * --------------------------------------------------------------------------- */
+/* ── Breakpoints ────────────────────────────────────────────
+ * phone    = base styles (no query)
+ * <480px   = fine phone tweaks
+ * >=768px  = tablet
+ * >=1100px = desktop / two-column
+ * ──────────────────────────────────────────────────────────── */

@@ -254,6 +254,15 @@
   background: #000;
   z-index: 1;
 }
+/* jsg locks the canvas to width × 66.67% (aspect), which can't fill a tall phone.
+   Force it to fill #JsGraph1; AutoScalePix + jsg's resize poll re-render at the
+   real box size (no stretching). */
+#JsGraph1 .JsGraph-ClippingBox,
+#JsGraph1 .JsGraph-Canvas {
+  width: 100% !important;
+  height: 100% !important;
+  inset: 0 !important;
+}
 
 /* ---- Bottom bar group: quick section ---- */
 .quick-section {
