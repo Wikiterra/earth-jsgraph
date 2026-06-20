@@ -4,14 +4,14 @@ Las dos apps llevaban copias **divergidas** del framework. Tras normalizar el
 formato de ambas (prettier, mismas opciones) y comparar, la divergencia funcional
 real es la siguiente:
 
-| Archivo | Δ líneas | Naturaleza de la diferencia | Canónico |
-|---|---|---|---|
-| DataX.js | 2 | fed añade `export {}` + `globalThis` (ESM). Código idéntico. | **fed** |
-| xtc.js | 2 | idem | **fed** |
-| ModelAnimation.js | 9 | idem | **fed** |
-| jsgx3d.js | 26 | fed: `inheritsFrom` → prototipado estándar; + ESM exports | **fed** |
-| jsg.js | 48 | fed: `var JsgMat2` (fix global implícito); `document.writeln` → inserción DOM (necesario bajo ESM/Vite); + ESM exports | **fed** |
-| wiki.js | 2588 | fed adelgazó mucho (eliminó dead code). edc usa la versión completa. | **fed** (solo fed lo consume hoy) |
+| Archivo           | Δ líneas | Naturaleza de la diferencia                                                                                            | Canónico                          |
+|-------------------|----------|------------------------------------------------------------------------------------------------------------------------|-----------------------------------|
+| DataX.js          | 2        | fed añade `export {}` + `globalThis` (ESM). Código idéntico.                                                           | **fed**                           |
+| xtc.js            | 2        | idem                                                                                                                   | **fed**                           |
+| ModelAnimation.js | 9        | idem                                                                                                                   | **fed**                           |
+| jsgx3d.js         | 26       | fed: `inheritsFrom` → prototipado estándar; + ESM exports                                                              | **fed**                           |
+| jsg.js            | 48       | fed: `var JsgMat2` (fix global implícito); `document.writeln` → inserción DOM (necesario bajo ESM/Vite); + ESM exports | **fed**                           |
+| wiki.js           | 2588     | fed adelgazó mucho (eliminó dead code). edc usa la versión completa.                                                   | **fed** (solo fed lo consume hoy) |
 
 ## Decisión
 

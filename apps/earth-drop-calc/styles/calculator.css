@@ -9,7 +9,9 @@
  * anything shared with fed-wabis-v2 in shared.css instead.
  * ============================================================================= */
 
-/* ---- CalcApp container ---- */
+/* ---- CalcApp container ----
+   Narrow screens: single readable column (max 760px). Wide screens: the card
+   grows to 1400px and the body splits into two columns via .calc-grid below. */
 .CalcApp {
   max-width: 760px;
   margin: 16px auto;
@@ -31,6 +33,21 @@
 .CalcApp .Scroller { width: 100%; }
 @media (max-width: 800px) {
   .CalcApp { margin: 0; border: none; border-radius: 0; box-shadow: none; }
+}
+
+/* ---- Wide-screen two-column layout ----
+   Default (mobile-first): one column, natural stacking order.
+   >=1100px: graph + controls on the left, read-only data + reference images on
+   the right, so wide monitors stop wasting horizontal space. */
+.calc-grid { display: grid; grid-template-columns: 1fr; gap: 0 28px; }
+@media (min-width: 1100px) {
+  .CalcApp { max-width: 1400px; }
+  .calc-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: start; }
+  /* Keep the graph + its controls in view while the data column scrolls. */
+  .calc-left { position: sticky; top: 16px; }
+  /* The read-only data tables are 4-col (Label Value Label Value); their default
+     150px inputs are too wide for one column. Trim them (display-only fields). */
+  .calc-right table.ControlPanel td.Value input[type="text"] { width: 110px; }
 }
 
 /* ---- Tab Selectors ---- */

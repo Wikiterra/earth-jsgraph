@@ -48,6 +48,12 @@
     <!-- Anchor used by DataX.SetupUrlStateHandler to scroll back to the app after URL state restore. -->
     <a id="App"></a>
 
+    <!-- Wide-screen layout: on >=1100px this becomes two columns (graph + controls
+         on the left, read-only data + reference images on the right); stacks on
+         narrow screens. See calculator.css (.calc-grid). -->
+    <div class="calc-grid">
+    <div class="calc-left">
+
     <!-- 3D scene canvas mount: js/main.js → sceneRenderer.js → createGraph3D() →
        CreateDomObjects replaces this div with the <canvas>. -->
     <div id="jsg-canvas-mount"></div>
@@ -129,6 +135,9 @@
 
     </div>
 
+    </div><!-- /calc-left -->
+    <div class="calc-right">
+
     <!-- ===========================================================
        Read-only data panels (always visible below the tabs):
        Nearest Target Data and Horizon Data.
@@ -179,6 +188,9 @@
       <li class="TabDefault TabEnabled TabSelected">No Refraction</li>
       <li class="TabEnabled">Refraction</li>
     </ul>
+
+    </div><!-- /calc-right -->
+    </div><!-- /calc-grid -->
 
   </div>
 </body>
