@@ -129,16 +129,26 @@
       </div>
     </footer>
 
-    <!-- Reference images (accessible via panel or key) -->
+    <!-- Reference images. The TabBoxes/TabHide wrappers are required by Tabs.js
+         (it toggles them by index); the inner markup is semantic figure/caption. -->
     <div id="CurveCalcGraphsBoxes" class="TabBoxes">
       <div class="TabHide">
-        <div class="bpic"><div class="ofrbpic"><div class="ifrbpic"><img src="assets/CurveCalcAngles.png" alt=""></div><div class="imgd">Curvature Calculator showing Angles</div></div></div>
+        <figure class="ref-pic">
+          <img src="assets/CurveCalcAngles.png" alt="" loading="lazy" decoding="async">
+          <figcaption>Curvature Calculator showing Angles</figcaption>
+        </figure>
       </div>
       <div>
-        <div class="bpic"><div class="ofrbpic"><div class="ifrbpic"><img src="assets/CurveCalcNoRefraction2.png" alt=""></div><div class="imgd">Curvature Calculator showing No Refraction</div></div></div>
+        <figure class="ref-pic">
+          <img src="assets/CurveCalcNoRefraction2.png" alt="" loading="lazy" decoding="async">
+          <figcaption>Curvature Calculator showing No Refraction</figcaption>
+        </figure>
       </div>
       <div class="TabHide">
-        <div class="bpic"><div class="ofrbpic"><div class="ifrbpic"><img src="assets/CurveCalcRefraction2.png" alt=""></div><div class="imgd">Curvature Calculator showing Refraction</div></div></div>
+        <figure class="ref-pic">
+          <img src="assets/CurveCalcRefraction2.png" alt="" loading="lazy" decoding="async">
+          <figcaption>Curvature Calculator showing Refraction</figcaption>
+        </figure>
       </div>
     </div>
 

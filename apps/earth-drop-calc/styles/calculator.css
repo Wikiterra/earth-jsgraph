@@ -446,10 +446,10 @@ div.Slider input[type="range"]::-webkit-slider-runnable-track {
 div.Slider.Disabled { opacity: 0.4; pointer-events: none; }
 div.Slider.ReadOnly { opacity: 0.5; pointer-events: none; }
 
-/* ---- Reference images ---- */
-.bpic { width: 100%; }
-.bpic img { width: 100%; }
-.bpic .imgd { width: 100%; font-size: 13px; color: #555; text-align: center; }
+/* ---- Reference images (semantic figure/figcaption) ---- */
+.ref-pic { width: 100%; margin: 0; }
+.ref-pic img { width: 100%; display: block; }
+.ref-pic figcaption { font-size: 13px; color: #555; text-align: center; }
 
 /* ---- Read-only data compact ---- */
 #TargetDataPanel td.Value input[type="text"],
@@ -514,10 +514,10 @@ div.Slider input[type="range"]::-webkit-slider-runnable-track {
 div.Slider.Disabled { opacity: 0.4; pointer-events: none; }
 div.Slider.ReadOnly { opacity: 0.5; pointer-events: none; }
 
-/* ---- Reference images ---- */
-.bpic { width: 100%; }
-.bpic img { width: 100%; }
-.bpic .imgd { width: 100%; font-size: 13px; color: #555; text-align: center; }
+/* ---- Reference images (semantic figure/figcaption) ---- */
+.ref-pic { width: 100%; margin: 0; }
+.ref-pic img { width: 100%; display: block; }
+.ref-pic figcaption { font-size: 13px; color: #555; text-align: center; }
 
 /* ---- Read-only data panels (Target / Horizon) ----
    Compact value inputs (display-only). These are 4-col tables that can't reflow
