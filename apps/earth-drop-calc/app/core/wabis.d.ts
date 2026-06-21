@@ -97,10 +97,11 @@ declare namespace DataX {
 }
 
 // ---- NumFormatter ----
-declare namespace NumFormatter {
-  function NumToString(v: number, precision: number): string;
-  function StringToNum(s: string): number;
+declare class CNumFormatter {
+  NumToString(v: number, opts: { Mode: string; Precision: number; UsePrefix?: boolean; Units?: string }): string;
+  StringToNum(s: string): number;
 }
+declare var NumFormatter: CNumFormatter;
 
 // ---- Slider ----
 declare class Slider {
