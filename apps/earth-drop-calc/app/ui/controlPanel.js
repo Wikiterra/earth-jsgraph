@@ -13,7 +13,7 @@
 // =============================================================================
 /* global NumFormatter */
 
-/** @typedef {{ obj: any, prop: string, refStr: string }} Ref */
+/** @typedef {{ parts: string[], refStr: string }} Ref */
 /** @typedef {Record<string, any>} Cfg  Loose field/panel config (as authored in app/panels). */
 /** @typedef {{ el: any, init: () => void, update: () => void, name?: string, slider?: boolean, header?: boolean }} FieldObj */
 
@@ -32,18 +32,30 @@ function makeRef(refStr, modelRefName) {
   let ref = refStr;
   if (ref.indexOf('.') === -1 && modelRefName) ref = modelRefName + '.' + ref;
   const parts = ref.replace(/\[([^\]]+)\]/g, '.$1').split('.');
+  return { parts, refStr };
+}
+
+/**
+ * Resolve a Ref's parent object + final prop against globalThis. Done lazily on
+ * every access (not cached at construction) so refs to globals published AFTER
+ * the panel is built still bind — e.g. BaroModel, which refraction.js assigns to
+ * globalThis after defining its panel.
+ * @param {Ref|null} r @returns {{ obj: any, prop: string }|null}
+ */
+function resolveRef(r) {
+  if (!r) return null;
   let obj = /** @type {any} */ (globalThis);
-  for (let i = 0; i < parts.length - 1; i++) {
-    obj = obj[parts[i]];
-    if (obj == null) return null; // unresolvable path → no binding (vendor tolerates this)
+  for (let i = 0; i < r.parts.length - 1; i++) {
+    obj = obj[r.parts[i]];
+    if (obj == null) return null;
   }
-  return { obj, prop: parts[parts.length - 1], refStr };
+  return { obj, prop: r.parts[r.parts.length - 1] };
 }
 
 /** Read a model value. @param {Ref|null} r @returns {any} */
 function readRef(r) {
-  if (!r) return '';
-  return r.obj[r.prop];
+  const t = resolveRef(r);
+  return t ? t.obj[t.prop] : '';
 }
 
 /**
@@ -53,11 +65,12 @@ function readRef(r) {
  * @param {Ref|null} r @param {any} val @param {?Function} onChange @param {any} field @param {boolean} [force]
  */
 function writeRef(r, val, onChange, field, force) {
-  if (!r) return;
-  const old = r.obj[r.prop];
+  const t = resolveRef(r);
+  if (!t) return;
+  const old = t.obj[t.prop];
   if (!force && old === val) return;
-  if (typeof r.obj[r.prop] === 'function') r.obj[r.prop](r, val);
-  else r.obj[r.prop] = val;
+  if (typeof t.obj[t.prop] === 'function') t.obj[t.prop]({ refStr: r.refStr, obj: t.obj, prop: t.prop }, val);
+  else t.obj[t.prop] = val;
   if (onChange) onChange(field, val);
 }
 

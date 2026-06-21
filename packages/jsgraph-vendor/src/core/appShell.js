@@ -3,8 +3,8 @@
 import './appShell.css';
 
 const APPS = [
-  { slug: 'earth-drop-calc', label: 'Curvature' },
-  { slug: 'fed-wabis', label: 'Dome Model' },
+  { slug: 'earth-drop-calc', label: 'Drop Curvature Calculator' },
+  { slug: 'fed-wabis', label: 'Earth Dome Model' },
 ];
 
 const path = location.pathname;

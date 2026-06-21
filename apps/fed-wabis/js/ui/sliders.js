@@ -152,12 +152,8 @@ export function init() {
     UpdateAll();
   });
 
-  document.getElementById('ps-dist-moon').addEventListener('input', function () {
-    const km = Math.pow(10, parseFloat(this.value));
-    FeDomeApp.DistMoon = km;
-    document.getElementById('pv-dist-moon').textContent = fmtDist(km);
-    UpdateAll();
-  });
+  // ps-dist-moon slider was removed from index.html; its dead wiring threw on a
+  // null element, aborting the rest of init() (later sliders) and appShell.js.
 
   document.getElementById('ps-dome-h').addEventListener('input', function () {
     const v = parseFloat(this.value);

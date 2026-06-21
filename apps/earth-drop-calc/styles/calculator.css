@@ -1,5 +1,5 @@
 /* =============================================================================
- * calculator.css — curvature-drop-calc app styles
+ * calculator.css — earth-drop-calc app styles
  *
  * Layout mirrors fed-wabis: fixed top/bottom bars, canvas fills rest.
  * Panel content renders inside a drawer overlay.
@@ -53,10 +53,10 @@
   display: flex;
   align-items: center;
   gap: 2px;
-  overflow-x: auto;
-  scrollbar-width: none;
+  /* Don't compress the 3 section toggles; #bottom-bar already scrolls. A nested
+     overflow here clipped the buttons inside the outer scroll. */
+  flex-shrink: 0;
 }
-.layer-section::-webkit-scrollbar { display: none; }
 
 .layer-toggle {
   display: flex;
@@ -222,7 +222,10 @@
   padding: 0;
   margin: 0;
   overflow: hidden;
-  background: #000;
+  /* Light "paper" background: the scene draws black FE grid/labels + white
+     text-boxes, which were invisible on the old #000 (FE view rendered all
+     black except the yellow target). */
+  background: #fff;
   z-index: 1;
 }
 /* jsg creates the canvas at width × 66.67% (aspect). Let jsg control the canvas
