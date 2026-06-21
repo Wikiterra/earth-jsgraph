@@ -14,7 +14,7 @@ const SVG = (viewBox, inner, opts) => {
   return `<svg width="${w}" height="${h}" viewBox="${viewBox}" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"${cls ? ` class="${cls}"` : ''}>${inner}</svg>`;
 };
 
-// ---- fed-wabis-v2 bottom bar icons ----
+// ---- fed-wabis bottom bar icons ----
 export const gridIcon = (o) => SVG('0 0 24 24', '<path d="M4 8h16M4 16h16M8 3v18M16 3v18"/>', o);
 export const domeIcon = (o) => SVG('0 0 24 24', '<path d="M3 20a9 9 0 0 1 18 0M12 11v9M6 18a7 7 0 0 1 12 0"/>', o);
 export const shadowIcon = (o) => SVG('0 0 24 24', '<circle cx="8" cy="7" r="3"/><path d="M10.2 9.8 19 21H5z" fill="currentColor" fill-opacity="0.3"/>', o);
@@ -26,7 +26,7 @@ export const moveIcon = (o) => SVG('0 0 24 24', '<path d="M12 2v20M2 12h20M5 5l1
 export const domeRaysIcon = (o) => SVG('0 0 24 24', '<path d="M3 20a9 9 0 0 1 18 0M12 20v-8M7.5 20 11 13M16.5 20 13 13"/>', o);
 export const sphereRaysIcon = (o) => SVG('0 0 24 24', '<circle cx="12" cy="8" r="3"/><path d="M9 11 5 20M12 11v9M15 11l4 9"/>', o);
 
-// ---- earth-drop-calc bottom bar icons ----
+// ---- curvature-drop-calc bottom bar icons ----
 export const measuresIcon = (o) => SVG('0 0 24 24', '<line x1="4" y1="4" x2="20" y2="20"/><polyline points="4 20 4 4 20 4"/>', o);
 export const opticsIcon = (o) => SVG('0 0 24 24', '<path d="M3 20a9 9 0 0 1 18 0M12 20v-8M7.5 20 11 13M16.5 20 13 13"/>', o);
 export const dataIcon = (o) => SVG('0 0 24 24', '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>', o);

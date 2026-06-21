@@ -4,7 +4,7 @@ import './appShell.css';
 
 const APPS = [
   { slug: 'earth-drop-calc', label: 'Curvature' },
-  { slug: 'fed-wabis-v2', label: 'Dome Model' },
+  { slug: 'fed-wabis', label: 'Dome Model' },
 ];
 
 const path = location.pathname;

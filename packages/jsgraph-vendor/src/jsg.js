@@ -1223,7 +1223,7 @@ JsGraph.prototype.CreateDomObjects = function (aParams) {
     s += '<canvas id="' + this.Id + '-Canvas"' + cssCanvas + canvasStyle + "></canvas>";
     s += "</div></div>";
     // ponytail: vendor patch — inject the canvas DOM in a way that works for
-    // BOTH load styles. fed-wabis-v2 loads vendor as deferred ESM (document.write
+    // BOTH load styles. fed-wabis loads vendor as deferred ESM (document.write
     // is a no-op post-load) and provides a #jsg-canvas-mount placeholder; earth-drop
     // loads vendor as classic parse-time <script> and relies on inline document.write.
     var _jm = document.getElementById("jsg-canvas-mount");
@@ -1273,7 +1273,7 @@ JsGraph.prototype.CreateDomObjects = function (aParams) {
       "></canvas>";
     s += "</div></div>";
     // ponytail: vendor patch — inject the canvas DOM in a way that works for
-    // BOTH load styles. fed-wabis-v2 loads vendor as deferred ESM (document.write
+    // BOTH load styles. fed-wabis loads vendor as deferred ESM (document.write
     // is a no-op post-load) and provides a #jsg-canvas-mount placeholder; earth-drop
     // loads vendor as classic parse-time <script> and relies on inline document.write.
     var _jm = document.getElementById("jsg-canvas-mount");

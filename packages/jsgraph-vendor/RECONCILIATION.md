@@ -15,7 +15,7 @@ real es la siguiente:
 
 ## Decisión
 
-**Canónico = versiones de `fed-wabis-v2`.** No por ser "más nuevas" sino porque
+**Canónico = versiones de `fed-wabis`.** No por ser "más nuevas" sino porque
 son funcionalmente el mismo framework **más** fixes que el monorepo Vite/ESM
 necesita:
 
@@ -29,9 +29,9 @@ necesita:
 
 - Mover los **6 archivos compartidos** (jsg, jsgx3d, wiki, DataX, ModelAnimation,
   xtc) a `jsgraph-vendor/src` con la versión canónica (fed).
-- Reconectar **fed-wabis-v2** para consumirlos desde `jsgraph-vendor`; eliminar
+- Reconectar **fed-wabis** para consumirlos desde `jsgraph-vendor`; eliminar
   sus copias locales. → fed deduplicado, comportamiento idéntico (mismo código).
-- **earth-drop-calc** conserva su `vendor/` por ahora: usa `<script>` clásico +
+- **curvature-drop-calc** conserva su `vendor/` por ahora: usa `<script>` clásico +
   `document.writeln`; consumir el canónico exige migrarlo a ESM + punto de
   montaje, que es su **Fase 3** (piloto). Allí se completa su dedup y, si hace
   falta, se reconcilia `wiki.js` al superconjunto (re-añadir funciones que edc

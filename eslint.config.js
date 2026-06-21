@@ -26,7 +26,7 @@ export default tseslint.config(
     // that is neither imported nor a declared global — catching missing imports.
     // Declared globals = browser + the wabis vendor surface (resolved at runtime)
     // + foundational shared helpers + the two vendor-string-bound models (bridge).
-    files: ["apps/earth-drop-calc/app/**/*.js", "apps/earth-drop-calc/js/**/*.js"],
+    files: ["apps/curvature-drop-calc/app/**/*.js", "apps/curvature-drop-calc/js/**/*.js"],
     languageOptions: {
       globals: {
         ...globals.browser,
@@ -93,7 +93,7 @@ export default tseslint.config(
     // Object.assign(FeDomeApp, {...}) — a deliberate method-partial layout, kept
     // as-is. Declared globals = browser + wabis vendor + shared helpers + the
     // fed runtime singletons.
-    files: ["apps/fed-wabis-v2/assets/**/*.js", "apps/fed-wabis-v2/js/**/*.js"],
+    files: ["apps/fed-wabis/assets/**/*.js", "apps/fed-wabis/js/**/*.js"],
     languageOptions: {
       globals: {
         ...globals.browser,

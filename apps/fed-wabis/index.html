@@ -14,7 +14,7 @@
 
     <!-- Top bar: WikiTerra branding (injected by appShell.js) + playback (center) + demo tabs (right) + calendar -->
     <header id="top-bar">
-      <!-- Playback controls — centered -->
+      <!-- Playback controls — centered overlay on canvas -->
       <div id="top-controls">
         <div class="top-playback" role="group" aria-label="Playback controls">
           <button class="pb-btn" id="pb-step-back" aria-label="Step back one cycle">
@@ -27,11 +27,6 @@
           </button>
           <button class="pb-btn" id="pb-step-fwd" aria-label="Step forward one cycle">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 18l8.5-6L6 6v12zm2-6 5.5 3.9V8.1L8 12zM16 6h2v12h-2z"/></svg>
-          </button>
-          <button id="pb-speed-btn" class="pb-speed-btn" type="button"
-                  aria-label="Playback speed (click to cycle, shift-click to step back)"
-                  title="Click: next speed · Shift-click / right-click: previous">
-            <span id="pb-speed-label">1 yr/s</span>
           </button>
           <button class="pb-btn pb-reset" id="pb-reset" aria-label="Reset simulation" title="Reset simulation">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
@@ -226,10 +221,6 @@
         <div class="param-slider">
           <label class="param-label" for="ps-dist-sun">☀Dist <span class="param-val" id="pv-dist-sun">1.5e8</span></label>
           <input type="range" id="ps-dist-sun" class="param-range" min="3" max="9" step="0.01" value="8.175" aria-label="Sun distance (log₁₀ km)">
-        </div>
-        <div class="param-slider">
-          <label class="param-label" for="ps-dist-moon">☾Dist <span class="param-val" id="pv-dist-moon">384k</span></label>
-          <input type="range" id="ps-dist-moon" class="param-range" min="3" max="6" step="0.01" value="5.584" aria-label="Moon distance (log₁₀ km)">
         </div>
         <div class="param-slider">
           <label class="param-label" for="ps-dome-h">DomeH <span class="param-val" id="pv-dome-h">9000</span></label>

@@ -1,7 +1,7 @@
 # ROADMAP — jsgraph-workspace
 
 Roadmap único del monorepo: estado, pendiente y principios de las dos apps
-(earth-drop-calc, fed-wabis-v2) sobre el vendor wabis compartido. Plan
+(curvature-drop-calc, fed-wabis) sobre el vendor wabis compartido. Plan
 arquitectónico por fases en [../MIGRATION-PLAN.md](../MIGRATION-PLAN.md).
 
 > Red de seguridad antes de tocar nada: `pnpm characterize` (9 tests — matemática +
@@ -25,14 +25,14 @@ arquitectónico por fases en [../MIGRATION-PLAN.md](../MIGRATION-PLAN.md).
   escenario Globe+FE de edc. — `5d8c176`, `5bdc6f4`
 - Tooling: ESLint + Prettier + Playwright + `@ts-check`; `.editorconfig`, meta/favicon.
 
-**earth-drop-calc**
+**curvature-drop-calc**
 - A ESM: entry único `js/main.js`, paneles vía `RenderInto` (fuera `document.writeln` y
-  parse-time), Vite empaqueta, `pnpm --filter earth-drop-calc dev` restaurado. — `cbc4a17`
+  parse-time), Vite empaqueta, `pnpm --filter curvature-drop-calc dev` restaurado. — `cbc4a17`
 - UTF-8; constantes físicas a `constants.js`; capas `physics.js` + `sliderMapping.js`;
   helpers comunes; JSDoc + `wabis.d.ts` (0 errores TS); 3 bugs latentes arreglados;
   paneles Target 1/2 → factory; barra de navegación común con fed.
 
-**fed-wabis-v2** (Fases 1–14, detalle en git history)
+**fed-wabis** (Fases 1–14, detalle en git history)
 - Limpieza HTML/CMS, layout full-screen, calendario, CSS mobile-first, accesibilidad
   ARIA, conversión a ESM (`main-v2.js`), descomposición de `app.js` (3232 → 453 L) y
   `wiki.js` (920 → 424 L), `Tabs.js` eliminado, timeline scrubber, play/pause, barras

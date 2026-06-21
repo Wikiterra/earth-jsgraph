@@ -1,5 +1,5 @@
 /**
- * ui.js — earth-drop-calc panel drawer orchestrator
+ * ui.js — curvature-drop-calc panel drawer orchestrator
  *
  * Three collapsible sections: Measures, Optics, Distance Data.
  */
@@ -79,26 +79,6 @@ export function init() {
     });
   }
 
-  /* Reset button */
-  document.getElementById('pb-reset')?.addEventListener('click', () => {
-    if (window.ResetApp) ResetApp();
-  });
-
-  /* Units panel toggle */
-  document.getElementById('qs-units')?.addEventListener('click', () => {
-    /* Import and show units panel — rendered on first click */
-    const unitsPanel = document.querySelector('.drawer-section[data-section="units"]');
-    if (unitsPanel) {
-      openSection('units');
-      return;
-    }
-    /* Otherwise navigate to save-restore tab from hidden tabs for units */
-    const tabs = document.getElementById('CurveSettingsTabs');
-    if (tabs) {
-      Tabs.Select('CurveSettingsTabs', 5);
-    }
-  });
-
   /* ── ResizeObserver: trigger jsg redraw when container changes size ─── */
   if (window.ResizeObserver && window.graph) {
     try {
@@ -119,7 +99,7 @@ export function init() {
       const canvas = window.graph && window.graph.Canvas;
       if (!canvas) return;
       const a = document.createElement('a');
-      a.download = 'earth-drop-calc.png';
+      a.download = 'curvature-drop-calc.png';
       a.href = canvas.toDataURL('image/png');
       a.click();
     } catch (e) { /* ignore */ }

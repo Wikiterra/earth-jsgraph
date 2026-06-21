@@ -8,7 +8,7 @@ import { LVal, LUnit, HVal, HUnit, AVal, AUnit } from '../core/units.js';
 var graph = createGraph3D( {
   Id: 'JsGraph1',
   Width: '100%',
-  Height: '66.67%',
+  Height: '100%',
   DrawFunc: DrawModel,
   AutoReset: true,
   AutoClear: true,

@@ -36,7 +36,7 @@ const apps: Record<string, AppCase> = {
       (globalThis as any).UpdateAll();
     },
   },
-  "fed-wabis-v2": {
+  "fed-wabis": {
     url: "http://localhost:5302/",
     canvas: "#FeGraph-Canvas",
     ready: () => typeof (globalThis as any).FeDomeApp?.Update === "function",

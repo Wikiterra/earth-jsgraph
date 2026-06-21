@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { test, expect } from "@playwright/test";
 
-// Characterizes fed-wabis-v2's model (FeDomeApp). Each scenario is one of the app's
+// Characterizes fed-wabis's model (FeDomeApp). Each scenario is one of the app's
 // own canonical saved states (from saveRestore); we apply it, call Update(), and
 // snapshot every numeric / number-array field. This is the regression net protecting
 // the Phase 1 rewire (and any later changes) — FeDomeApp is a singleton, but each
@@ -38,7 +38,7 @@ const scenarios: Record<string, Record<string, unknown>> = {
   "tfe-state": TFE_STATE,
 };
 
-test.describe("fed-wabis-v2 · FeDomeApp model characterization", () => {
+test.describe("fed-wabis · FeDomeApp model characterization", () => {
   for (const [name, overrides] of Object.entries(scenarios)) {
     test(name, async ({ page }) => {
       await page.goto(FED_URL);

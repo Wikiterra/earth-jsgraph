@@ -1,14 +1,14 @@
 /* =============================================================================
- * calculator.css — earth-drop-calc app styles
+ * calculator.css — curvature-drop-calc app styles
  *
- * Layout mirrors fed-wabis-v2: fixed top/bottom bars, canvas fills rest.
+ * Layout mirrors fed-wabis: fixed top/bottom bars, canvas fills rest.
  * Panel content renders inside a drawer overlay.
  *
  * Shared design tokens come from jsgraph-vendor/src/core/tokens.css (imported
  * before this file via main.js → tokens.css).
  * ============================================================================= */
 
-/* ---- Shared layout (mirrors fed-wabis-v2/styles.css) ---- */
+/* ---- Shared layout (mirrors fed-wabis/styles.css) ---- */
 #top-bar {
   position: fixed;
   top: 0; left: 0; right: 0;

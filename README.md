@@ -16,8 +16,8 @@ packages/
     src/                 · framework wabis, INTACTO salvo parches mínimos (ver MIGRATION-PLAN §8)
     src/core/            · seam SOLID propio (createGraph3D + port Graph3D.ts)
 apps/
-  earth-drop-calc/  Calculadora de curvatura/caída (piloto de migración).
-  fed-wabis-v2/     Flat Earth Dome Model (wabis-calc-v2).
+  curvature-drop-calc/  Calculadora de curvatura/caída (piloto de migración).
+  fed-wabis/     Flat Earth Dome Model (wabis-calc-v2).
 ```
 
 > Hubo dos packages (`jsgraph-vendor` + `jsgraph-core`); el "core" quedó tan fino
@@ -60,8 +60,8 @@ reescribir solo ese adapter, sin tocar las apps.
 
 ```bash
 pnpm install                       # instala dependencias del workspace
-pnpm --filter earth-drop-calc dev  # arranca una app (Vite per-app)
-pnpm --filter fed-wabis-v2 dev     # la otra
+pnpm --filter curvature-drop-calc dev  # arranca una app (Vite per-app)
+pnpm --filter fed-wabis dev     # la otra
 pnpm dev                           # o el Vite raíz: sirve AMBAS (sub-paths /apps/…)
 pnpm build     # build estático unificado de las dos apps → dist/ (GitHub Pages)
 pnpm preview   # sirve dist/ localmente (como lo verá Pages)

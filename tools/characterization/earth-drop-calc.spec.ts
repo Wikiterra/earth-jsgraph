@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { test, expect } from "@playwright/test";
 
-// Characterizes earth-drop-calc's math engine (CurveAppClass). For each scenario we
+// Characterizes curvature-drop-calc's math engine (CurveAppClass). For each scenario we
 // build a FRESH instance, apply known input overrides, call Update(), and snapshot
 // every numeric / number-array field. Any future change to the math (e.g. during the
 // Phase 3 ESM migration) that alters an output will fail this test.
@@ -19,7 +19,7 @@ const scenarios: Record<string, Record<string, unknown>> = {
   "tilt-pan-zoom": { Tilt: 10, Pan: 30, ViewAngleField: 2 },
 };
 
-test.describe("earth-drop-calc · CurveApp math characterization", () => {
+test.describe("curvature-drop-calc · CurveApp math characterization", () => {
   for (const [name, overrides] of Object.entries(scenarios)) {
     test(name, async ({ page }) => {
       await page.goto(EDC_URL);

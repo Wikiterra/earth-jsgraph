@@ -393,7 +393,8 @@ class Panel {
     // no-op). The panel still registers so ControlPanels.Update() is a safe no-op.
     if (!target) return this;
     const root = el('div', 'cp-panel cp-panel--cols' + this.ncols +
-      (this.isSliderPanel ? ' cp-panel--slider' : ''), { id: this.name });
+      (this.isSliderPanel ? ' cp-panel--slider' : '') +
+      (this.readOnly ? ' cp-panel--readonly' : ''), { id: this.name });
     root.style.setProperty('--cp-cols', String(this.ncols));
     for (const f of this.fields) root.appendChild(f.el);
     target.appendChild(root);

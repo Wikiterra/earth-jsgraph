@@ -66,3 +66,49 @@ ControlPanels.NewPanel( {
   }
 
 ).RenderInto('panel-units');
+
+ControlPanels.NewPanel( {
+    Name: 'Angle-Calculator',
+    ModelRef: 'AngleModel',
+    OnModelChange: UpdateAngleModel,
+    NCols: 2,
+    Format: 'std',
+    Digits: 10
+  }
+
+).AddTextField( {
+    Name: 'deg',
+    Label: 'Degree',
+    Units: '°',
+    Inc: 1,
+  }
+
+).AddTextField( {
+    Name: 'rad',
+    Label: 'Radian',
+    Units: 'rad',
+    Inc: 0.01,
+  }
+
+).AddTextField( {
+    Name: 'grad',
+    Label: 'Gradian',
+    Units: 'grad',
+    Inc: 1,
+  }
+
+).AddTextField( {
+    Name: 'arcmin',
+    Label: 'Arcminute',
+    Units: '\'',
+    Inc: 1,
+  }
+
+).AddTextField( {
+    Name: 'arcsec',
+    Label: 'Arcsecond',
+    Units: '"',
+    Inc: 1,
+  }
+
+).RenderInto('panel-units');

@@ -43,7 +43,7 @@ importers:
         specifier: ^7.1.2
         version: 7.3.5
 
-  apps/fed-wabis-v2:
+  apps/fed-wabis:
     dependencies:
       jsgraph-vendor:
         specifier: workspace:*

@@ -19,13 +19,13 @@ export default defineConfig({
   projects: [{ name: "chromium", use: { browserName: "chromium" } }],
   webServer: [
     {
-      command: `pnpm --filter earth-drop-calc exec vite --port ${EDC_PORT} --strictPort`,
+      command: `pnpm --filter curvature-drop-calc exec vite --port ${EDC_PORT} --strictPort`,
       port: EDC_PORT,
       reuseExistingServer: true,
       timeout: 60_000,
     },
     {
-      command: `pnpm --filter fed-wabis-v2 exec vite --port ${FED_PORT} --strictPort`,
+      command: `pnpm --filter fed-wabis exec vite --port ${FED_PORT} --strictPort`,
       port: FED_PORT,
       reuseExistingServer: true,
       timeout: 60_000,

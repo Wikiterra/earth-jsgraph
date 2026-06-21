@@ -81,6 +81,63 @@ function UpdateLengthModel() {
   ControlPanels.Update( 'Units-Calculator' );
 }
 
-xOnLoad( UpdateLengthModel );
+function CAngleModel() {
+  this.deg = 0;
+  this.rad = 0;
+  this.grad = 0;
+  this.arcmin = 0;
+  this.arcsec = 0;
+  this.degLast = 0;
+  this.radLast = 0;
+  this.gradLast = 0;
+  this.arcminLast = 0;
+  this.arcsecLast = 0;
+}
 
-Object.assign(globalThis, { CLengthModel, LengthModel, UpdateLengthModel });
+CAngleModel.prototype.calcOthersFromDeg = function() {
+  this.rad = this.deg * Math.PI / 180;
+  this.grad = this.deg * 200 / 180;
+  this.arcmin = this.deg * 60;
+  this.arcsec = this.deg * 3600;
+}
+
+CAngleModel.prototype.Update = function() {
+  if (this.deg != this.degLast) {
+    this.calcOthersFromDeg();
+  }
+  else if (this.rad != this.radLast) {
+    this.deg = this.rad * 180 / Math.PI;
+    this.calcOthersFromDeg();
+  }
+  else if (this.grad != this.gradLast) {
+    this.deg = this.grad * 180 / 200;
+    this.calcOthersFromDeg();
+  }
+  else if (this.arcmin != this.arcminLast) {
+    this.deg = this.arcmin / 60;
+    this.calcOthersFromDeg();
+  }
+  else if (this.arcsec != this.arcsecLast) {
+    this.deg = this.arcsec / 3600;
+    this.calcOthersFromDeg();
+  }
+  this.degLast = this.deg;
+  this.radLast = this.rad;
+  this.gradLast = this.grad;
+  this.arcminLast = this.arcmin;
+  this.arcsecLast = this.arcsec;
+}
+
+var AngleModel = new CAngleModel();
+
+function UpdateAngleModel() {
+  AngleModel.Update();
+  ControlPanels.Update( 'Angle-Calculator' );
+}
+
+xOnLoad(function() {
+  UpdateLengthModel();
+  UpdateAngleModel();
+});
+
+Object.assign(globalThis, { CLengthModel, LengthModel, UpdateLengthModel, CAngleModel, AngleModel, UpdateAngleModel });

@@ -20,13 +20,13 @@ trim_trailing_whitespace = false
 indent_style = tab
 indent_size = 4
 
-[apps/earth-drop-calc/app/**]
+[apps/curvature-drop-calc/app/**]
 indent_style = tab
 
-[apps/earth-drop-calc/assets/**]
+[apps/curvature-drop-calc/assets/**]
 indent_style = tab
 
-[apps/fed-wabis-v2/**]
+[apps/fed-wabis/**]
 indent_style = tab
 
 [.editorconfig]

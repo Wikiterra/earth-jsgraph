@@ -1,6 +1,6 @@
 // =============================================================================
 // helpers.js — Shared math / utility functions used by both apps.
-//   Lives in the vendor package so both earth-drop-calc and fed-wabis-v2
+//   Lives in the vendor package so both curvature-drop-calc and fed-wabis
 //   can import it without duplication.
 //
 //   Dual-loadable: runs as a classic <script> AND as an ESM side-effect import.
@@ -14,7 +14,7 @@
 function toRad(a) { return a * Math.PI / 180; }
 function toDeg(a) { return a * 180 / Math.PI; }
 
-// Aliases for code that uses uppercase naming (fed-wabis-v2 legacy).
+// Aliases for code that uses uppercase naming (fed-wabis legacy).
 function ToRad(x) { return x * Math.PI / 180; }
 function ToDeg(x) { return x * 180 / Math.PI; }
 
