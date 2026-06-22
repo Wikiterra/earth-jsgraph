@@ -109,10 +109,8 @@
 /* ---- Override dark vars for light theme ---- */
 :root {
   --color-primary: #2d3436;
-}
-:root {
-  --top-bar-h:        44px;
-  --bottom-bar-h:     56px;
+  --top-bar-h:        clamp(40px, 4cqi + 1rem, 48px);
+  --bottom-bar-h:     clamp(52px, 5cqi + 1.5rem, 60px);
   --color-bg:      #eef0f2;
   --bar-bg:        rgba(30, 40, 50, 0.95);
   --bar-text:      rgba(255,255,255,0.9);
@@ -296,3 +294,18 @@ ul.TabSelectors.HiddenTabs { display: none; }
 .ref-pic img { width: 100%; display: block; }
 .ref-pic figcaption { font-size: 13px; color: #555; text-align: center; }
 
+/* ---- Mobile-first: toggle labels hidden on phones, shown at ≥480px ---- */
+.toggle-label { display: none; }
+
+@media (min-width: 480px) {
+  .toggle-label { display: inline; }
+}
+
+/* ---- Compact phone (< 400px) ---- */
+@media (max-width: 400px) {
+  #top-bar { gap: 4px; padding: 0 6px; }
+  .pb-btn { width: 26px; height: 26px; }
+  .quick-section { padding: 0 2px; }
+  .layer-toggle { padding: 4px 5px; min-width: 32px; }
+  #panel-drawer { max-height: 65vh; }
+}

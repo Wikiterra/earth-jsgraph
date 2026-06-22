@@ -126,8 +126,8 @@
   font-weight: 500;
 }
 .cp-panel--readonly .cp-panel__header {
-  background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
-  color: #0369a1;
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  color: var(--color-accent-strong);
   font-size: 0.8rem;
   letter-spacing: 0.02em;
   text-transform: uppercase;

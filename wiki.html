@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="WikiTerra jsgraph — documentation for the Flat Earth Dome Model and Earth Curvature Calculator apps">
+  <meta name="theme-color" content="#1f2937">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%231a5276' stroke='%23ccc' stroke-width='2'/%3E%3C/svg%3E">
+  <title>Docs · WikiTerra jsgraph</title>
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+  <nav>
+    <span class="brand">WikiTerra · jsgraph</span>
+    <a href="apps/fed-wabis/">FE Dome</a>
+    <span class="sep">|</span>
+    <a href="apps/earth-drop-calc/">Curvature Calc</a>
+    <span class="sep">|</span>
+    <a href="index.html">Home</a>
+    <span class="sep">|</span>
+    <a href="wiki.html" aria-current="page">Docs</a>
+  </nav>
+
+  <div class="page">
+    <div class="hero">
+      <h1>App Documentation</h1>
+      <p class="tagline">Two visualization tools built on the wabis / jsgraph engine.</p>
+    </div>
+
+    <!-- ===== FED WABIS ===== -->
+    <div class="app-section">
+      <div class="app-header">
+        <h2>Flat Earth Dome Model</h2>
+        <a href="apps/fed-wabis/">Open app →</a>
+      </div>
+
+      <p>Interactive 3D simulation of the flat earth dome cosmology. Shows how the sun, moon and stars move over a flat disc with a dome, and compares predicted shadows and eclipses to real astronomical events.</p>
+
+      <div class="features">
+        <span class="feat">Playback animation</span>
+        <span class="feat">Day / night cycle</span>
+        <span class="feat">Solar &amp; lunar eclipses</span>
+        <span class="feat">Equinox / solstice scenarios</span>
+        <span class="feat">Observer position</span>
+        <span class="feat">Date &amp; time picker</span>
+      </div>
+
+      <h3>Canvas controls</h3>
+      <table class="controls">
+        <tr><th>Input</th><th>Action</th></tr>
+        <tr><td>Drag</td><td>Rotate view around the scene</td></tr>
+        <tr><td>Two-finger pinch</td><td>Zoom in / out</td></tr>
+        <tr><td>Scroll wheel</td><td>Zoom in / out</td></tr>
+        <tr><td><kbd>Ctrl</kbd> + drag</td><td>Move observer position on the flat earth</td></tr>
+        <tr><td>Move button (⊕) + drag</td><td>Move observer (alternative to Ctrl-drag)</td></tr>
+      </table>
+
+      <h3>Top bar</h3>
+      <table class="controls">
+        <tr><th>Element</th><th>What it does</th></tr>
+        <tr><td>▶ / ⏸ Play</td><td>Start or pause the time animation</td></tr>
+        <tr><td>⏮ / ⏭ Step</td><td>Step one cycle backward or forward</td></tr>
+        <tr><td>↺ Reset</td><td>Return to the initial state</td></tr>
+        <tr><td>Speed button</td><td>Cycle through animation speeds (click forward, Shift-click back)</td></tr>
+        <tr><td>Demo tabs (Intro … Stars)</td><td>Load a preset scenario; each unlocks a guided sub-demo sequence</td></tr>
+        <tr><td>☀ Eclipse tab</td><td>Jump directly to the total solar eclipse scenario</td></tr>
+      </table>
+
+      <h3>Timeline strip</h3>
+      <table class="controls">
+        <tr><th>Element</th><th>What it does</th></tr>
+        <tr><td>Mode button (1h / 1d / 1y)</td><td>Switch the scrubber range between one hour, one day, or one year</td></tr>
+        <tr><td>Scrubber</td><td>Drag to jump to any point in the selected range</td></tr>
+      </table>
+
+      <h3>Date &amp; time picker (top-right)</h3>
+      <p>Scroll or click the ▲▼ arrows on each field (month, day, year, hour, minute) to set the simulation date. The sun ☀ and moon ☾ azimuth / elevation update live below the picker.</p>
+
+      <h3>Bottom bar — layer toggles</h3>
+      <table class="controls">
+        <tr><th>Button</th><th>Toggles</th></tr>
+        <tr><td>Grid</td><td>Flat earth grid lines</td></tr>
+        <tr><td>Dome</td><td>Dome hemisphere wireframe</td></tr>
+        <tr><td>Shadow</td><td>Shadow cone cast by the moon</td></tr>
+        <tr><td>P·Dome</td><td>Personal dome (observer-relative sky sphere)</td></tr>
+        <tr><td>Sun / Moon / Stars</td><td>Show or hide each luminary</td></tr>
+        <tr><td>Orbits</td><td>Sun and moon orbital tracks</td></tr>
+        <tr><td>D·Rays</td><td>Dome light rays from the sun</td></tr>
+        <tr><td>P·Rays</td><td>Parallel rays on the personal dome</td></tr>
+      </table>
+
+      <h3>Parameter sliders (desktop, bottom-right)</h3>
+      <table class="controls">
+        <tr><th>Slider</th><th>Controls</th></tr>
+        <tr><td>M.Ecl</td><td>Moon ecliptic angle (±90°)</td></tr>
+        <tr><td>☀Dist</td><td>Sun distance (log scale, km)</td></tr>
+        <tr><td>DomeH</td><td>Dome height (km)</td></tr>
+        <tr><td>DomeSz</td><td>Dome size (× FE radius)</td></tr>
+        <tr><td>RayP</td><td>Ray convergence parameter</td></tr>
+      </table>
+    </div>
+
+    <!-- ===== EARTH DROP CALC ===== -->
+    <div class="app-section">
+      <div class="app-header">
+        <h2>Earth Curvature Calculator</h2>
+        <a href="apps/earth-drop-calc/">Open app →</a>
+      </div>
+
+      <p>Calculates and visualizes how much of a distant target is hidden below the horizon from a given observer altitude, comparing the globe earth and flat earth models side by side, with optional atmospheric refraction.</p>
+
+      <div class="features">
+        <span class="feat">Globe vs. flat earth</span>
+        <span class="feat">Atmospheric refraction</span>
+        <span class="feat">Two targets</span>
+        <span class="feat">Metric &amp; imperial units</span>
+        <span class="feat">URL state sharing</span>
+        <span class="feat">Screenshot export</span>
+      </div>
+
+      <h3>Bottom bar</h3>
+      <table class="controls">
+        <tr><th>Button</th><th>Opens panel</th></tr>
+        <tr><td>📐 Measures</td><td>Observer height, target distance &amp; size, view angle</td></tr>
+        <tr><td>🔬 Optics</td><td>Refraction model (standard, custom, off)</td></tr>
+        <tr><td>📊 Data</td><td>Read-only results: hidden height, horizon distance, etc.</td></tr>
+        <tr><td>Globe / FE / Both</td><td>Switch which model(s) are drawn on the canvas</td></tr>
+        <tr><td>Units</td><td>Switch between metric and imperial</td></tr>
+      </table>
+
+      <h3>Panel drawer (slides up from bottom)</h3>
+      <p>Tap any section button to open the drawer. Inside, each section is collapsible. Tap the section title to expand or collapse it. Tap the ▼ button at the bottom to close the drawer.</p>
+
+      <h3>Measures panel</h3>
+      <table class="controls">
+        <tr><th>Field</th><th>Description</th></tr>
+        <tr><td>Observer height</td><td>Eye height above the surface</td></tr>
+        <tr><td>Target distance</td><td>Horizontal distance to the target</td></tr>
+        <tr><td>Target height</td><td>Total height of the target object</td></tr>
+        <tr><td>View angle</td><td>Vertical tilt of the camera</td></tr>
+      </table>
+
+      <h3>Optics panel</h3>
+      <table class="controls">
+        <tr><th>Setting</th><th>Effect</th></tr>
+        <tr><td>Standard refraction</td><td>Applies the standard 7/6 earth-radius refraction model</td></tr>
+        <tr><td>Custom k</td><td>Set a custom refraction coefficient</td></tr>
+        <tr><td>Off</td><td>No refraction (geometric only)</td></tr>
+      </table>
+
+      <h3>Distance Data panel (read-only results)</h3>
+      <table class="controls">
+        <tr><th>Field</th><th>Meaning</th></tr>
+        <tr><td>Hidden height</td><td>How much of the target is below the horizon line</td></tr>
+        <tr><td>Horizon distance</td><td>Distance to the optical horizon from the observer</td></tr>
+        <tr><td>Drop</td><td>Geometric earth drop over the target distance</td></tr>
+        <tr><td>Bulge</td><td>Mid-distance bulge (sagitta)</td></tr>
+      </table>
+
+      <h3>Top bar</h3>
+      <table class="controls">
+        <tr><th>Button</th><th>Action</th></tr>
+        <tr><td>📷 Screenshot</td><td>Save the current canvas as a PNG file</td></tr>
+      </table>
+
+      <h3>Sharing a scenario</h3>
+      <p>The full app state is encoded in the URL (via DataX). Copy the address bar to share the exact configuration with someone else, or bookmark it to return later.</p>
+    </div>
+
+    <!-- ===== DEV ===== -->
+    <div class="dev-section">
+      <h2>Developer setup</h2>
+
+      <h3>Requirements</h3>
+      <ul>
+        <li>Node ≥ 18 and pnpm ≥ 8</li>
+        <li>Run through Vite — bare specifiers won't resolve without it</li>
+      </ul>
+
+      <h3>Commands</h3>
+<pre><code>pnpm install                              # install workspace deps
+pnpm dev                                  # serve both apps (Vite root)
+pnpm --filter fed-wabis dev               # serve only fed-wabis
+pnpm --filter earth-drop-calc dev         # serve only drop-calc
+pnpm build                                # build → dist/ (GitHub Pages)
+pnpm preview                              # preview dist/ locally
+pnpm characterize                         # safety net: math + canvas snapshots
+pnpm lint                                 # ESLint</code></pre>
+
+      <div class="note">⚠ Do not open index.html directly (file://) — bare ESM specifiers only resolve under Vite.</div>
+
+      <h3>Repo structure</h3>
+<pre><code>apps/
+  earth-drop-calc/    Curvature / drop calculator
+  fed-wabis/          Flat Earth Dome Model
+packages/
+  jsgraph-vendor/     Shared wabis engine + design tokens</code></pre>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -17,8 +17,19 @@ JsgMouseHandler.prototype.OnMouseScroll = function (event) {
     event.preventDefault(); return true;
 }
 JsgMouseHandler.prototype.GetTouchOffsetPos = function (event) { var rect = event.target.getBoundingClientRect(); var x = event.targetTouches[0].clientX - rect.left; var y = event.targetTouches[0].clientY - rect.top; return [x, y]; }
+JsgMouseHandler.prototype._pinchDist = function (touches) {
+    var dx = touches[0].clientX - touches[1].clientX, dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+}
 JsgMouseHandler.prototype.OnTouchStart = function (event) {
     var originalEvent = event.event; if (!originalEvent.touches) { this.MouseIsDown = false; return true; }
+    if (originalEvent.touches.length === 2) {
+        this._pinch = this._pinchDist(originalEvent.touches);
+        this.MouseIsDown = false;
+        event.PreventDefault();
+        return true;
+    }
+    this._pinch = null;
     var pos = this.GetTouchOffsetPos(originalEvent); return this.StartTracking(event, pos);
 }
 JsgMouseHandler.prototype.OnMouseDown = function (event) { return this.StartTracking(event, [event.offsetX, event.offsetY]); }
@@ -36,7 +47,17 @@ JsgMouseHandler.prototype.OnMouseMove = function (event) {
     return this.ContinueTracking(event, [event.offsetX, event.offsetY]);
 }
 JsgMouseHandler.prototype.OnTouchMove = function (event) {
-    var originalEvent = event.event; if (!this.MouseIsDown || !originalEvent.touches || originalEvent.touches.length != 1) { this.MouseIsDown = false; return true; }
+    var originalEvent = event.event;
+    if (originalEvent.touches && originalEvent.touches.length === 2 && this._pinch) {
+        var newDist = this._pinchDist(originalEvent.touches);
+        var ratio = newDist / this._pinch;
+        if (xFunc(this.Model.OnScroll)) { this.Model.OnScroll(ratio > 1, ratio, originalEvent); }
+        this._pinch = newDist;
+        this.MouseIsDown = false;
+        event.PreventDefault();
+        return true;
+    }
+    if (!this.MouseIsDown || !originalEvent.touches || originalEvent.touches.length != 1) { this.MouseIsDown = false; return true; }
     var pos = this.GetTouchOffsetPos(originalEvent); return this.ContinueTracking(event, pos);
 }
 JsgMouseHandler.prototype.StartTracking = function (event, pos) {

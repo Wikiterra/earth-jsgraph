@@ -1,30 +1,52 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="WikiTerra · jsgraph apps — Colección de herramientas de visualización geográfica y astronómica">
-  <meta name="theme-color" content="#222">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%231a5276' stroke='%23ccc' stroke-width='2'/%3E%3Cpath d='M50 5 A45 45 0 0 1 95 50' fill='none' stroke='%23fff' stroke-width='1.5' opacity='0.3'/%3E%3C/svg%3E">
-  <title>WikiTerra · jsgraph apps</title>
-  <style>
-    body { font: 16px/1.5 system-ui, sans-serif; max-width: 40rem; margin: 4rem auto; padding: 0 1rem; }
-    h1 { margin-bottom: 1.5rem; }
-    a.card { display: block; padding: 1rem 1.25rem; margin: .75rem 0; border: 1px solid #ccc; border-radius: 8px; text-decoration: none; color: inherit; }
-    a.card:hover { border-color: #888; }
-    a.card b { display: block; font-size: 1.1rem; }
-    a.card span { color: #666; font-size: .9rem; }
-  </style>
+  <meta name="description" content="WikiTerra · jsgraph apps — geographic and astronomical visualization tools">
+  <meta name="theme-color" content="#1f2937">
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%231a5276' stroke='%23ccc' stroke-width='2'/%3E%3Cpath d='M50 5 A45 45 0 0 1 95 50' fill='none' stroke='%23fff' stroke-width='1.5' opacity='0.3'/%3E%3C/svg%3E">
+  <title>WikiTerra · jsgraph</title>
+  <link rel="stylesheet" href="site.css">
 </head>
+
 <body>
-  <h1>WikiTerra · jsgraph</h1>
-  <a class="card" href="apps/fed-wabis/">
-    <b>Flat Earth Dome Model</b>
-    <span>Simulación 3D del modelo de domo (wabis-calc-v2)</span>
-  </a>
-  <a class="card" href="apps/earth-drop-calc/">
-    <b>Earth Curvature Calculator</b>
-    <span>Curvatura / caída con refracción, plano vs. globo</span>
-  </a>
+
+  <nav>
+    <span class="brand">WikiTerra · jsgraph</span>
+    <a href="apps/fed-wabis/">FE Dome</a>
+    <span class="sep">|</span>
+    <a href="apps/earth-drop-calc/">Curvature Calc</a>
+    <span class="sep">|</span>
+    <a href="wiki.html">Docs</a>
+  </nav>
+
+  <div class="page">
+    <div class="hero">
+      <h1>WikiTerra · jsgraph</h1>
+      <p class="tagline">Geographic and astronomical visualization tools built on the wabis / jsgraph engine.</p>
+    </div>
+
+    <div class="cards">
+      <a class="card" href="apps/fed-wabis/">
+        <span class="card-arrow">→</span>
+        <b>Flat Earth Dome Model</b>
+        <span>Interactive 3D simulation of the flat earth dome cosmology — sun, moon, eclipses, day/night cycle.</span>
+      </a>
+      <a class="card" href="apps/earth-drop-calc/">
+        <span class="card-arrow">→</span>
+        <b>Earth Curvature Calculator</b>
+        <span>Calculates and visualizes hidden height and horizon drop, globe vs. flat earth, with refraction.</span>
+      </a>
+    </div>
+
+    <div class="home-footer">
+      <a href="wiki.html">Documentation →</a>
+    </div>
+  </div>
+
 </body>
+
 </html>
