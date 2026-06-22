@@ -16,16 +16,16 @@ import 'jsgraph-vendor/src/core/shared.css';
 
 import 'jsgraph-vendor/src/jsg.js';
 import 'jsgraph-vendor/src/jsgx3d.js';
-import '../assets/jsgMouseHandler.js';
-import '../assets/EarthMap.js';
-import '../assets/earth-map-data.js';
+import '../app/jsgMouseHandler.js';
+import '../app/EarthMap.js';
+import '../app/earth-map-data.js';
 import 'jsgraph-vendor/src/DataX.js';
 import 'jsgraph-vendor/src/ModelAnimation.js';
-import '../assets/app.js';
-import '../assets/app-math.js';
-import '../assets/app-draw.js';
-import '../assets/demos-manager.js';
-import '../assets/demos-data.js';
+import '../app/app.js';
+import '../app/app-math.js';
+import '../app/app-draw.js';
+import '../app/demos-manager.js';
+import '../app/demos-data.js';
 import './ui.js';
 
 // shared top nav / app-switcher (branding + link to the other app)

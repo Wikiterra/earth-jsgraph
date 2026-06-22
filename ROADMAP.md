@@ -34,7 +34,7 @@ arquitectónico por fases en [../MIGRATION-PLAN.md](../MIGRATION-PLAN.md).
 
 **fed-wabis** (Fases 1–14, detalle en git history)
 - Limpieza HTML/CMS, layout full-screen, calendario, CSS mobile-first, accesibilidad
-  ARIA, conversión a ESM (`main-v2.js`), descomposición de `app.js` (3232 → 453 L) y
+  ARIA, conversión a ESM (`main.js`), descomposición de `app.js` (3232 → 453 L) y
   `wiki.js` (920 → 424 L), `Tabs.js` eliminado, timeline scrubber, play/pause, barras
   reorganizadas (Layers/Params/Rays/Luminaries).
 

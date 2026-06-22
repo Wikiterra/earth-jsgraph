@@ -35,7 +35,7 @@ Una sola cascada, de lo compartido a lo específico. Cada app la carga en este o
 | 4. App         | `apps/<app>/styles/*.css`                       | por app    | Chrome y overrides propios. **Última capa, gana.**                                                                                                 |
 
 - edc carga 1–4 vía `js/main.js` (imports ESM, en orden). fed carga tokens vía `@import`
-  al inicio de su `styles/styles.css` y los componentes vía `main-v2.js`.
+  al inicio de su `styles/styles.css` y los componentes vía `main.js`.
 - Ambas apps usan `styles/` (no `css/`). Los colores de marca (`#ff8033`…) viven **solo**
   en `tokens.css`; el resto referencia `var(--…)`. Colores semánticos de una sola app
   (resaltados de campos, cabeceras de panel) se quedan locales en su `*.css`.

@@ -93,7 +93,7 @@ export default tseslint.config(
     // Object.assign(FeDomeApp, {...}) — a deliberate method-partial layout, kept
     // as-is. Declared globals = browser + wabis vendor + shared helpers + the
     // fed runtime singletons.
-    files: ["apps/fed-wabis/assets/**/*.js", "apps/fed-wabis/js/**/*.js"],
+    files: ["apps/fed-wabis/app/**/*.js", "apps/fed-wabis/js/**/*.js"],
     languageOptions: {
       globals: {
         ...globals.browser,

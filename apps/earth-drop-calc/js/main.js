@@ -1,4 +1,4 @@
-// ES module entry for curvature-drop-calc (mirrors fed-wabis/js/main-v2.js).
+// ES module entry for curvature-drop-calc (mirrors fed-wabis/js/main.js).
 // Replaces ~21 classic <script> tags. Each file runs for its side effects and
 // publishes its globals via Object.assign(globalThis, …) (vendor + app alike),
 // so the legacy global-based code keeps working under module scope.

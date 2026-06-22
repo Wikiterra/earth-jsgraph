@@ -15,8 +15,9 @@ export default defineConfig({
     rollupOptions: {
       input: {
         index: resolve(root, 'index.html'),
-        drop: resolve(root, 'apps/earth-drop-calc/index.html'),
-        fed: resolve(root, 'apps/fed-wabis/index.html'),
+        wiki:  resolve(root, 'wiki.html'),
+        drop:  resolve(root, 'apps/earth-drop-calc/index.html'),
+        fed:   resolve(root, 'apps/fed-wabis/index.html'),
       },
     },
   },
