@@ -17,6 +17,6 @@ const bar = document.getElementById('top-bar');
 if (bar) {
   const wrap = document.createElement('span');
   wrap.className = 'app-shell-group';
-  wrap.innerHTML = `<a class="app-shell-brand" href="../../">WikiTerra</a><nav class="app-shell-links">${links}</nav>`;
+  wrap.innerHTML = `<a class="app-shell-brand" href="../../">WikiTerra</a><nav class="app-shell-links">${links}<a href="../../wiki.html">Docs</a></nav>`;
   bar.insertBefore(wrap, bar.firstChild);
 }

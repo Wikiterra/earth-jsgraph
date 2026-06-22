@@ -57,6 +57,17 @@ arquitectónico por fases en [../MIGRATION-PLAN.md](../MIGRATION-PLAN.md).
   columnas (gráfico | datos) ≥1200; tabs/sliders táctiles. fed: barra inferior con
   scroll en móvil (controles ya no se recortan). — `f2fe9a7`, `44a5c3a`
 
+**UX / mobile (jun 2026)**
+- **Pinch-to-zoom en fed:** `jsgMouseHandler.js` detecta 2 dedos en `OnTouchStart`/`OnTouchMove`
+  y llama `Model.OnScroll` con el ratio de distancia entre puntos. `touch-action: none` en
+  `#FeGraph` previene que el navegador intercepte el gesto. Hint de gesto actualizado.
+- **edc mobile-first (clamp + compact):** alturas de barra con `clamp()`; `.toggle-label`
+  oculto por defecto, visible ≥480 px; overrides compactos para ≤400 px.
+- **edc colores:** cabecera de paneles read-only cambiada de gradiente azul a
+  `color-mix(… var(--color-accent) …)` — consistente con el tema naranja.
+- **Mini-wiki:** `wiki.html` + `site.css` compartido con `index.html`; enlace "Docs" en
+  appShell de ambas apps.
+
 **Arquitectura / calidad (jun 2026)**
 - **Fronteras ESM reales (edc):** `physics`/`units`/`sliderMapping` ahora `export`;
   sus consumidores `import`. El resto del bag global se volvió **contrato explícito
@@ -76,5 +87,4 @@ arquitectónico por fases en [../MIGRATION-PLAN.md](../MIGRATION-PLAN.md).
 - **`ControlPanel.js`** (~400 L one-liner denso): único vendor sin modernizar; tocar solo
   si un bug/feature lo exige.
 - **Dividir más `app.js`** de fed (~450 L cohesivas) — churn sin ganancia.
-- **`xEvent` → `addEventListener` nativo** / **pinch-zoom de 2 dedos** en fed: cirugía
-  sin demanda actual.
+- **`xEvent` → `addEventListener` nativo** en fed: cirugía sin demanda actual.
