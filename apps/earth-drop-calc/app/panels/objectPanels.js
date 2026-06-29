@@ -4,7 +4,7 @@
 
 function MakeObjectSliders(ix, container) {
   const i = '[' + ix + ']';
-  ControlPanels.NewSliderPanel({
+  const p = ControlPanels.NewSliderPanel({
     Name: 'Object-Sliders' + ix,
     ModelRef: 'CurveApp',
     OnModelChange: UpdateAll,
@@ -12,8 +12,10 @@ function MakeObjectSliders(ix, container) {
     Digits: DefaultDigits,
     ReadOnly: false,
     PanelFormat: 'InputMediumWidth',
-  })
-    .AddValueSliderField({ Name: 'NObjects', ValueRef: 'NObjects' + i, Label: 'NObjects', Color: 'black', Format: 'fix', Digits: 0, Min: 0, Max: 200, Steps: 200, Inc: 1 })
+  });
+  // NObjects only on target 1 — second target's count stays controlled by the model.
+  if (ix === 0) p.AddValueSliderField({ Name: 'NObjects', ValueRef: 'NObjects' + i, Label: 'NObjects', Color: 'black', Format: 'fix', Digits: 0, Min: 0, Max: 200, Steps: 200, Inc: 1 });
+  p
     .AddValueSliderField({ Name: 'ObjSurfDist', Label: 'Dist', ValueRef: 'ObjSurfDist' + i, SliderValueRef: 'SliderObjSurfDistLog' + i, UnitsData: 'LengthUnits', Color: 'blue', Min: 0, Max: 5, Inc: 100 })
     .AddValueSliderField({ Name: 'ObjSize', ValueRef: 'ObjSize' + i, SliderValueRef: 'SliderObjSizeLog' + i, UnitsData: 'HeightUnits', Color: 'red', Min: 0, Max: 4, Inc: 1 })
     .AddValueSliderField({ Name: 'ObjDeltaDist', Label: 'DeltaDist', ValueRef: 'ObjDeltaDist' + i, SliderValueRef: 'SliderObjDeltaDistLog' + i, UnitsData: 'LengthUnits', Color: 'blue', Min: 0, Max: 4, Inc: 10 })
@@ -41,8 +43,6 @@ function MakeObjectOptions(ix, container) {
     .RenderInto(container);
 }
 
-// Order within each container: sliders then options (matches the original files).
+// Only target 1 is shown; target 2 (index 1) stays in the model but has no panel.
 MakeObjectSliders(0, 'panel-obj1');
 MakeObjectOptions(0, 'panel-obj1');
-MakeObjectSliders(1, 'panel-obj2');
-MakeObjectOptions(1, 'panel-obj2');

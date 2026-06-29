@@ -14,7 +14,7 @@
      foreground (flips light↔dark text), --bar-rgb the bar/overlay background,
      --canvas-bg the scene background. */
   --ui-fg-rgb: 255, 255, 255;
-  --bar-rgb:   16, 16, 24;
+  --bar-rgb:   20, 13, 43;
   --canvas-bg: #000;
 
   --color-primary: #ece9ff;
@@ -77,23 +77,28 @@ body {
   box-shadow: 0 2px 12px rgba(0,0,0,0.4);
 }
 
-/* Playback cluster — centered overlay on the canvas */
+/* Playback cluster — centered in the top bar. #top-bar's backdrop-filter makes
+   it the containing block, so absolute centering lands in the bar (brand stays
+   left, demo tabs right). Demo tabs are hidden on mobile so no overlap there. */
 #top-controls {
-  position: fixed;
-  top: 50%;
+  position: absolute;
   left: 50%;
+  top: 50%;
   transform: translate(-50%, -50%);
-  z-index: 500;
   display: flex;
   align-items: center;
   gap: 6px;
-  pointer-events: none;  /* clicks pass through the container */
+  z-index: 1;
 }
-#top-controls > * { pointer-events: auto; }
 
-/* Demo tabs — pushed to the right on desktop, hidden on mobile */
+/* Demo tabs — pushed hard right, no default <ul> margin/padding, and capped to
+   the right half minus the centered play/reset cluster so they never cover it.
+   Overflow-x (set on .TabSelectors) lets them scroll instead of overlapping. */
 #DomeDemoTabs {
-  margin-left: auto;
+  margin: 0 0 0 auto;
+  padding: 0;
+  max-width: calc(50vw - 80px);
+  display: none;
 }
 
 /* Demo tab container (#DomeDemoTabs) — class names retained from legacy Tabs styling */
@@ -295,22 +300,21 @@ body {
   border: 1px solid rgba(var(--ui-fg-rgb),0.12);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
-  padding: 4px 28px 4px 8px;
+  padding: 4px 8px;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-/* Edit toggle — top-right corner of the calendar panel */
+/* Edit toggle — last item in the digit row (in flow, never overlaps the text) */
 .cal-edit-btn {
-  position: absolute;
-  top: 3px;
-  right: 3px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
+  margin-left: 4px;
+  flex-shrink: 0;
   border: 1px solid rgba(var(--ui-fg-rgb),0.12);
   border-radius: var(--radius-sm);
   background: rgba(var(--ui-fg-rgb),0.06);
@@ -420,6 +424,14 @@ body {
   color: rgba(var(--ui-fg-rgb),0.35);
   font-size: 12px;
   padding: 0 1px;
+  user-select: none;
+}
+
+.cal-dow {
+  color: rgba(var(--ui-fg-rgb),0.55);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 0 3px 0 1px;
   user-select: none;
 }
 
@@ -778,6 +790,25 @@ body {
   pointer-events: none;
 }
 
+/* Diameters strip — top-center, just below the sun/moon strip */
+#dim-strip {
+  position: fixed;
+  top: calc(var(--top-bar-h) + 34px);
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 16px);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: rgba(var(--bar-rgb), 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+}
+#dim-strip .sms-item { white-space: normal; text-align: center; }
+
 /* Observer lat/long strip — standalone, bottom-left above the bottom bar */
 #latlong-strip {
   position: fixed;
@@ -841,11 +872,23 @@ body {
   z-index: 500;
 }
 #calendar-dropdown {
-  min-width: 200px !important;
+  min-width: 0 !important;
   background: rgba(var(--bar-rgb), 0.95) !important;
-  padding: 5px 6px;
+  padding: 3px 5px;
 }
 #calendar-dropdown .cal-year-track { display: none; }
+
+/* Compact calendar on mobile — small card, top-right inside the canvas */
+@media (max-width: 767px) {
+  #calendar-dropdown .cal-digits { gap: 1px; padding: 1px 0; }
+  #calendar-dropdown .cal-spin { font-size: 10px; min-width: 15px; padding: 2px 1px; }
+  #calendar-dropdown .cal-spin.cs-wide { min-width: 26px; }
+  #calendar-dropdown .cal-sep { font-size: 10px; }
+  #calendar-dropdown .cal-dow { font-size: 9px; padding: 0 2px 0 0; }
+  #calendar-dropdown .cal-utc { font-size: 8px; margin-left: 1px; }
+  .cal-edit-btn { width: 17px; height: 17px; margin-left: 2px; }
+  .cal-edit-btn svg { width: 11px; height: 11px; }
+}
 
 /* Timeline strip below canvas on mobile */
 #timeline-strip {
@@ -916,6 +959,9 @@ body {
   .pb-speed-btn { font-size: 11px; height: 26px; min-width: 48px; padding: 0 7px; }
   .tc-timeline { min-width: 100px; }
   .timeline-ticks { font-size: 7.5px; }
+
+  /* Narrow screens: keep only the core gesture hint (drag / pinch) */
+  .gh-fine, .gh-move { display: none; }
 }
 
 /* =============================================================

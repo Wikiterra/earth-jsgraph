@@ -2,6 +2,7 @@ import { playback } from './playback.js';
 
 const MNAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const MFULL  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DNAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const SPIN_IDS = ['cs-month', 'cs-day', 'cs-year', 'cs-hour', 'cs-min'];
 
 const calState = { month: 0, day: 1, year: 2024, hour: 12, min: 0 };
@@ -28,6 +29,12 @@ function renderCalDigits() {
     sm.textContent = MNAMES[calState.month];
     sm.setAttribute('aria-valuenow',  calState.month);
     sm.setAttribute('aria-valuetext', MFULL[calState.month]);
+    const sw = document.getElementById('cs-dow');
+    if (sw) {
+      const wd = new Date(0);
+      wd.setUTCFullYear(calState.year, calState.month, calState.day);
+      sw.textContent = DNAMES[wd.getUTCDay()];
+    }
     const sd = document.getElementById('cs-day');
     sd.textContent = String(calState.day).padStart(2, '0');
     sd.setAttribute('aria-valuenow', calState.day);
@@ -54,28 +61,30 @@ function applyCalDigits() {
 }
 
 function stepCalField(field, delta) {
-  let maxDay;
-  switch (field) {
-    case 'month':
-      calState.month = (calState.month + delta + 12) % 12;
-      maxDay = daysInMonth(calState.year, calState.month);
-      if (calState.day > maxDay) calState.day = maxDay;
-      break;
-    case 'day':
-      maxDay = daysInMonth(calState.year, calState.month);
-      calState.day = ((calState.day - 1 + delta + maxDay) % maxDay) + 1;
-      break;
-    case 'year':
-      calState.year = Math.max(1900, Math.min(2099, calState.year + delta));
-      maxDay = daysInMonth(calState.year, calState.month);
-      if (calState.day > maxDay) calState.day = maxDay;
-      break;
-    case 'hour':
-      calState.hour = (calState.hour + delta + 24) % 24;
-      break;
-    case 'min':
-      calState.min = (calState.min + delta + 60) % 60;
-      break;
+  // month/year step in place (no carry — clicking "month" changes the month,
+  // dec->jan stays same year), clamping day to the new month's length.
+  if (field === 'month') {
+    const m = calState.month + delta;
+    calState.year += Math.floor(m / 12);
+    calState.month = ((m % 12) + 12) % 12;
+    calState.day = Math.min(calState.day, daysInMonth(calState.year, calState.month));
+  } else if (field === 'year') {
+    calState.year = Math.max(1900, Math.min(2099, calState.year + delta));
+    calState.day = Math.min(calState.day, daysInMonth(calState.year, calState.month));
+  } else {
+    // day/hour/min: let Date carry up through every higher unit. 59min+1 -> 00
+    // and hour+1; 23h+1 -> next day; end of month/year roll over naturally.
+    const d = new Date(0);
+    d.setUTCFullYear(calState.year, calState.month, calState.day);
+    d.setUTCHours(calState.hour, calState.min, 0, 0);
+    if (field === 'day')  d.setUTCDate(d.getUTCDate() + delta);
+    if (field === 'hour') d.setUTCHours(d.getUTCHours() + delta);
+    if (field === 'min')  d.setUTCMinutes(d.getUTCMinutes() + delta);
+    calState.year  = d.getUTCFullYear();
+    calState.month = d.getUTCMonth();
+    calState.day   = d.getUTCDate();
+    calState.hour  = d.getUTCHours();
+    calState.min   = d.getUTCMinutes();
   }
   renderCalDigits();
   applyCalDigits();

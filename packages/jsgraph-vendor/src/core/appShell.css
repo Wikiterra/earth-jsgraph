@@ -9,6 +9,11 @@
   flex-shrink: 0;
 }
 
+/* Phones: drop the "Jsgraph" suffix to free top-bar space */
+@media (max-width: 560px) {
+  .app-shell-brand .brand-suffix { display: none; }
+}
+
 /* Light/dark theme toggle injected into #top-bar */
 .app-shell-theme {
   display: inline-flex;

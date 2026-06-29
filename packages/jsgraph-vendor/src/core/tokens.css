@@ -12,9 +12,10 @@
     --color-accent:        #ff8033;
     --color-accent-strong: #ff6000;
 
-    /* Cross-app top navigation bar (app-shell) */
-    --nav-bg:     #1f2937;
-    --nav-accent: #f59e0b;
+    /* Cross-app top navigation bar (app-shell) — brand indigo + orange,
+       matching the site nav and the app bars (--bar-rgb 20,13,43). */
+    --nav-bg:     #140d2b;
+    --nav-accent: #ff8033;
     --nav-link:   #cbd5e1;
 
     /* Neutrals */

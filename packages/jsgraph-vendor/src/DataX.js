@@ -27,7 +27,7 @@ var DataX = {
         if (callCB && this.AfterSetStateCallback) { this.AfterSetStateCallback(); }
         return true;
     }, UrlToAppState: function (url) { this.ParseUrl(url); var stateStr = this.GetUrlStr('state'); if (stateStr == '') return false; this.StreamToAppState(stateStr); return true; }, UrlParams: null, ParseUrl: function (url) {
-        if (!xStr(url) && this.UrlParams) return; this.UrlParams = {}; url = xDefStr(url, location.href); var pos = url.indexOf('?'); if (pos < 0) return; var paramListStr = url.substr(pos + 1); if (paramListStr == '') return; var pos = paramListStr.indexOf('#'); if (pos >= 0) paramListStr = paramListStr.substr(0, pos); if (paramListStr == '') return; var paramList = paramListStr.split('&'); for (i = 0; i < paramList.length; i++) {
+        if (!xStr(url) && this.UrlParams) return; this.UrlParams = {}; url = xDefStr(url, location.href); var pos = url.indexOf('?'); if (pos < 0) return; var paramListStr = url.substr(pos + 1); if (paramListStr == '') return; var pos = paramListStr.indexOf('#'); if (pos >= 0) paramListStr = paramListStr.substr(0, pos); if (paramListStr == '') return; var paramList = paramListStr.split('&'); for (var i = 0; i < paramList.length; i++) {
             var paramStr = paramList[i]; var pos = paramStr.indexOf('='); if (pos > 0) {
                 var name = paramStr.substr(0, pos).toLowerCase(); var value = paramStr.substr(pos + 1); try { value = decodeURIComponent(value); } catch (err) { }
                 this.UrlParams[name] = value;

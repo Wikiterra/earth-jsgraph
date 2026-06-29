@@ -30,7 +30,7 @@ if (bar) {
   const brand = document.createElement('a');
   brand.className = 'app-shell-brand';
   brand.href = '../../';
-  brand.textContent = 'WikiTerra Jsgraph';
+  brand.innerHTML = 'WikiTerra<span class="brand-suffix"> Jsgraph</span>';
   bar.insertBefore(brand, bar.firstChild);
 
   const toggle = document.createElement('button');

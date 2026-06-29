@@ -65,13 +65,10 @@
       <!-- Calendar date picker — always visible, no toggle -->
       <div id="calendar-widget">
           <div id="calendar-dropdown" role="region" aria-label="Date picker">
-            <!-- Read-only by default; the edit toggle reveals the ↑↓ arrows / scroll editing. -->
-            <button class="cal-edit-btn" id="cal-edit-toggle" aria-pressed="false"
-                    aria-label="Edit date and time" title="Edit date and time">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
-            </button>
-            <!-- Digit-scroll spinbuttons: ↑↓ arrows or scroll wheel on each field. -->
+            <!-- Read-only by default; the edit toggle (at the row's end) reveals
+                 the ↑↓ arrows / scroll editing. -->
             <div class="cal-digits" role="group" aria-label="Date and time">
+              <span class="cal-dow" id="cs-dow" aria-label="Day of week">Mon</span>
               <span class="cal-field">
                 <span class="cal-spin" id="cs-month" role="spinbutton" tabindex="0"
                       aria-label="Month" aria-valuenow="0" aria-valuemin="0" aria-valuemax="11"
@@ -120,10 +117,13 @@
                 </span>
               </span>
               <span class="cal-utc">UTC</span>
+              <button class="cal-edit-btn" id="cal-edit-toggle" aria-pressed="false"
+                      aria-label="Edit date and time" title="Edit date and time">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+              </button>
             </div>
           </div>
         </div>
-      </div>
     </header>
 
     <!-- Sun / Moon azimuth strip — standalone, separate from the calendar box -->
@@ -135,6 +135,11 @@
     <!-- Observer latitude / longitude — always visible -->
     <div id="latlong-strip" class="sms-strip" aria-live="polite" aria-atomic="true">
       <span class="sms-item" id="ll-text" title="Observer latitude / longitude">⌖ —</span>
+    </div>
+
+    <!-- Diameters: earth map, dome, personal dome -->
+    <div id="dim-strip" class="sms-strip" aria-live="polite" aria-atomic="true">
+      <span class="sms-item" id="dim-text" title="Diameters">⌀ —</span>
     </div>
 
     <!-- Canvas mount: CreateDomObjects replaces this div with #FeGraph once modules load -->
@@ -252,20 +257,12 @@
     <!-- Param sliders popover — sibling of the bars so it isn't clipped -->
     <div class="param-popover" id="param-popover" hidden>
       <div class="param-slider">
-        <label class="param-label" for="ps-moon-ecl">M.Ecl <span class="param-val" id="pv-moon-ecl">5.1°</span></label>
-        <input type="range" id="ps-moon-ecl" class="param-range" min="-90" max="90" step="0.5" value="5.145" aria-label="Moon ecliptic angle (degrees)">
-      </div>
-      <div class="param-slider">
-        <label class="param-label" for="ps-dist-sun">☀Dist <span class="param-val" id="pv-dist-sun">1.5e8</span></label>
-        <input type="range" id="ps-dist-sun" class="param-range" min="3" max="9" step="0.01" value="8.175" aria-label="Sun distance (log₁₀ km)">
-      </div>
-      <div class="param-slider">
-        <label class="param-label" for="ps-dome-h">DomeH <span class="param-val" id="pv-dome-h">9000</span></label>
-        <input type="range" id="ps-dome-h" class="param-range" min="2000" max="20015" step="100" value="9000" aria-label="Dome height (km)">
-      </div>
-      <div class="param-slider">
         <label class="param-label" for="ps-dome-sz">DomeSz <span class="param-val" id="pv-dome-sz">1.0</span></label>
-        <input type="range" id="ps-dome-sz" class="param-range" min="1" max="5" step="0.1" value="1" aria-label="Dome size (× FE radius)">
+        <input type="range" id="ps-dome-sz" class="param-range" min="1" max="5" step="0.1" value="1" aria-label="Dome size (scales dome height and sun distance)">
+      </div>
+      <div class="param-slider">
+        <label class="param-label" for="ps-pdome-sz">P·Dome <span class="param-val" id="pv-pdome-sz">5000</span></label>
+        <input type="range" id="ps-pdome-sz" class="param-range" min="2000" max="5000" step="100" value="5000" aria-label="Personal dome size (km)">
       </div>
       <div class="param-slider">
         <label class="param-label" for="ps-ray-p">RayP <span class="param-val" id="pv-ray-p">1.0</span></label>

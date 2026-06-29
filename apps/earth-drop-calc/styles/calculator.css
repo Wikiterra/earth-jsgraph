@@ -345,6 +345,16 @@ ul.TabSelectors.HiddenTabs { display: none; }
   .toggle-label { display: inline; }
 }
 
+/* Wide screens: let the popup grow to its content instead of scrolling inside. */
+@media (min-width: 768px) {
+  #panel-drawer { max-height: none; }
+  #panel-drawer-content { overflow-y: visible; }
+  /* Drop shared.css's 600px min-width so panels fit the 560px drawer — kills the
+     horizontal scrollbar on desktop. Mobile keeps min-width:0, so it only scrolls
+     when content genuinely overflows the screen. */
+  #panel-drawer .ScrollCanvas { min-width: 0; }
+}
+
 /* ---- Compact phone (< 400px) ---- */
 @media (max-width: 400px) {
   #top-bar { gap: 4px; padding: 0 6px; }

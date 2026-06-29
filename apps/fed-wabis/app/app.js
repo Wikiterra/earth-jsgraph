@@ -31,6 +31,7 @@ var FeDomeAppMetaData = {
     { Name: 'DateTime', Type: 'num', Default: 82.5 },
     { Name: 'DomeSize', Type: 'num', Default: 1.0 },
     { Name: 'DomeHeight', Type: 'num', Default: 9000.0 },
+    { Name: 'RadiusSphere', Type: 'num', Default: 5000.0 },
 
     { Name: 'ShowFeGrid', Type: 'bool', Default: true },
     { Name: 'ShowShadow', Type: 'bool', Default: true },
@@ -295,6 +296,8 @@ var FeDomeApp = {
     if (this.DomeSize > 5) this.DomeSize = 5;
     if (this.DomeHeight < this.DomeHeightMin) this.DomeHeight = this.DomeHeightMin;
     if (this.DomeHeight > this.DomeHeightMax) this.DomeHeight = this.DomeHeightMax;
+    if (this.RadiusSphere < 2000) this.RadiusSphere = 2000;
+    if (this.RadiusSphere > 5000) this.RadiusSphere = 5000;
     if (this.RayParameter < 0.5) this.RayParameter = 0.5;
     if (this.RayParameter > 2.0) this.RayParameter = 2.0;
 
@@ -343,8 +346,7 @@ var FeDomeApp = {
     this.MoonFeCelestSphereCoord = this.LocalGlobeCoordToGlobalFeCoord(JsgVect3.Scale(this.MoonLocalGlobeCoord, this.RadiusSphere));
 
     this.SunAnglesGlobe = this.CelestCoordToLocalGlobeAngles(this.SunCelestCoord);
-    var zoomParam = Limit01((this.Zoom - 2) / (this.ZoomMax - 2));
-    this.RadiusSphere = (1 - zoomParam) * 3000 + 2000;
+    // RadiusSphere (personal dome) is set by its own slider; cap it at the dome height.
     if (this.DomeHeight < this.RadiusSphere) this.RadiusSphere = this.DomeHeight;
   },
 

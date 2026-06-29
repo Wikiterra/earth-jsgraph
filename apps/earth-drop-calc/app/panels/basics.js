@@ -21,28 +21,6 @@ ControlPanels.NewSliderPanel( {
   Inc: 0.1,
 
 } ).AddValueSliderField( {
-  Name: 'ObjSurfDist',
-  Label: 'Target Distance',
-  ValueRef: 'ObjSurfDist[0]',
-  SliderValueRef: 'SliderObjSurfDistLog[0]',
-  UnitsData: 'LengthUnits',
-  Color: 'orange',
-  Min: 0,
-  Max: 5,
-  Inc: 100,
-
-} ).AddValueSliderField( {
-  Name: 'TargetSize',
-  Label: 'Target Size',
-  ValueRef: 'ObjSize[0]',
-  SliderValueRef: 'SliderObjSizeLog[0]',
-  UnitsData: 'HeightUnits',
-  Color: 'green',
-  Min: 0,
-  Max: 4,
-  Inc: 1,
-
-} ).AddValueSliderField( {
   Name: 'Refraction',
   ValueRef: 'RefractionCoeff',
   SliderValueRef: 'RefractionSlider',

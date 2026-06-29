@@ -2,7 +2,7 @@ export const playback = {
   active:   false,
   rafId:    null,
   lastTs:   null,
-  baseRate: 1.0,
+  baseRate: 0.6,
   stepSize: 1.0,
 
   start() {

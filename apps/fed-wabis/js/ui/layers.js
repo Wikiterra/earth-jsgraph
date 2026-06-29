@@ -28,6 +28,16 @@ export function sync() {
   if (ll) { try { ll.textContent = fmtLatLong(); } catch (e) {} }
   const strip = document.getElementById('latlong-strip');
   if (strip) strip.classList.toggle('active', !!FeDomeApp.MoveObserverMode);
+
+  const dim = document.getElementById('dim-text');
+  if (dim) {
+    try {
+      const km = v => Math.round(v).toLocaleString('en') + ' km';
+      dim.textContent = 'Earth ⌀ ' + km(2 * FeDomeApp.RadiusFE) +
+        ' · Dome ⌀ ' + km(2 * FeDomeApp.DomeSize * FeDomeApp.RadiusFE) +
+        ' · P-Dome ⌀ ' + km(2 * FeDomeApp.RadiusSphere);
+    } catch (e) {}
+  }
 }
 
 export function init() {

@@ -289,6 +289,16 @@ pre code { font-size: inherit; }
 }
 
 /* ---- mobile ---- */
+@media (max-width: 600px) {
+  /* Single-line nav: shorter brand, no separators, scroll if it overflows */
+  nav { gap: .75rem; padding: 0 .75rem; overflow-x: auto; scrollbar-width: none; }
+  nav::-webkit-scrollbar { display: none; }
+  nav a { white-space: nowrap; font-size: .82rem; }
+  .brand { font-size: .85rem; }
+  .brand-suffix { display: none; }
+  .sep { display: none; }
+}
+
 @media (max-width: 480px) {
   .page { padding: 1.25rem .75rem 3rem; }
   .app-section { padding: 1.25rem 1rem; }
